@@ -233,6 +233,7 @@ INSTALLED_APPS = (
     'onadata.apps.logger',
     'onadata.apps.viewer',
     'onadata.apps.main',
+    'onadata.apps.core',
     'onadata.apps.restservice',
     'onadata.apps.api',
     'guardian',

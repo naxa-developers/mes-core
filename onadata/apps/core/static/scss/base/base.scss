@@ -1,0 +1,114 @@
+
+.z-index {
+    z-index: 9999
+}
+
+.m-l-10,
+.dropdown-menu ul.menu .menu-info,
+.mcard_2 .user .details,
+.contact .c_list .c_name {
+    margin-left: 10px
+}
+
+
+.margin-0,
+.card .header .header-dropdown,
+.card .header h2,
+.media .media-body .media-heading,
+.wizard .content,
+.wizard .content .body label.error,
+.dropdown-menu ul.menu .menu-info h4,
+.dropdown-menu ul.menu .menu-info p,
+.profile_state {
+    margin: 0 !important
+}
+
+.p-l-0,
+.sidebar .menu .list,
+.sidebar .menu .list .ml-menu,
+.dropdown-menu ul.menu,
+.invoice .nav-tabs {
+    padding-left: 0px
+}
+
+.block-header {
+    padding: 10px 15px
+}
+
+@media only screen and (max-width: 767px) {
+    .block-header .col-lg-5.col-md-6.col-sm-12 {
+        display: none
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .block-header .right_icon_toggle_btn {
+        display: none
+    }
+}
+
+.block-header h2 {
+    font-size: 22px;
+    margin: 0 !important;
+    font-weight: 700
+}
+
+@media only screen and (max-width: 768px) {
+    .block-header h2 {
+        font-size: 18px
+    }
+}
+
+.block-header h2 small {
+    color: #666;
+    display: block;
+    margin-top: 8px
+}
+
+.block-header h2 small a {
+    font-weight: 700;
+    color: #777
+}
+
+.block-header .breadcrumb {
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    -ms-border-radius: 50px;
+    border-radius: 50px;
+    background: transparent;
+    font-size: 14px
+}
+
+@media only screen and (max-width: 768px) {
+    .block-header .breadcrumb {
+        font-size: 12px
+    }
+    .block-header .breadcrumb i {
+        font-size: 14px
+    }
+}
+.card {
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+    border: 0;
+    position: relative;
+    width: 100%;
+    box-shadow: none;
+    background: transparent;
+    .body{
+        font-weight: 400;
+        border-radius: .35rem;
+        background: #fff;
+        font-size: 14px;
+        color: #222;
+        padding: 20px;
+    }
+}
+
+
+
+
+
+

@@ -1,0 +1,247 @@
+.btn,
+.navbar .navbar-nav>a.btn {
+    border-width: 2px;
+    font-weight: 400;
+    font-size: .8171em;
+    line-height: 1.35em;
+    margin: 5px 1px;
+    border: none;
+    border-radius: .2875rem;
+    padding: 8px 18px;
+    cursor: pointer;
+    background-color: $color-secondary;
+    color: $color-white;
+    @include anim05;
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn.active,
+.btn:active:focus,
+.btn:active:hover,
+.btn.active:focus,
+.btn.active:hover,
+.show>.btn.dropdown-toggle,
+.show>.btn.dropdown-toggle:focus,
+.show>.btn.dropdown-toggle:hover,
+.navbar .navbar-nav>a.btn:hover,
+.navbar .navbar-nav>a.btn:focus,
+.navbar .navbar-nav>a.btn:active,
+.navbar .navbar-nav>a.btn.active,
+.navbar .navbar-nav>a.btn:active:focus,
+.navbar .navbar-nav>a.btn:active:hover,
+.navbar .navbar-nav>a.btn.active:focus,
+.navbar .navbar-nav>a.btn.active:hover,
+.show>.navbar .navbar-nav>a.btn.dropdown-toggle,
+.show>.navbar .navbar-nav>a.btn.dropdown-toggle:focus,
+.show>.navbar .navbar-nav>a.btn.dropdown-toggle:hover {
+    box-shadow: none;
+    background-color:$color-orange;
+}
+
+.btn:hover,
+.navbar .navbar-nav>a.btn:hover {
+    box-shadow: 0 3px 8px 0 rgba(41, 42, 51, 0.17)
+}
+
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active,
+.btn-default.active,
+.btn-default:active:focus,
+.btn-default:active:hover,
+.btn-default.active:focus,
+.btn-default.active:hover,
+.show>.btn-default.dropdown-toggle,
+.show>.btn-default.dropdown-toggle:focus,
+.show>.btn-default.dropdown-toggle:hover {
+    box-shadow: none
+}
+
+.btn-default:hover {
+    box-shadow: 0 3px 8px 0 rgba(41, 42, 51, 0.17)
+}
+
+.btn-default.disabled,
+.btn-default.disabled:hover,
+.btn-default.disabled:focus,
+.btn-default.disabled.focus,
+.btn-default.disabled:active,
+.btn-default.disabled.active,
+.btn-default:disabled,
+.btn-default:disabled:hover,
+.btn-default:disabled:focus,
+.btn-default:disabled.focus,
+.btn-default:disabled:active,
+.btn-default:disabled.active,
+.btn-default[disabled],
+.btn-default[disabled]:hover,
+.btn-default[disabled]:focus,
+.btn-default[disabled].focus,
+.btn-default[disabled]:active,
+.btn-default[disabled].active,
+fieldset[disabled] .btn-default,
+fieldset[disabled] .btn-default:hover,
+fieldset[disabled] .btn-default:focus,
+fieldset[disabled] .btn-default.focus,
+fieldset[disabled] .btn-default:active,
+fieldset[disabled] .btn-default.active {
+    background-color: #888;
+    border-color: #888
+}
+
+
+
+.btn-lg {
+    font-size: 1em;
+    border-radius: .35rem;
+    padding: 12px 40px
+}
+
+.btn-lg.btn-simple {
+    padding: 11px 39px
+}
+
+.btn-sm {
+    font-size: 12px;
+    border-radius: .2875rem;
+    padding: 5px 12px
+}
+
+.btn-sm.btn-simple {
+    padding: 4px 11px
+}
+
+.btn-link {
+    border: 0;
+    padding: .5rem .7rem;
+    background-color: transparent
+}
+
+.btn-wd {
+    min-width: 140px
+}
+
+.btn-group.select {
+    width: 100%
+}
+
+.btn-group.select .btn {
+    text-align: left
+}
+
+.btn-group.select .caret {
+    position: absolute;
+    top: 50%;
+    margin-top: -1px;
+    right: 8px
+}
+
+
+.checkbox,
+.radio {
+    margin-bottom: 12px
+}
+
+.checkbox label,
+.radio label {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    padding-left: 33px;
+    line-height: 27px;
+    &::before,
+    &::after{
+        content: " ";
+        display: inline-block;
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        left: 0;
+        cursor: pointer;
+        border-radius: 3px;
+        top: 0;
+        background-color: transparent;
+        border: 1px solid #ced4da;
+        -webkit-transition: opacity 0.3s linear;
+        -moz-transition: opacity 0.3s linear;
+        -o-transition: opacity 0.3s linear;
+        -ms-transition: opacity 0.3s linear;
+        transition: opacity 0.3s linear
+    }
+}
+
+.checkbox {
+    label{
+        &::after {
+            color: #555;
+            font-size: 14px;
+            font-family: 'LineAwesome';
+            content: "\f17b";
+            top: 0px;
+            text-align: center;
+            opacity: 0;
+            border: 0;
+            background-color: inherit
+        }
+    }
+    input[type="checkbox"]{
+        opacity: 0;
+        position: absolute;
+        visibility: hidden;
+        &:checked+label:after{
+            opacity: 1
+        }
+    }
+    
+}
+.radio{
+    input[type="radio"] {
+        opacity: 0;
+        position: absolute;
+        visibility: hidden
+    }
+    input[type="radio"]+label:after{
+        opacity: 0;
+    }
+    input[type="radio"]:checked+label::after {
+        width: 4px;
+        height: 4px;
+        background-color: #555;
+        border-color: #555;
+        top: 11px;
+        left: 11px;
+        opacity: 1
+    }
+    label::after,
+    label::before{
+        content: " ";
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid #ced4da;
+        display: inline-block;
+        position: absolute;
+        left: 3px;
+        top: 3px;
+        padding: 1px;
+        -webkit-transition: opacity 0.3s linear;
+        -moz-transition: opacity 0.3s linear;
+        -o-transition: opacity 0.3s linear;
+        -ms-transition: opacity 0.3s linear;
+        transition: opacity 0.3s linear
+    }
+}
+.checkbox.checkbox-circle label::before {
+    border-radius: 50%
+}
+
+.radio input[type="radio"]:disabled+label::before,
+.radio input[type="radio"]:disabled+label::after {
+    color: #9A9A9A
+}
+
+.radio.radio-inline {
+    margin-top: 0
+}

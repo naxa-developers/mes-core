@@ -28,6 +28,7 @@ urlpatterns = patterns(
     url(r'^accounts/', include('onadata.apps.main.registration_urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^core/', include('onadata.apps.core.urls')),
 
     # oath2_provider
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),

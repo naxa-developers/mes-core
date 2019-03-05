@@ -59,6 +59,7 @@ This endpoint allows you to list and retrieve user's first and last names.
     # This field is has been added by the previous dev, and is used to generate
     # a custom url routing on the fly. Basically it will be added in the
     # url regex.
+
     lookup_field = 'username'
 
     def get_object(self):

@@ -1,0 +1,4 @@
+Requirement already satisfied: django-registration in /home/maskey/kobocat/lib/python2.7/site-packages (3.0)
+Requirement already satisfied: confusable-homoglyphs~=3.0 in /home/maskey/kobocat/lib/python2.7/site-packages (from django-registration) (3.2.0)
+Requirement already satisfied: Django>=1.11 in /home/maskey/kobocat/lib/python2.7/site-packages (from django-registration) (1.11.20)
+Requirement already satisfied: pytz in /home/maskey/kobocat/lib/python2.7/site-packages (from Django>=1.11->django-registration) (2018.9)

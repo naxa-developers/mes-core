@@ -1,0 +1,80 @@
+
+
+
+.authentication {
+    display: flex;
+    align-items: center;
+    height: 100vh
+}
+
+@media only screen and (max-width: 992px) {
+    .authentication {
+        height: auto
+    }
+    .authentication .copyright {
+        margin-bottom: 20px
+    }
+}
+
+.authentication .auth_form {
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    border-radius: 10px;
+    background: #f5f5f5;
+    border: 5px solid #fff;
+    box-shadow: 0 0 16px rgba(41, 42, 51, 0.06), 0 6px 20px rgba(41, 42, 51, 0.02)
+}
+
+@media only screen and (max-width: 992px) {
+    .authentication .auth_form {
+        margin: 20px 0
+    }
+}
+
+.authentication .auth_form .header {
+    text-align: center
+}
+
+.authentication .auth_form h5 {
+    margin-top: 10px;
+    margin-bottom: 0
+}
+
+.authentication .auth_form .body {
+    background: transparent
+}
+
+.authentication .auth_form .body .input-group-text {
+    justify-content: center;
+    min-width: 42px
+}
+
+.authentication .auth_form .checkbox label {
+    font-size: 13px
+}
+
+.authentication .logo,
+.authentication .l_profile {
+    width: 100px
+}
+
+.authentication .signin_with {
+    text-align: center
+}
+
+.btn.google {
+    background: #d5472f
+}
+
+.btn.facebook {
+    background: #3a579b
+}
+
+.btn.twitter {
+    background: #3c94fe
+}
