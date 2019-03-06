@@ -1,3 +1,4 @@
+from django.contrib.auth import views as auth_views
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.views.generic import RedirectView
@@ -18,13 +19,14 @@ urlpatterns = patterns(
     (r'^i18n/', include('django.conf.urls.i18n')),
     url('^api/v1/', include(router.urls)),
     url('^api/v1/', include(router_with_patch_list.urls)),
-    url(r'^service_health/$',
-        'onadata.apps.main.service_health.service_health'),
+    url(r'^service_health/$', 'onadata.apps.main.service_health.service_health'),
     url(r'^api-docs/', RedirectView.as_view(url='/api/v1/')),
     url(r'^api/', RedirectView.as_view(url='/api/v1/')),
     url(r'^api/v1', RedirectView.as_view(url='/api/v1/')),
 
     # django default stuff
+    url(r'^accounts/login', auth_views.login, {'template_name': 'core/sign-in.html'}, name='login'),
+    url(r'^accounts/logout', auth_views.logout, {'template_name': 'core/sign-in.html'}, name='logout'),
     url(r'^accounts/', include('onadata.apps.main.registration_urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
