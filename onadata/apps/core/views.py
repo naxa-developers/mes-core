@@ -97,3 +97,9 @@ class OutputCreateView(CreateView):
 	success_url = reverse_lazy('output_list')
 
 
+class OutputUpdateView(UpdateView):
+	model = Output
+	template_name = 'core/output-form.html'
+	form_class = OutputForm
+	success_url = reverse_lazy('output_list')
+
