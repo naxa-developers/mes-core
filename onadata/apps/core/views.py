@@ -1,10 +1,14 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
-from .forms import SignUpForm
+from django.core.urlresolvers import reverse_lazy
+# from django.conf.urls import reverse_lazy
+from .models import Project
+from .forms import SignUpForm, ProjectForm
+
 
 def logout_view(request):
     logout(request)
@@ -20,10 +24,6 @@ class LoginRequiredMixin(object):
 
 class HomeView(LoginRequiredMixin, TemplateView):
 	template_name = 'core/index.html'
-
-
-class ProjectListView(TemplateView):
-	template_name = 'core/project-list.html'
 
 
 class SignInView(TemplateView):
@@ -47,3 +47,26 @@ class SignUpView(TemplateView):
 		else:
 			form = SignUpForm()
 		return render(request, 'core/sign-up.html', {'form': form})
+
+
+class ProjectListView(ListView):
+	model = Project
+	template_name = 'core/project-list.html'
+
+	def get_queryset(self, **kwargs):
+		context = super(ProjectListView, self).get_queryset(**kwargs)
+
+		project = Project.objects.all()
+
+		return context
+
+
+
+class ProjectCreateView(CreateView):
+	model = Project
+	template_name = 'core/project_form.html'
+	form_class = ProjectForm
+	success_url = reverse_lazy('project_list')
+
+
+

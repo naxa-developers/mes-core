@@ -8,7 +8,6 @@ class Project(models.Model):
 	start_date = models.DateTimeField()
 	end_date = models.DateTimeField()
 	reporting_period = models.IntegerField(choices=((1,"Monthly"),(2, "Bi-annually"), (3, "Quaterly")))
-	cluster = models.BooleanField(default=True)
 	beneficiaries = models.BooleanField(default=True)
 
 	def __str__(self):
