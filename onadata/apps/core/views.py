@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 # from django.conf.urls import reverse_lazy
-from .models import Project, Output
+from .models import Project, Output, ActivityGroup
 from .forms import SignUpForm, ProjectForm, OutputForm
 
 
@@ -108,3 +108,13 @@ class OutputDeleteView(DeleteView):
 	model = Output
 	template_name = 'core/output-delete.html'
 	success_url = reverse_lazy('output_list')
+
+
+
+class ActivityGroupListVeiw(ListView):
+	model = ActivityGroup
+	template_name = 'core/activitygroup-list.html'
+
+
+
+

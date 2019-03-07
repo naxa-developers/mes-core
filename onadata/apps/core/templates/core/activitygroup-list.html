@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Project List{% endblock %}
+{% block title %}Activity-Group List{% endblock %}
 
 {% block content %}
 <!-- Main Content -->
@@ -10,10 +10,10 @@
         <div class="block-header">
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2>Project list</h2>
+                    <h2>Activity-Group list</h2>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html"><i class="aa la-home"></i> Practical Action</a></li>
-                        <li class="breadcrumb-item">Project</li>
+                        <li class="breadcrumb-item">Activity-Group</li>
                         <li class="breadcrumb-item active">list</li>
                     </ul>
                     <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
@@ -31,27 +31,21 @@
                         <div class="table-responsive">
                             <table class="table table-hover c_table theme-color">
                                 <thead>
-                                    <tr>
+                                    <tr> 
+                                        <th>Output</th>
+                                        <th>Project</th> 
                                         <th>Name</th>                                        
                                         <th>Description</th>
-                                        <th>sector</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Reporting Period</th>
-                                        <th>beneficiaries</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for project in object_list %}
+                                    {% for actgroup in object_list %}
                                 
                                     <tr>
-                                       <td>{{ project.name }}</td>
-                                       <td>{{ project.description }}</td>
-                                       <td>{{ project.sector }}</td>
-                                       <td>{{ project.start_date }}</td>
-                                       <td>{{ project.end_date }}</td>
-                                       <td>{{ project.reporting_period }}</td>
-                                       <td>{{ project.beneficiaries }}</td>
+                                       <td>{{ actgroup.name }}</td>
+                                       <td>{{ actgroup.name }}</td>
+                                       <td>{{ actgroup.name }}</td>
+                                       <td>{{ actgroup.description }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
