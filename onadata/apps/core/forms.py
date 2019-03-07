@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Project
+from .models import Project, Output
 
 
 class SignUpForm(UserCreationForm):
@@ -17,3 +17,10 @@ class ProjectForm(forms.ModelForm):
 	class Meta:
 		model = Project
 		fields = ('name', 'description', 'sector', 'start_date', 'end_date', 'reporting_period', 'beneficiaries')
+
+
+class OutputForm(forms.ModelForm):
+
+	class Meta:
+		model = Output
+		fields = ('name', 'description', 'PID')

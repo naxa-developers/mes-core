@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 # from django.conf.urls import reverse_lazy
 from .models import Project, Output
-from .forms import SignUpForm, ProjectForm
+from .forms import SignUpForm, ProjectForm, OutputForm
 
 
 def logout_view(request):
@@ -52,7 +52,7 @@ class SignUpView(TemplateView):
 class ProjectListView(ListView):
 	model = Project
 	template_name = 'core/project-list.html'
-	
+
 
 class ProjectDetailView(DetailView):
 	model = Project
@@ -88,6 +88,12 @@ class OutputListView(ListView):
 class OutputDetailView(DetailView):
 	model = Output
 	template_name = 'core/output-detail.html'
-		
+
+
+class OutputCreateView(CreateView):
+	model = Output
+	template_name = 'core/output-form.html'
+	form_class = OutputForm
+	success_url = reverse_lazy('output_list')
 
 

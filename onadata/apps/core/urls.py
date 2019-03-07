@@ -8,10 +8,11 @@ urlpatterns = [
 
 	url(r'project-list', views.ProjectListView.as_view(), name='project_list'),
 	url(r'project-add', views.ProjectCreateView.as_view(), name='project_add'),
-	url(r'^project-edit/(?P<pk>[0-9]+)/$', views.ProjectUpdateView.as_view(), name='project_edit'),
-	url(r'^project-detail/(?P<pk>[0-9]+)/$', views.ProjectDetailView.as_view(), name='project_detail'),
-	url(r'^project-delete/(?P<pk>[0-9]+)/$', views.ProjectDeleteView.as_view(), name='project_delete'),
+	url(r'project-edit/(?P<pk>[0-9]+)/$', views.ProjectUpdateView.as_view(), name='project_edit'),
+	url(r'project-detail/(?P<pk>[0-9]+)/$', views.ProjectDetailView.as_view(), name='project_detail'),
+	url(r'project-delete/(?P<pk>[0-9]+)/$', views.ProjectDeleteView.as_view(), name='project_delete'),
 
 	url(r'output-list', views.OutputListView.as_view(), name='output_list'),
-	url(r'^output-detail/(?P<pk>[0-9]+)/$', views.OutputDetailView.as_view(), name='output_detail'),
+	url(r'output-detail/(?P<pk>[0-9]+)/$', views.OutputDetailView.as_view(), name='output_detail'),
+	url(r'output-add', views.OutputCreateView.as_view(), name='output_add'),
 ]
