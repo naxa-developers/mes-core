@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 # from django.conf.urls import reverse_lazy
-from .models import Project
+from .models import Project, Output
 from .forms import SignUpForm, ProjectForm
 
 
@@ -77,16 +77,11 @@ class ProjectDeleteView(DeleteView):
 	template_name = 'core/project-delete.html'
 	success_url = reverse_lazy('project_list')
 
-# class OutputListView(ListView):
-# 	model = OutputListView
-# 	template_name = 'core/output-list.html'
 
-# 	def get_queryset(self, **kwargs):
-# 		context = super(OutputListView, self).get_queryset(**kwargs)
 
-# 		output = Output.objects.all()
-
-# 		return context
+class OutputListView(ListView):
+	model = Output
+	template_name = 'core/output-list.html'
 
 		
 
