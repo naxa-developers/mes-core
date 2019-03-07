@@ -16,4 +16,5 @@ urlpatterns = [
 	url(r'output-detail/(?P<pk>[0-9]+)/$', views.OutputDetailView.as_view(), name='output_detail'),
 	url(r'output-add', views.OutputCreateView.as_view(), name='output_add'),
 	url(r'output-edit/(?P<pk>[0-9]+)/$', views.OutputUpdateView.as_view(), name='output_edit'),
+	url(r'output-delete/(?P<pk>[0-9]+)/$', views.OutputDeleteView.as_view(), name='output_delete'),
 ]

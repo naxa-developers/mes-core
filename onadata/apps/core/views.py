@@ -103,3 +103,8 @@ class OutputUpdateView(UpdateView):
 	form_class = OutputForm
 	success_url = reverse_lazy('output_list')
 
+
+class OutputDeleteView(DeleteView):
+	model = Output
+	template_name = 'core/output-delete.html'
+	success_url = reverse_lazy('output_list')
