@@ -13,13 +13,13 @@ class Project(models.Model):
 	def __str__(self):
 		return self.name
 
-# class Output(models.Model):
-# 	name = models.CharField(max_length=200)
-# 	description = models.CharField(max_length=500)
-#   PID = models.IntegerField('Project Id')
+class Output(models.Model):
+	name = models.CharField(max_length=200)
+	description = models.CharField(max_length=500)
+  	PID = models.IntegerField('Project Id')
 
-# 	def __str__(self):
-# 		return self.name
+	def __str__(self):
+		return self.name
 
 
 # class Group(models.Model):
