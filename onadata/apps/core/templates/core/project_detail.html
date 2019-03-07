@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Project Detail{% endblock %}
+
+{% block content %}
+<section class="content">
+    <div class="formHolder">
+        <div class="widget-info margin-top-large">
+            <div class="widget-head">
+                <div class="widget-body mt-2 horizontalForm">
+                    <div class="widget-head">
+                        <h4><a href="#" title="">detail</a></h4>
+                    </div>
+                            <table class="table table-hover c_table theme-color">
+                                <thead>
+                                    <tr> 
+                                        <th>Name</th>                                        
+                                        <th>Description</th>
+                                        <th>sector</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Reporting Period</th>
+                                        <th>beneficiaries</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+    
+                                    <tr>
+                                       <td>{{ project.name }}</td>
+                                       <td>{{ project.description }}</td>
+                                       <td>{{ project.sector }}</td>
+                                       <td>{{ project.start_date }}</td>
+                                       <td>{{ project.end_date }}</td>
+                                       <td>{{ project.reporting_period }}</td>
+                                       <td>{{ beneficiaries }}</td>
+                                    </tr>
+                                
+                                </tbody>
+                            </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
