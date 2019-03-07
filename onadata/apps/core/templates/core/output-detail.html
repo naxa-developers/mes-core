@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Output Detail{% endblock %}
+
+{% block content %}
+<section class="content">
+    <div class="formHolder">
+        <div class="widget-info margin-top-large">
+            <div class="widget-head">
+                <div class="widget-body mt-2 horizontalForm">
+                    <div class="widget-head">
+                        <h4><a href="#" title="">detail</a></h4>
+                    </div>
+                            <table class="table table-hover c_table theme-color">
+                                <thead>
+                                    <tr> 
+                                        <th>Name</th>                                        
+                                        <th>Description</th>
+                                        <th>Project Id</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+    
+                                    <tr>
+                                       <td>{{ output.name }}</td>
+                                       <td>{{ output.description }}</td>
+                                       <td>{{ output.PID }}</td>
+                                    </tr>
+                                
+                                </tbody>
+                            </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

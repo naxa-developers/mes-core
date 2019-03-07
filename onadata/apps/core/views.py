@@ -52,6 +52,7 @@ class SignUpView(TemplateView):
 class ProjectListView(ListView):
 	model = Project
 	template_name = 'core/project-list.html'
+	
 
 class ProjectDetailView(DetailView):
 	model = Project
@@ -83,6 +84,10 @@ class OutputListView(ListView):
 	model = Output
 	template_name = 'core/output-list.html'
 
+
+class OutputDetailView(DetailView):
+	model = Output
+	template_name = 'core/output-detail.html'
 		
 
 
