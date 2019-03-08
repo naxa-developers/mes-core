@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Activity-Group List{% endblock %}
+{% block title %}Activity List{% endblock %}
 
 {% block content %}
 <!-- Main Content -->
@@ -10,10 +10,10 @@
         <div class="block-header">
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2>Activity-Group list</h2>
+                    <h2>Activity list</h2>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html"><i class="aa la-home"></i> Practical Action</a></li>
-                        <li class="breadcrumb-item">Activity-Group</li>
+                        <li class="breadcrumb-item">Activity</li>
                         <li class="breadcrumb-item active">list</li>
                     </ul>
                     <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
@@ -32,20 +32,37 @@
                             <table class="table table-hover c_table theme-color">
                                 <thead>
                                     <tr> 
-                                        <th>Output</th>
-                                        <th>Project</th> 
+                                        <th>activity_group</th> 
                                         <th>Name</th>                                        
                                         <th>Description</th>
+                                        <th>AG_Id</th>
+                                        <th>target_number</th>
+                                        <th>target_unit</th>
+                                        <th>start_date</th>
+                                        <th>end_date</th>
+                                        <th>form_id</th>
+                                        <th>target_complete</th>
+                                        <th>beneficiary_level</th>
+                                        <th>target_met</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for actgroup in object_list %}
+                                    {% for activity in object_list %}
                                 
                                     <tr>
-                                       <td>{{ actgroup.output }}</td>
-                                       <td>{{ actgroup.project }}</td>
-                                       <td>{{ actgroup.name }}</td>
-                                       <td>{{ actgroup.description }}</td>
+                                       <td>{{ activity.activity_group }}</td>
+                                       <td>{{ activity.name }}</td>
+                                       <td>{{ activity.description }}</td>
+                                       <td>{{ activity.AG_Id }}</td>
+                                       <td>{{ activity.target_number }}</td>
+                                       <td>{{ activity.target_unit }}</td>
+                                       <td>{{ activity.start_date }}</td>
+                                       <td>{{ activity.end_date }}</td>
+                                       <td>{{ activity.form_id }}</td>
+                                       <td>{{ activity.target_complete }}</td>
+                                       <td>{{ activity.beneficiary_level }}</td>
+                                       <td>{{ activity.target_met }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

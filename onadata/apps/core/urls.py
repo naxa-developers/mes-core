@@ -23,4 +23,6 @@ urlpatterns = [
 	url(r'activitygroup-add', views.ActivityGroupCreateView.as_view(), name='activitygroup_add'),
 	url(r'activitygroup-delete/(?P<pk>[0-9]+)/$', views.ActivityGroupDeleteView.as_view(), name='activitygroup_delete'),
 	url(r'activitygroup-edit/(?P<pk>[0-9]+)/$', views.ActivityGroupUpdateView.as_view(), name='activitygroup_edit'),	
+
+	url(r'activity-list', views.ActivityListView.as_view(), name='activity_list'),
 ]
