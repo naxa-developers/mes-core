@@ -138,7 +138,7 @@ class ActivityGroupUpdateView(UpdateView):
 
 
 class ActivityGroupDetailView(DetailView):
-	mode = ActivityGroup
+	model = ActivityGroup
 	template_name = 'core/activitygroup-detail.html'
 
 
