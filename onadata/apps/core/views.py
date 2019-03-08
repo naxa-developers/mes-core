@@ -117,8 +117,6 @@ class ActivityGroupListVeiw(ListView):
 
 
 
-
-
 class ActivityGroupDeleteView(DeleteView):
 	model = ActivityGroup
 	template_name = 'core/activitygroup_delete.html'
@@ -130,6 +128,20 @@ class ActivityGroupCreateView(CreateView):
 	template_name = 'core/activitygroup-form.html'
 	form_class = ActivityGroupForm
 	success_url = reverse_lazy('activitygroup_list')
+
+
+class ActivityGroupUpdateView(UpdateView):
+	model = ActivityGroup
+	template_name = 'core/activitygroup-form.html'
+	form_class = ActivityGroupForm
+	success_url = reverse_lazy('activitygroup_list')
+
+
+
+class ActivityGroupDetailView(DetailView):
+	mode = ActivityGroup
+	template_name = 'core/activitygroup-detail.html'
+
 
 
 
