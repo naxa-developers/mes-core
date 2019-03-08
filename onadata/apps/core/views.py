@@ -168,6 +168,12 @@ class ActivityUpdateView(UpdateView):
 	success_url = reverse_lazy('activity_list')
 
 
+class ActivityDeleteView(DeleteView):
+	model = Activity
+	template_name = 'core/activity-delete.html'
+	success_url = reverse_lazy('activity_list')
+
+
 
 
 
