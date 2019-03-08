@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Project, Output, ActivityGroup
+from .models import Project, Output, ActivityGroup, Activity
 
 
 class SignUpForm(UserCreationForm):
@@ -31,3 +31,11 @@ class ActivityGroupForm(forms.ModelForm):
 	class Meta:
 		model = ActivityGroup
 		fields = ('output', 'project', 'name', 'description')
+
+
+class ActivityForm(forms.ModelForm):
+
+	class Meta:
+		model = Activity
+		fields = ('activity_group', 'name', 'description', 'AG_Id', 'target_number', 'target_unit', 'start_date', 'end_date', 'form_id', 'target_complete', 'beneficiary_level', 'published', 'target_met')
+

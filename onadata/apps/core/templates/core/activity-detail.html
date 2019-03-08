@@ -1,0 +1,53 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Activity Detail{% endblock %}
+
+{% block content %}
+<section class="content">
+    <div class="formHolder">
+        <div class="widget-info margin-top-large">
+            <div class="widget-head">
+                <div class="widget-body mt-2 horizontalForm">
+                    <div class="widget-head">
+                        <h4><a href="#" title="">detail</a></h4>
+                    </div>
+                            <table class="table table-hover c_table theme-color">
+                                <thead>
+                                    <tr> 
+                                        <th>activity_group</th> 
+                                        <th>Name</th>                                        
+                                        <th>Description</th>
+                                        <th>AG_Id</th>
+                                        <th>target_number</th>
+                                        <th>target_unit</th>
+                                        <th>start_date</th>
+                                        <th>end_date</th>
+                                        <th>form_id</th>
+                                        <th>target_complete</th>
+                                        <th>beneficiary_level</th>
+                                        <th>target_met</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                       <td>{{ activity.activity_group }}</td>
+                                       <td>{{ activity.name }}</td>
+                                       <td>{{ activity.description }}</td>
+                                       <td>{{ activity.AG_Id }}</td>
+                                       <td>{{ activity.target_number }}</td>
+                                       <td>{{ activity.target_unit }}</td>
+                                       <td>{{ activity.start_date }}</td>
+                                       <td>{{ activity.end_date }}</td>
+                                       <td>{{ activity.form_id }}</td>
+                                       <td>{{ activity.target_complete }}</td>
+                                       <td>{{ activity.beneficiary_level }}</td>
+                                       <td>{{ activity.target_met }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -25,4 +25,7 @@ urlpatterns = [
 	url(r'activitygroup-edit/(?P<pk>[0-9]+)/$', views.ActivityGroupUpdateView.as_view(), name='activitygroup_edit'),	
 
 	url(r'activity-list', views.ActivityListView.as_view(), name='activity_list'),
+	url(r'activity-add', views.ActivityCreateView.as_view(), name='activity_add'),
+	# url(r'activity-detail/(?P<pk>[0-9]+)/$', views.ActivityDetailView.as_view(), name='activity_detail'),
+	url(r'activity-edit/(?P<pk>[0-9]+)/$', views.ActivityUpdateView.as_view(), name='activity_edit'),
 ]

@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 # from django.conf.urls import reverse_lazy
 from .models import Project, Output, ActivityGroup, Activity
-from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm
+from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm
 
 
 def logout_view(request):
@@ -147,6 +147,25 @@ class ActivityGroupDetailView(DetailView):
 class ActivityListView(ListView):
 	model = Activity
 	template_name = 'core/activity-list.html'
+
+
+class ActivityCreateView(CreateView):
+	model = Activity
+	template_name = 'core/activity-form.html'
+	form_class = ActivityForm
+	success_url = reverse_lazy('activity_list')
+
+
+class ActivityDetailView(DetailView):
+	model = Activity
+	template_name = 'core/activity-detail.html'
+
+
+class ActivityUpdateView(UpdateView):
+	model = Activity
+	template_name = 'core/activity-form.html'
+	form_class = ActivityForm
+	success_url = reverse_lazy('activity_list')
 
 
 
