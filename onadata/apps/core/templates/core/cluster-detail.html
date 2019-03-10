@@ -1,0 +1,43 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Cluster Detail{% endblock %}
+
+{% block content %}
+<section class="content">
+    <div class="formHolder">
+        <div class="widget-info margin-top-large">
+            <div class="widget-head">
+                <div class="widget-body mt-2 horizontalForm">
+                    <div class="widget-head">
+                        <h4><a href="#" title="">detail</a></h4>
+                    </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover c_table theme-color">
+                                <thead>
+                                    <tr> 
+                                        <th>Name</th>                                        
+                                        <th>project</th>
+                                        <th>activity_group</th>
+                                        <th>district</th>
+                                        <th>municipality</th>
+                                        <th>ward</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                       <td>{{ cluster.name }}</td>
+                                       <td>{{ cluster.project }}</td>
+                                       <td>{{ cluster.activity_group }}</td>
+                                       <td>{{ cluster.district }}</td>
+                                       <td>{{ cluster.municipality }}</td>
+                                       <td>{{ cluster.ward }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

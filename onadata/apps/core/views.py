@@ -188,6 +188,11 @@ class ClusterCreateView(CreateView):
 	success_url = reverse_lazy('cluster_list') 
 
 
+class ClusterDetailView(DetailView):
+	model = Cluster
+	template_name = 'core/cluster-detail.html'
+
+
 
 
 
