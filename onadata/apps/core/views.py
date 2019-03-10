@@ -206,7 +206,6 @@ class ClusterDeleteView(DeleteView):
 	success_url = reverse_lazy('cluster_list')
 
 
-
 class BeneficiaryListView(ListView):
 	model = Beneficiary
 	template_name = 'core/beneficiary-list.html'
@@ -217,6 +216,11 @@ class BeneficiaryCreateView(CreateView):
 	template_name = 'core/beneficiary-form.html'
 	form_class = BeneficiaryForm
 	success_url = reverse_lazy('beneficiary_list')
+
+
+class BeneficiaryDetailView(DetailView):
+	model = Beneficiary
+	template_name = 'core/beneficiary-detail.html'
 
 
 
