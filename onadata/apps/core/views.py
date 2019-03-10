@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary
-from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm
+from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm
 
 
 def logout_view(request):
@@ -210,6 +210,13 @@ class ClusterDeleteView(DeleteView):
 class BeneficiaryListView(ListView):
 	model = Beneficiary
 	template_name = 'core/beneficiary-list.html'
+
+
+class BeneficiaryCreateView(CreateView):
+	model = Beneficiary
+	template_name = 'core/beneficiary-form.html'
+	form_class = BeneficiaryForm
+	success_url = reverse_lazy('beneficiary_list')
 
 
 

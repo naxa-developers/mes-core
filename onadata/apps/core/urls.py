@@ -37,4 +37,5 @@ urlpatterns = [
 	url(r'cluster-delete/(?P<pk>[0-9]+)/$', views.ClusterDeleteView.as_view(), name='cluster_delete'),
 
 	url(r'beneficiary-list', views.BeneficiaryListView.as_view(), name='beneficiary_list'),
+	url(r'beneficiary-add', views.BeneficiaryCreateView.as_view(), name='beneficiary_add'),
 ]
