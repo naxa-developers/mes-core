@@ -1,0 +1,72 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Cluster List{% endblock %}
+
+{% block content %}
+<!-- Main Content -->
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>Cluster list</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html"><i class="aa la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item">Cluster</li>
+                        <li class="breadcrumb-item active">list</li>
+                    </ul>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">                
+                    <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                    <a href="{% url 'project_add' %}"><button class="btn btn-success btn-icon float-right" type="button"><i class="la la-plus"></i></button></a>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="card project_list">
+                        <div class="table-responsive">
+                            <table class="table table-hover c_table theme-color">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>                                        
+                                        <th>project</th>
+                                        <th>activity_group</th>
+                                        <th>district</th>
+                                        <th>municipality</th>
+                                        <th>ward</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cluster in object_list %}
+                                
+                                    <tr>
+                                       <td>{{ cluster.name }}</td>
+                                       <td>{{ cluster.project }}</td>
+                                       <td>{{ cluster.activity_group }}</td>
+                                       <td>{{ cluster.district }}</td>
+                                       <td>{{ cluster.municipality }}</td>
+                                       <td>{{ cluster.ward }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <ul class="pagination pagination-primary mt-4">
+                            <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

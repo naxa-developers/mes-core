@@ -5,8 +5,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
-# from django.conf.urls import reverse_lazy
-from .models import Project, Output, ActivityGroup, Activity
+
+from .models import Project, Output, ActivityGroup, Activity, Cluster
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm
 
 
@@ -173,6 +173,12 @@ class ActivityDeleteView(DeleteView):
 	model = Activity
 	template_name = 'core/activity-delete.html'
 	success_url = reverse_lazy('activity_list')
+
+
+
+class ClusterListView(ListView):
+	model = Cluster
+	template_name = 'core/cluster-list.html'
 
 
 
