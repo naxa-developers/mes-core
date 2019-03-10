@@ -54,3 +54,12 @@ class Activity(models.Model):
 
 	def __str__(self):
 		return self.name
+
+
+class Cluster(models.Model):
+	name = models.CharField(max_length=200)
+	project = models.ForeignKey('Project', related_name='cluster')	
+	activity_group = models.ForeignKey('ActivityGroup', related_name='cluster')	
+	district = models.CharField(max_length=200)
+	municipality = models.CharField(max_length=200)
+	ward = models.CharField(max_length=200)
