@@ -17,6 +17,7 @@ class ProjectForm(forms.ModelForm):
 	class Meta:
 		model = Project
 		fields = ('name', 'description', 'sector', 'start_date', 'end_date', 'reporting_period', 'beneficiaries')
+		
 
 
 class OutputForm(forms.ModelForm):
@@ -33,9 +34,11 @@ class ActivityGroupForm(forms.ModelForm):
 		fields = ('output', 'project', 'name', 'description')
 
 
+
 class ActivityForm(forms.ModelForm):
 
 	class Meta:
 		model = Activity
 		fields = ('activity_group', 'name', 'description', 'AG_Id', 'target_number', 'target_unit', 'start_date', 'end_date', 'form_id', 'target_complete', 'beneficiary_level', 'published', 'target_met')
+
 
