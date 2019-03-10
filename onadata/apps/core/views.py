@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm
 
 
@@ -204,6 +204,12 @@ class ClusterDeleteView(DeleteView):
 	model = Cluster
 	template_name = 'core/cluster-delete.html'
 	success_url = reverse_lazy('cluster_list')
+
+
+
+class BeneficiaryListView(ListView):
+	model = Beneficiary
+	template_name = 'core/beneficiary-list.html'
 
 
 
