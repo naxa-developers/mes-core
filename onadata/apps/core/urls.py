@@ -31,4 +31,5 @@ urlpatterns = [
 	url(r'activity-delete/(?P<pk>[0-9]+)/$', views.ActivityDeleteView.as_view(), name='activity_delete'),
 
 	url(r'cluster-list', views.ClusterListView.as_view(), name='cluster_list'),
+	url(r'cluster-add', views.ClusterCreateView.as_view(), name='cluster_add'),
 ]

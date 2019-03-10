@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Project, Output, ActivityGroup, Activity
+from .models import Project, Output, ActivityGroup, Activity, Cluster
 
 
 class SignUpForm(UserCreationForm):
@@ -42,3 +42,8 @@ class ActivityForm(forms.ModelForm):
 		fields = ('activity_group', 'name', 'description', 'AG_Id', 'target_number', 'target_unit', 'start_date', 'end_date', 'form_id', 'target_complete', 'beneficiary_level', 'published', 'target_met')
 
 
+class ClusterForm(forms.ModelForm):
+
+	class Meta:
+		model = Cluster
+		fields = ('name', 'project', 'activity_group', 'district', 'municipality', 'ward')
