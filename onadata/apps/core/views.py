@@ -223,6 +223,18 @@ class BeneficiaryDetailView(DetailView):
 	template_name = 'core/beneficiary-detail.html'
 
 
+class BeneficiaryUpdateView(UpdateView):
+	model = Beneficiary
+	template_name = 'core/beneficiary-form.html'
+	form_class = BeneficiaryForm
+	success_url = reverse_lazy('beneficiary_list')	
+
+
+class BeneficiaryDeleteView(DeleteView):
+	model = Beneficiary
+	template_name = 'core/beneficiary-delete.html'
+	success_url = reverse_lazy('beneficiary_list')
+
 
 
 
