@@ -193,6 +193,19 @@ class ClusterDetailView(DetailView):
 	template_name = 'core/cluster-detail.html'
 
 
+class ClusterUpdateView(UpdateView):
+	model = Cluster
+	template_name = 'core/cluster-form.html'
+	form_class = ClusterForm
+	success_url = reverse_lazy('cluster_list')
+
+
+class ClusterDeleteView(DeleteView):
+	model = Cluster
+	template_name = 'core/cluster-delete.html'
+	success_url = reverse_lazy('cluster_list')
+
+
 
 
 

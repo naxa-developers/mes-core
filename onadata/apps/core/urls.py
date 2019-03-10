@@ -33,4 +33,6 @@ urlpatterns = [
 	url(r'cluster-list', views.ClusterListView.as_view(), name='cluster_list'),
 	url(r'cluster-add', views.ClusterCreateView.as_view(), name='cluster_add'),
 	url(r'cluster-detail/(?P<pk>[0-9]+)/$', views.ClusterDetailView.as_view(), name='cluster_detail'),
+	url(r'cluster-edit/(?P<pk>[0-9]+)/$', views.ClusterUpdateView.as_view(), name='cluster_edit'),
+	url(r'cluster-delete/(?P<pk>[0-9]+)/$', views.ClusterDeleteView.as_view(), name='cluster_delete'),
 ]
