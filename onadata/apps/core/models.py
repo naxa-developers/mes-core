@@ -66,3 +66,14 @@ class Cluster(models.Model):
 
 	def __str__(self):
 		return self.name
+
+
+class Beneficiary(models.Model):
+	identifier = models.IntegerField()
+	name = models.CharField(max_length=200)
+	address = models.CharField(max_length=400)
+	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
+	type_id = models.IntegerField()
+
+	def __str__(self):
+		return self.name
