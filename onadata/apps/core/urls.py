@@ -41,4 +41,9 @@ urlpatterns = [
 	url(r'beneficiary-detail/(?P<pk>[0-9]+)/$', views.BeneficiaryDetailView.as_view(), name='beneficiary_detail'),
 	url(r'beneficiary-edit/(?P<pk>[0-9]+)/$', views.BeneficiaryUpdateView.as_view(), name='beneficiary_edit'),
 	url(r'beneficiary-delete/(?P<pk>[0-9]+)/$', views.BeneficiaryDeleteView.as_view(), name='beneficiary_delete'),
+
+
+	url(r'activity-group/', views.activity_group_list),
+	url(r'activity-group/(?P<pk>[0-9]+)/$', views.activity_group_detail),
+
 ]

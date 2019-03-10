@@ -6,6 +6,13 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+
+from .serializers import ActivityGroupSerializer
+
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm
 
@@ -234,6 +241,50 @@ class BeneficiaryDeleteView(DeleteView):
 	model = Beneficiary
 	template_name = 'core/beneficiary-delete.html'
 	success_url = reverse_lazy('beneficiary_list')
+
+
+################################################################################################################
+
+@csrf_exempt
+def activity_group_list(request):
+	if request.method == 'GET':
+		queryset = ActivityGroup.objects.all()
+		activity_group = ActivityGroup.objects.all()
+		serializer = ActivityGroupSerializer(activity_group, many=True)
+		return JsonResponse(serializer.data, safe=False)
+
+	elif request.method == 'POST':
+		data = JSONParser().parse(request)
+		serializer = ActivityGroupSerializer(data=data)
+		if serializer.is_valid():
+			serializer.save()
+			return JsonResponse(serializer.data, status=201)
+		return JsonResponse(serializer.errors, status=400)
+
+
+@csrf_exempt
+def activity_group_detail(request, pk):
+	try:
+		queryset = ActivityGroup.objects.all()	
+		activity_group = ActivityGroup.objects.get(pk=pk)
+	except ActivityGroup.DoesNotExist:
+		return HttpResponse(status=404)
+
+	if request.method == 'GET':
+		serializer = ActivityGroupSerializer(activity_group)
+		return JsonResponse(serializer.data)
+
+	elif request.method == 'PUT':
+		data = JSONParser().parse(request)
+		serializer = ActivityGroupSerializer(activity_group, data-data)
+		if serializer.is_valid():
+			serializer.save()
+			return JsonResponse(serializer.data)
+		return JsonResponse(serializer.errors, status=400)
+
+	elif request.method == 'DELETE':
+		activity_group.delete()
+		return HttpResponse(status=204)
 
 
 
