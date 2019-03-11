@@ -12,7 +12,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 
-from .serializers import ActivityGroupSerializer
+from .serializers import ActivityGroupSerializer, ActivitySerializer
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm
@@ -245,6 +245,11 @@ class BeneficiaryDeleteView(DeleteView):
 
 
 ################################################################################################################
+
+
+class ActivityViewSet(viewsets.ModelViewSet):
+	queryset = Activity.objects.all()
+	serializer_class = ActivitySerializer
 
 class ActivityGroupViewSet(viewsets.ModelViewSet):
 	queryset =  ActivityGroup.objects.all()

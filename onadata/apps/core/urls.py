@@ -3,7 +3,9 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
+router.register(r'activity', views.ActivityViewSet),
 router.register(r'actgroup', views.ActivityGroupViewSet),
+
 
 urlpatterns = [
 	url(r'^$', views.HomeView.as_view(), name='home'),
