@@ -12,7 +12,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 
-from .serializers import ActivityGroupSerializer, ActivitySerializer
+from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm
@@ -254,6 +254,10 @@ class ActivityViewSet(viewsets.ModelViewSet):
 class ActivityGroupViewSet(viewsets.ModelViewSet):
 	queryset =  ActivityGroup.objects.all()
 	serializer_class = ActivityGroupSerializer
+
+class OutputViewSet(viewsets.ModelViewSet):
+	queryset = Output.objects.all()
+	serializer_class = OutputSerializer
 
 
 

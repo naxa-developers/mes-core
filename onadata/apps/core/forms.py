@@ -24,7 +24,7 @@ class OutputForm(forms.ModelForm):
 
 	class Meta:
 		model = Output
-		fields = ('name', 'description', 'PID')
+		fields = ('name', 'description','project')
 
 
 class ActivityGroupForm(forms.ModelForm):

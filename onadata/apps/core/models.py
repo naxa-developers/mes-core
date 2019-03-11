@@ -17,7 +17,7 @@ class Project(models.Model):
 class Output(models.Model):
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
-  	PID = models.IntegerField('Project Id')
+  	project = models.ForeignKey('Project', related_name='output')
 
 	def __str__(self):
 		return self.name
