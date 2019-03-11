@@ -10,6 +10,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+from rest_framework import viewsets
 
 from .serializers import ActivityGroupSerializer
 
@@ -245,46 +246,10 @@ class BeneficiaryDeleteView(DeleteView):
 
 ################################################################################################################
 
-@csrf_exempt
-def activity_group_list(request):
-	if request.method == 'GET':
-		queryset = ActivityGroup.objects.all()
-		activity_group = ActivityGroup.objects.all()
-		serializer = ActivityGroupSerializer(activity_group, many=True)
-		return JsonResponse(serializer.data, safe=False)
+class ActivityGroupViewSet(viewsets.ModelViewSet):
+	queryset =  ActivityGroup.objects.all()
+	serializer_class = ActivityGroupSerializer
 
-	elif request.method == 'POST':
-		data = JSONParser().parse(request)
-		serializer = ActivityGroupSerializer(data=data)
-		if serializer.is_valid():
-			serializer.save()
-			return JsonResponse(serializer.data, status=201)
-		return JsonResponse(serializer.errors, status=400)
-
-
-@csrf_exempt
-def activity_group_detail(request, pk):
-	try:
-		queryset = ActivityGroup.objects.all()	
-		activity_group = ActivityGroup.objects.get(pk=pk)
-	except ActivityGroup.DoesNotExist:
-		return HttpResponse(status=404)
-
-	if request.method == 'GET':
-		serializer = ActivityGroupSerializer(activity_group)
-		return JsonResponse(serializer.data)
-
-	elif request.method == 'PUT':
-		data = JSONParser().parse(request)
-		serializer = ActivityGroupSerializer(activity_group, data-data)
-		if serializer.is_valid():
-			serializer.save()
-			return JsonResponse(serializer.data)
-		return JsonResponse(serializer.errors, status=400)
-
-	elif request.method == 'DELETE':
-		activity_group.delete()
-		return HttpResponse(status=204)
 
 
 
