@@ -1,5 +1,6 @@
 from django.db import models
 
+from onadata.apps.logger.models.xform import XForm
 
 class Project(models.Model):
 	name = models.CharField(max_length=200)
@@ -44,7 +45,7 @@ class Activity(models.Model):
 	start_date = models.DateTimeField()
 	end_date = models.DateTimeField()
 
-	form_id = models.IntegerField()
+	form = models.ForeignKey(XForm, related_name='actform')
 
 	target_complete = models.BooleanField(default=True)
 	beneficiary_level = models.BooleanField(default=True)
