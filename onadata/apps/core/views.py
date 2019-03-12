@@ -14,7 +14,7 @@ from rest_framework import viewsets
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, ClusterSerializer, BeneficiarySerialzier
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm
 
 
@@ -242,6 +242,12 @@ class BeneficiaryDeleteView(DeleteView):
 	model = Beneficiary
 	template_name = 'core/beneficiary-delete.html'
 	success_url = reverse_lazy('beneficiary_list')
+
+
+
+class UserRoleListView(ListView):
+	model = UserRole
+	template_name = 'core/userrole-list.html'
 
 
 ################################################################################################################
