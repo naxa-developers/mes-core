@@ -5,7 +5,8 @@ from . import views
 router = DefaultRouter()
 router.register(r'activity', views.ActivityViewSet),
 router.register(r'actgroup', views.ActivityGroupViewSet),
-router.register(r'output', views.OutputViewSet)
+router.register(r'output', views.OutputViewSet),
+router.register(r'project', views.ProjectViewSet)
 
 
 urlpatterns = [
