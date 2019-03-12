@@ -6,7 +6,9 @@ router = DefaultRouter()
 router.register(r'activity', views.ActivityViewSet),
 router.register(r'actgroup', views.ActivityGroupViewSet),
 router.register(r'output', views.OutputViewSet),
-router.register(r'project', views.ProjectViewSet)
+router.register(r'project', views.ProjectViewSet),
+router.register(r'cluster', views.ClusterViewSet),
+router.register(r'beneficiary', views.BeneficiaryViewSet)
 
 
 urlpatterns = [
