@@ -33,16 +33,18 @@ class ActivityGroupSerializer(serializers.ModelSerializer):
 
 
 
-
-class ClusterSerializer(serializers.ModelSerializer):
-	activitygroup = ActivityGroupSerializer(many=True, read_only=True)
-
-	class Meta:
-		model = Cluster
-		fields = ('activitygroup', 'name', 'project', 'district', 'municipality', 'ward')
-
-
 class BeneficiarySerialzier(serializers.ModelSerializer):
 	class Meta:
 		model = Beneficiary
 		fields = ('identifier', 'name', 'address', 'cluster', 'type_id')
+
+
+
+class ClusterSerializer(serializers.ModelSerializer):
+	beneficiary = BeneficiarySerialzier(many=True, read_only=True)
+	activitygroup = ActivityGroupSerializer(many=True, read_only=True)
+
+	class Meta:
+		model = Cluster
+		fields = ('name', 'project', 'district', 'municipality', 'ward', 'beneficiary', 'activitygroup')
+
