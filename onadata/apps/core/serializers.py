@@ -2,10 +2,20 @@ from rest_framework import serializers
 
 from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary
 
+
+
+class OutputSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Output
+		fields = ('name', 'description','project')
+
+
 class ProjectSerializer(serializers.ModelSerializer):
+	output = OutputSerializer(many=True, read_only=True)
+
 	class Meta:
 		model = Project
-		fields = ('name', 'description', 'sector', 'start_date', 'end_date', 'reporting_period', 'beneficiaries')
+		fields = ('name', 'description', 'sector', 'start_date', 'end_date', 'reporting_period', 'beneficiaries', 'output')
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -19,19 +29,17 @@ class ActivityGroupSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = ActivityGroup
-		fields = ('output', 'name', 'description', 'activity')
+		fields = ('output', 'name', 'description', 'activity', 'cluster')
 
 
-class OutputSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Output
-		fields = ('name', 'description','project')
 
 
 class ClusterSerializer(serializers.ModelSerializer):
+	activitygroup = ActivityGroupSerializer(many=True, read_only=True)
+
 	class Meta:
 		model = Cluster
-		fields = ('name', 'project', 'activity_group', 'district', 'municipality', 'ward')
+		fields = ('activitygroup', 'name', 'project', 'district', 'municipality', 'ward')
 
 
 class BeneficiarySerialzier(serializers.ModelSerializer):

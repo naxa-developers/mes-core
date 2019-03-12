@@ -276,6 +276,9 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
 	queryset = Beneficiary.objects.all()
 	serializer_class = BeneficiarySerialzier
 
+	def get_queryset(self):
+		cluster = self.request.query_params['cluster']
+		return self.queryset.filter(cluster=cluster)
 
 
 

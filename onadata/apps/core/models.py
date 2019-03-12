@@ -1,3 +1,7 @@
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 from django.db import models
 
 from onadata.apps.logger.models.xform import XForm
@@ -23,11 +27,23 @@ class Output(models.Model):
 		return self.name
 
 
+class Cluster(models.Model):
+	name = models.CharField(max_length=200)
+	project = models.ForeignKey('Project', related_name='cluster')	
+	district = models.CharField(max_length=200)
+	municipality = models.CharField(max_length=200)
+	ward = models.CharField(max_length=200)
+
+	def __str__(self):
+		return self.name
+
+
 class ActivityGroup(models.Model):
 	output = models.ForeignKey('Output', related_name='activity_group')
 	project = models.ForeignKey('Project', related_name='activity_group')
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
+	cluster = models.ForeignKey('Cluster', related_name='activitygroup')
 
 	def __str__(self):
 		return self.name
@@ -57,16 +73,7 @@ class Activity(models.Model):
 		return self.name
 
 
-class Cluster(models.Model):
-	name = models.CharField(max_length=200)
-	project = models.ForeignKey('Project', related_name='cluster')	
-	activity_group = models.ForeignKey('ActivityGroup', related_name='cluster')	
-	district = models.CharField(max_length=200)
-	municipality = models.CharField(max_length=200)
-	ward = models.CharField(max_length=200)
 
-	def __str__(self):
-		return self.name
 
 
 class Beneficiary(models.Model):
@@ -78,3 +85,10 @@ class Beneficiary(models.Model):
 
 	def __str__(self):
 		return self.name
+
+
+
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_auth_token(sender, instance=None, created=False, **kwargs):
+#     if created:
+#         Token.objects.create(user=instance)

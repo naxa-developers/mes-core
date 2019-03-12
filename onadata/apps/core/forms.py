@@ -31,7 +31,7 @@ class ActivityGroupForm(forms.ModelForm):
 
 	class Meta:
 		model = ActivityGroup
-		fields = ('output', 'project', 'name', 'description')
+		fields = ('output', 'project', 'name', 'description', 'cluster')
 
 
 
@@ -46,7 +46,7 @@ class ClusterForm(forms.ModelForm):
 
 	class Meta:
 		model = Cluster
-		fields = ('name', 'project', 'activity_group', 'district', 'municipality', 'ward')
+		fields = ('name', 'project', 'district', 'municipality', 'ward')
 
 
 class BeneficiaryForm(forms.ModelForm):
