@@ -263,6 +263,17 @@ class UserRoleUpdateView(UpdateView):
 	form_class = UserRoleForm
 	success_url = reverse_lazy('userrole_list')
 
+
+class UserRoleDetailView(DetailView):
+	model = UserRole
+	template_name = 'core/userrole-detail.html'
+
+
+class UserRoleDeleteView(DeleteView):
+	model = UserRole
+	template_name = 'core/userrole-delete.html'
+	success_url = reverse_lazy('userrole_list')
+
 ################################################################################################################
 
 

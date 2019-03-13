@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Activity List{% endblock %}
+{% block title %}UserRole List{% endblock %}
 
 {% block content %}
 <!-- Main Content -->
@@ -10,17 +10,17 @@
         <div class="block-header">
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2>Activity list</h2>
+                    <h2>UserRole list</h2>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html"><i class="aa la-home"></i> Practical Action</a></li>
-                        <li class="breadcrumb-item">Activity</li>
+                        <li class="breadcrumb-item">User-Role</li>
                         <li class="breadcrumb-item active">list</li>
                     </ul>
                     <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
                 </div>
                 <div class="col-lg-5 col-md-6 col-sm-12">                
                     <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
-                    <a href="{% url 'activity_add' %}" ><button class="btn btn-success btn-icon float-right" type="button"><i class="la la-plus"></i></button></a>
+                    <a href="{% url 'userrole_add' %}" ><button class="btn btn-success btn-icon float-right" type="button"><i class="la la-plus"></i></button></a>
                 </div>
             </div>
         </div>

@@ -58,6 +58,8 @@ urlpatterns = [
 	url(r'userrole-list', views.UserRoleListView.as_view(), name='userrole_list'),
 	url(r'userrole-add', views.UserRoleCreateView.as_view(), name='userrole_add'),
 	url(r'userrole-edit/(?P<pk>[0-9]+)/$', views.UserRoleUpdateView.as_view(), name='userrole_edit'),
+	url(r'userrole-detail/(?P<pk>[0-9]+)/$', views.UserRoleDetailView.as_view(), name='userrole_detail'),
+	url(r'userrole-delete/(?P<pk>[0-9]+)/$', views.UserRoleDeleteView.as_view(), name='userrole_delete'),
 
 	url(r'^api-token-auth/', restviews.obtain_auth_token),
 ]
