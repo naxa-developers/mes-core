@@ -41,10 +41,10 @@ class BeneficiarySerialzier(serializers.ModelSerializer):
 
 
 class ClusterSerializer(serializers.ModelSerializer):
-	beneficiary = BeneficiarySerialzier(many=True, read_only=True)
+	# beneficiary = BeneficiarySerialzier(many=True, read_only=True)
 	activitygroup = ActivityGroupSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Cluster
-		fields = ('name', 'project', 'district', 'municipality', 'ward', 'beneficiary', 'activitygroup')
+		fields = ('name', 'project', 'district', 'municipality', 'ward', 'activitygroup')
 
