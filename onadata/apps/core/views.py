@@ -15,7 +15,7 @@ from rest_framework import viewsets
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, ClusterSerializer, BeneficiarySerialzier
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole
-from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm
+from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, UserRoleForm
 
 
 def logout_view(request):
@@ -249,6 +249,19 @@ class UserRoleListView(ListView):
 	model = UserRole
 	template_name = 'core/userrole-list.html'
 
+
+class UserRoleCreateView(CreateView):
+	model = UserRole
+	template_name = 'core/userrole-form.html'
+	form_class = UserRoleForm
+	success_url = reverse_lazy('userrole_list')
+
+
+class UserRoleUpdateView(UpdateView):
+	model = UserRole
+	template_name = 'core/userrole-form.html'
+	form_class = UserRoleForm
+	success_url = reverse_lazy('userrole_list')
 
 ################################################################################################################
 

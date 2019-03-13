@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole
 
 
 class SignUpForm(UserCreationForm):
@@ -54,3 +54,10 @@ class BeneficiaryForm(forms.ModelForm):
 	class Meta:
 		model = Beneficiary
 		fields = ('identifier', 'name', 'address', 'cluster', 'type_id')
+
+
+class UserRoleForm(forms.ModelForm):
+
+	class Meta:
+		model = UserRole
+		fields = ('user', 'project', 'group')
