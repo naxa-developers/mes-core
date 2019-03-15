@@ -1,5 +1,4 @@
 {% load static %}
-
 <!doctype html>
 <html class="no-js " lang="en">
 <head>
@@ -8,16 +7,18 @@
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 <meta name="description" content="Responsive Practical action dashboard.">
 <title>{% block title %}Practical Action{% endblock %}</title>
-<link rel="icon" href="{% static 'favicon.ico' %}" type="{% static 'image/x-icon' %}">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
  <!-- Favicon-->
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/line-awesome.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap-datepicker.min.css' %}">
 <!-- Custom Css -->
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body class="">
     <!-- Main Search -->
+
 <div id="search">
     <button id="close" type="button" class="close btn btn-primary btn-icon btn-icon-mini btn-round">x</button>
     <form>
@@ -33,71 +34,69 @@
             <a href="javascript:void(0);" class="dropdown-toggle" title="Notifications" data-toggle="dropdown" role="button" aria-expanded="true"><i class="la la-bell"></i>
                 <div class="notify"><span class="heartbit"></span><span class="point"></span></div>
             </a>
-            <ul class="dropdown-menu slideUp2" x-placement="top-start" style="position: absolute; transform: translate3d(0px, -105px, 0px); top: 0px; left: 0px; will-change: transform;">
+            <ul class="dropdown-menu slideUp2" >
                 <li class="header">Notifications</li>
-                <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 330px;">
-                    <li class="body" style="overflow: hidden; width: auto; height: 330px;">
-                        <ul class="menu list-unstyled">
-                            <li>
-                                <a href="javascript:void(0);">
-                                    <div class="menu-info">
-                                        <h4>8 New Members joined</h4>
-                                        <p><i class="la la-history"></i> 14 mins ago </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);">
-                                    <div class="menu-info">
-                                        <h4><b>Shyam</b> changes project list</h4>
-                                        <p><i class="la la-history"></i> 22 mins ago </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);">
-                                    <div class="menu-info">
-                                        <h4><b>Nancy Doe</b> add output</h4>
-                                        <p><i class="la la-history"></i> 3 hours ago </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);">
-                                    <div class="menu-info">
-                                        <h4><b>Nancy</b> Changed name</h4>
-                                        <p><i class="zmdi zmdi-time"></i> 2 hours ago </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);">
-                                    <div class="menu-info">
-                                        <h4><b>John</b> updated activity</h4>
-                                        <p><i class="la la-history"></i> 4 hours ago </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);">
-                                    <div class="icon-circle bg-purple"><i class="zmdi zmdi-refresh"></i></div>
-                                    <div class="menu-info">
-                                        <h4><b>John</b> Updated cluster</h4>
-                                        <p><i class="la la-history"></i> 3 hours ago </p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);">
-                                    <div class="menu-info">
-                                        <h4>Settings Updated</h4>
-                                        <p><i class="la la-history"></i> Yesterday </p>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </div>
+                
+                <li class="body">
+                    <ul class="menu list-unstyled">
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4>8 New Members joined</h4>
+                                    <p><i class="la la-history"></i> 14 mins ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Shyam</b> changes project list</h4>
+                                    <p><i class="la la-history"></i> 22 mins ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Nancy Doe</b> add output</h4>
+                                    <p><i class="la la-history"></i> 3 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Nancy</b> Changed name</h4>
+                                    <p><i class="zmdi zmdi-time"></i> 2 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>John</b> updated activity</h4>
+                                    <p><i class="la la-history"></i> 4 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>John</b> Updated cluster</h4>
+                                    <p><i class="la la-history"></i> 3 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4>Settings Updated</h4>
+                                    <p><i class="la la-history"></i> Yesterday </p>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="footer"> 
                     <a href="javascript:void(0);">View All Notifications</a> 
                 </li>
@@ -107,92 +106,103 @@
             <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="la la-flag"></i>
             <div class="notify"><span class="heartbit"></span><span class="point"></span></div>
             </a>
-            <ul class="dropdown-menu slideUp2" x-placement="top-start" style="position: absolute; transform: translate3d(0px, -105px, 0px); top: 0px; left: 0px; will-change: transform;">
-                    <li class="header">Notifications</li>
-                    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 330px;">
-                        <li class="body" style="overflow: hidden; width: auto; height: 330px;">
-                            <ul class="menu list-unstyled">
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="menu-info">
-                                            <h4>8 New Members joined</h4>
-                                            <p><i class="la la-history"></i> 14 mins ago </p>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="menu-info">
-                                            <h4><b>Shyam</b> changes project list</h4>
-                                            <p><i class="la la-history"></i> 22 mins ago </p>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="menu-info">
-                                            <h4><b>Nancy Doe</b> add output</h4>
-                                            <p><i class="la la-history"></i> 3 hours ago </p>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="menu-info">
-                                            <h4><b>Nancy</b> Changed name</h4>
-                                            <p><i class="zmdi zmdi-time"></i> 2 hours ago </p>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="menu-info">
-                                            <h4><b>John</b> updated activity</h4>
-                                            <p><i class="la la-history"></i> 4 hours ago </p>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="icon-circle bg-purple"><i class="zmdi zmdi-refresh"></i></div>
-                                        <div class="menu-info">
-                                            <h4><b>John</b> Updated cluster</h4>
-                                            <p><i class="la la-history"></i> 3 hours ago </p>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="menu-info">
-                                            <h4>Settings Updated</h4>
-                                            <p><i class="la la-history"></i> Yesterday </p>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
+            <ul class="dropdown-menu slideUp2">
+                <li class="header">Tasks list</li>
+                <li class="body" style="height: 330px;">
+                    <ul class="menu list-unstyled">
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4>8 New Members joined</h4>
+                                    <p><i class="la la-history"></i> 14 mins ago </p>
+                                </div>
+                            </a>
                         </li>
-                    </div>
-                    <li class="footer"> 
-                        <a href="javascript:void(0);">View All Notifications</a> 
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Shyam</b> changes project list</h4>
+                                    <p><i class="la la-history"></i> 22 mins ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Nancy Doe</b> add output</h4>
+                                    <p><i class="la la-history"></i> 3 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Nancy</b> Changed name</h4>
+                                    <p><i class="la la-history"></i> 2 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>John</b> updated activity</h4>
+                                    <p><i class="la la-history"></i> 4 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>John</b> Updated cluster</h4>
+                                    <p><i class="la la-history"></i> 3 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4>Settings Updated</h4>
+                                    <p><i class="la la-history"></i> Yesterday </p>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="footer"> 
+                    <a href="javascript:void(0);">View All Tasks</a> 
+                </li>
+            </ul>
+        </li>
+        <li><a href="javascript:void(0);" class="app_calendar" title="Calendar"><i class="la la-calendar"></i></a></li>
+        <li class="dropdown">
+            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="la la-cog"></i></a>
+            <ul class="dropdown-menu slideUp2" >
+                    <li class="body">
+                        <ul class="menu list-unstyled">
+                            <li>
+                                <a href="javascript:void(0);">Change password</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);">Change profile</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
         </li>
-        <li><a href="javascript:void(0);" class="app_calendar" title="Calendar"><i class="la la-calendar"></i></a></li>
-        <li><a href="javascript:void(0);" class="js-right-sidebar" title="Setting"><i class="la la-cog"></i></a></li>
-        <li><a href="{% url 'logout' %}" class="mega-menu" title="Sign Out"><i class="la la-power-off"></i></a></li>
+        <li><a href="sign-in.html" class="mega-menu" title="Sign Out"><i class="la la-power-off"></i></a></li>
     </ul>
 </div>
 <!-- Left Sidebar -->
 <aside id="leftsidebar" class="sidebar">
     <div class="navbar-brand">
-        <button class="btn-menu ls-toggle-btn" type="button"><i class="la la-align-justify"></i></button>
-        <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" width="100" alt="Practical Action"></a>
+        <button class="btn-menu ls-toggle-btn" type="button"><i class="la la-navicon"></i></button>
+        <a href="index.html"><img src="{% static 'images/logo.png' %}" width="100" alt="Practical Action"></a>
     </div>
     <div class="menu">
         <ul class="list">
             <li>
                 <div class="user-info">
-                    <a class="image" href="{% url 'home' %}"><img src="{% static 'images/pf.png' %}" alt="User"></a>
+                    <a class="image" href="index.html"><img src="{% static 'images/pf.png' %}" alt="User"></a>
                     <div class="detail">
                         <h4>Super Admin</h4>
                         <small>Super Admin</small>                        
@@ -202,9 +212,40 @@
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-tasks"></i><span>Projects</span></a>
                 <ul class="ml-menu">
                     <li><a href="project-list.html">Projects List</a></li>
-                    <li><a href="taskboard.html">Taskboard</a></li>
-                    <li><a href="ticket-list.html">Ticket List</a></li>
-                    <li><a href="ticket-detail.html">Ticket Detail</a></li>
+                    <li><a href="project-form.html">create Projects</a></li>
+                </ul>
+            </li>
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-signal"></i><span>Output</span></a>
+                <ul class="ml-menu">
+                    <li><a href="output-list.html">output List</a></li>
+                    <li><a href="output-list.html">add output</a></li>
+                </ul>
+            </li>
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-object-group"></i><span>Activity group</span></a>
+                <ul class="ml-menu">
+                    <li><a href="activitygroup-list.html">Activity group List</a></li>
+                    <li><a href="activitygroup-form.html">add activity group</a></li>
+                </ul>
+            </li>
+
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-line-chart"></i><span>Activities</span></a>
+                <ul class="ml-menu">
+                    <li><a href="activity-list.html">activity List</a></li>
+                    <li><a href="activity-form.html">add activity</a></li>
+                </ul>
+            </li>
+            
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>
+                <ul class="ml-menu">
+                    <li><a href="cluster-list.html">activity assign</a></li>
+                    <li><a href="cluster-form.html">add cluster</a></li>
+                </ul>
+            </li>
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-sellsy"></i><span>Benificiaries</span></a>
+                <ul class="ml-menu">
+                    <li><a href="banificiary-list.html">banificiary list</a></li>
+                    <li><a href="banificiary.html">upload Benificiaries</a></li>
+                    <li><a href="banificiary-form.html">edit Benificiaries</a></li>
                 </ul>
             </li>
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="la la-lock"></i><span>Authentication</span></a>
@@ -213,9 +254,6 @@
                     <li><a href="sign-up.html">Sign Up</a></li>
                     <li><a href="forgot-password.html">Forgot Password</a></li>
                     <li><a href="404.html">Page 404</a></li>
-                    <li><a href="500.html">Page 500</a></li>
-                    <li><a href="page-offline.html">Page Offline</a></li>
-                    <li><a href="locked.html">Locked Screen</a></li>
                 </ul>
             </li>
             
@@ -231,8 +269,9 @@
 <!-- Jquery Core Js --> 
 <script src="{% static 'js/libscripts.bundle.js' %}"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) --> 
 <script src="{% static 'js/vendorscripts.bundle.js' %}"></script> <!-- slimscroll, waves Scripts Plugin Js -->
-
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
 <script src="{% static 'js/mainscripts.bundle.js' %}"></script>
+<script src="{% static 'js/dateform.js' %}"></script>
 </body>
 
 

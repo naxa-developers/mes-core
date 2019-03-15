@@ -260,93 +260,44 @@
 </aside>
 
 <!-- Main Content -->
+
 <section class="content">
-    <div class="body_scroll">
-        <div class="block-header">
-            <div class="row">
-                <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2>Project list</h2>
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical Action</a></li>
-                        <li class="breadcrumb-item">Project</li>
-                        <li class="breadcrumb-item active">project list</li>
-                    </ul>
-                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
-                </div>
-                <div class="col-lg-5 col-md-6 col-sm-12">                
-                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
-                </div>
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Benificiaries</h2>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical</a></li>
+                    <li class="breadcrumb-item active">Benificiaries</li>
+                </ul>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn btn-primary float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
             </div>
         </div>
-        <div class="container-fluid">
-            <div class="card project_list">
-                <div class="table-responsive">
-                    <table class="table table-hover c_table">
-                        <thead>
-                            <tr>                                       
-                                <th>S.N</th>
-                                <th>Project Name</th>
-                                <th>Project Manager</th>
-                                <th>start date</th>
-                                <th>end date</th>
-                                <th>reporting period</th>
-                                <th>action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Upper koshi electricity</td>
-                                <td>Aron pradhan</td>
-                                <td>16/2/2019</td>
-                                <td>17/2/2019</td>
-                                <td>1 month</td>
-                                <td class="table-action">
-                                    <a href="#" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="#" class="btn"> <i class="la la-edit"></i></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Upper koshi electricity</td>
-                                <td>Aron pradhan</td>
-                                <td>16/2/2019</td>
-                                <td>17/2/2019</td>
-                                <td>1 month</td>
-                                <td class="table-action">
-                                    <a href="#" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="#" class="btn"> <i class="la la-edit"></i></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Upper koshi electricity</td>
-                                <td>Aron pradhan</td>
-                                <td>16/2/2019</td>
-                                <td>17/2/2019</td>
-                                <td>1 month</td>
-                                <td class="table-action">
-                                    <a href="#" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="#" class="btn"> <i class="la la-edit"></i></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="table-footer">
-                    <a class="btn" href="project-form.html"><i class="la la-plus"></i> Add project</a>
-                    <ul class="pagination pagination-primary">
-                        <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
-                        <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
-                        <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
-                        <li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>
-                        <li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>
-                    </ul>
-                </div> 
+    </div>
+    <div class="project-form">
+        <div class="card">
+            <div class="card-body">
+                <form action="banificiary-list.html" post="">
+                    <div class="form-group">
+                        <div class="custom-upload">
+                            <h3>Upload csv file</h3>
+                            <label class="custom-upload__button" for="file" data-element="custom-upload-button">Upload Files </label>
+                            <input class="custom-upload__input" id="file" type="file" data-behaviour="custom-upload-input" value="" multiple/>
+                        </div>
+                    </div>
+                    <div class="form-footer pull-right">
+                        <button type="submit" class="btn" role="button">Save</button>
+                    </div>
+                </form>
+                
             </div>
         </div>
     </div>
 </section>
+
 
 <!-- Jquery Core Js --> 
 <script src="js/libscripts.bundle.js"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) --> 

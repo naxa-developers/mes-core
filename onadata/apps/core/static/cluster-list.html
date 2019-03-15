@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/line-awesome.min.css">
 <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
+<link rel="stylesheet" href="css/select2.min.css">
 <!-- Custom Css -->
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -265,107 +266,203 @@
     <div class="block-header">
         <div class="row">
             <div class="col-lg-7 col-md-6 col-sm-12">
-                <h2>Dashboard</h2>
+                <h2>Cluster</h2>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical</a></li>
-                    <li class="breadcrumb-item active">Dashboard</li>
+                    <li class="breadcrumb-item active">cluster list</li>
                 </ul>
-                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+                <button class="btn btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
             </div>
             <div class="col-lg-5 col-md-6 col-sm-12">                
-                <button class="btn btn-primary float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
-                <a class="btn btn-create float-right" type="button" href="project-form.html"><i class="la la-plus"> create project</i></a>
+                <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
             </div>
         </div>
     </div>
-    <div class="dash-top">
-        <div class="container-fluid">
-            <div class="row clearfix">
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="card card-widget mrb30">
-                        <div class="body">
-                            <a href="output-form.html">
-                                <div class="card-content">
-                                    <div class="card-icon">
-                                        <i class="la la-signal"></i>
-                                    </div>
-                                    <div class="card-text">
-                                        <h3>3500</h3>
-                                        <h5>Output</h5>
+    <div class="accordion-form project-form">
+        <div class="card">
+            <div class="card-body">
+                <form action="cluster-detail.html" post="">
+                    <!-- accordion -->
+                    <div class="cluster-accordion">
+                        <div id="accordion">
+                            <div class="card">
+                                <div class="card-header" id="heading-2">
+                                    <h5>
+                                        <div class="checkbox">
+                                            <input id="head1" type="checkbox" class="select-all">
+                                            <label for="head1">Social marketing on local FM</label>
+                                        </div>
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="true"
+                                            aria-controls="collapse-2">
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapse-2" class="collapse show" data-parent="#accordion" aria-labelledby="heading-2">
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act18" type="checkbox">
+                                                <label for="act18">Massage airing from local FM</label>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                                <div class="handle"></div>
+                                            </button>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act2" type="checkbox">
+                                                <label for="act2">Reached out the information ( coverage of FM stations)</label>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                                <div class="handle"></div>
+                                            </button>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act3" type="checkbox">
+                                                <label for="act3">Number of IEC materials preparation </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act4" type="checkbox">
+                                                <label for="act4">Number of IEC materials dissemination </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="card card-widget mrb30">
-                        <div class="body">
-                            <a href="#">
-                                <div class="card-content">
-                                    <div class="card-icon">
-                                        <i class="la la-line-chart"></i>
-                                    </div>
-                                    <div class="card-text">
-                                        <h3>2426</h3>
-                                        <h5>Activities</h5>
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="heading-3">
+                                    <h5>
+                                        <div class="checkbox">
+                                            <input id="head2" type="checkbox" class="select-all">
+                                            <label for="head2">IEC material prepartion and dissemination</label>
+                                        </div>
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false"
+                                            aria-controls="collapse-3">
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapse-3" class="collapse" data-parent="#accordion" aria-labelledby="heading-3">
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act13" type="checkbox">
+                                                <label for="act3">Massage airing from local FM</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act14" type="checkbox">
+                                                <label for="act14">Reached out the information ( coverage of FM stations)</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act15" type="checkbox">
+                                                <label for="act15">Number of IEC materials preparation </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act16" type="checkbox">
+                                                <label for="act16">Number of IEC materials dissemination </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="card card-widget mrb30">
-                        <div class="body">
-                            <a href="#">
-                                <div class="card-content">
-                                    <div class="card-icon">
-                                        <i class="la la-object-group"></i>
-                                    </div>
-                                    <div class="card-text">
-                                        <h3>1456</h3>
-                                        <h5>Activities Group</h5>
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="heading-4">
+                                    <h5>
+                                        <div class="checkbox">
+                                            <input id="head3" type="checkbox" class="select-all">
+                                            <label for="head3">Hoarding board and leaflet</label>
+                                        </div>
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-4" aria-expanded="false"
+                                            aria-controls="collapse-4">
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapse-4" class="collapse" data-parent="#accordion" aria-labelledby="heading-3">
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act9" type="checkbox">
+                                                <label for="act9">Massage airing from local FM</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act10" type="checkbox">
+                                                <label for="act10">Reached out the information ( coverage of FM stations)</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act11" type="checkbox">
+                                                <label for="act11">Number of IEC materials preparation </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act12" type="checkbox">
+                                                <label for="act12">Number of IEC materials dissemination </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="card card-widget mrb30">
-                        <div class="body">
-                            <a href="#">
-                                <div class="card-content">
-                                    <div class="card-icon">
-                                        <i class="la la-transgender-alt"></i>
-                                    </div>
-                                    <div class="card-text">
-                                        <h3>1600</h3>
-                                        <h5>Cluster</h5>
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="heading-5">
+                                    <h5>
+                                        <div class="checkbox">
+                                            <input id="head" type="checkbox" class="select-all">
+                                            <label for="head4">Establishment of commercial CSEB enterprise</label>
+                                        </div>
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-5" aria-expanded="false"
+                                            aria-controls="collapse-5">
+                                            
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapse-5" class="collapse" data-parent="#accordion" aria-labelledby="heading-5">
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act5" type="checkbox">
+                                                <label for="act5">Massage airing from local FM</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act6" type="checkbox">
+                                                <label for="act6">Reached out the information ( coverage of FM stations)</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act7" type="checkbox">
+                                                <label for="act7">Number of IEC materials preparation </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="act8" type="checkbox">
+                                                <label for="act8">Number of IEC materials dissemination </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12">
-                    <div class="card card-widget mrb30">
-                        <div class="body">
-                            <a href="#">
-                                <div class="card-content">
-                                    <div class="card-icon">
-                                        <i class="la la-sellsy"></i>
-                                    </div>
-                                    <div class="card-text">
-                                        <h3>1256</h3>
-                                        <h5>Benificiaries</h5>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
+                    <div class="form-footer pull-right">
+                        <button type="submit" class="btn" role="button">Save</button>
+                        <a class="btn remove" href="cluster-form.html"><i class="la la-plus"></i> Add cluster</a>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -376,6 +473,7 @@
 <script src="js/libscripts.bundle.js"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) --> 
 <script src="js/vendorscripts.bundle.js"></script> <!-- slimscroll, waves Scripts Plugin Js -->
 <script src="js/bootstrap-datepicker.min.js"></script>
+<script src="js/select2.min.js"></script>
 <script src="js/mainscripts.bundle.js"></script>
 <script src="js/dateform.js"></script>
 </body>

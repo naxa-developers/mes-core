@@ -10,7 +10,8 @@
                 <div class="widget-body mt-2 horizontalForm">
                     <div class="widget-body">
                         <h3>Project {% if project %}Edit{% else %}Add{% endif %}</h3>
-                        <form action="" method="POST" enctype="multipart/form-data" novalidate>     {%csrf_token %}
+                        <form action="" method="POST" enctype="multipart/form-data" novalidate> 
+                            {% csrf_token %}
                             {{ form.as_p }}
                             <button type="submit" class="btn btn-xs btn-primary">Submit</button>
                         </form>

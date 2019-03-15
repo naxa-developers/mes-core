@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/line-awesome.min.css">
 <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
+<link rel="stylesheet" href="css/select2.min.css">
 <!-- Custom Css -->
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -260,98 +261,128 @@
 </aside>
 
 <!-- Main Content -->
+
 <section class="content">
-    <div class="body_scroll">
-        <div class="block-header">
-            <div class="row">
-                <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2>Project list</h2>
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical Action</a></li>
-                        <li class="breadcrumb-item">Project</li>
-                        <li class="breadcrumb-item active">project list</li>
-                    </ul>
-                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
-                </div>
-                <div class="col-lg-5 col-md-6 col-sm-12">                
-                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
-                </div>
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Activities</h2>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical</a></li>
+                    <li class="breadcrumb-item active">Activities</li>
+                </ul>
+                <button class="btn btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
             </div>
         </div>
-        <div class="container-fluid">
-            <div class="card project_list">
-                <div class="table-responsive">
-                    <table class="table table-hover c_table">
-                        <thead>
-                            <tr>                                       
-                                <th>S.N</th>
-                                <th>Project Name</th>
-                                <th>Project Manager</th>
-                                <th>start date</th>
-                                <th>end date</th>
-                                <th>reporting period</th>
-                                <th>action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Upper koshi electricity</td>
-                                <td>Aron pradhan</td>
-                                <td>16/2/2019</td>
-                                <td>17/2/2019</td>
-                                <td>1 month</td>
-                                <td class="table-action">
-                                    <a href="#" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="#" class="btn"> <i class="la la-edit"></i></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Upper koshi electricity</td>
-                                <td>Aron pradhan</td>
-                                <td>16/2/2019</td>
-                                <td>17/2/2019</td>
-                                <td>1 month</td>
-                                <td class="table-action">
-                                    <a href="#" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="#" class="btn"> <i class="la la-edit"></i></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Upper koshi electricity</td>
-                                <td>Aron pradhan</td>
-                                <td>16/2/2019</td>
-                                <td>17/2/2019</td>
-                                <td>1 month</td>
-                                <td class="table-action">
-                                    <a href="#" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="#" class="btn"> <i class="la la-edit"></i></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+    </div>
+    <div class="project-form">
+        <div class="help">
+            <span class="help-icon">
+                <i class="la la-question"></i>
+            </span>
+            <div class="helpContent-wrap">
+                <div class="help-content">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed ante rutrum, consectetur ante a, volutpat mauris. Aliquam tristique lacus eros, at varius sapien scelerisque semper. Etiam quis fringilla neque, eget porttitor mauris. Pellentesque ut rhoncus ligula, eget vestibulum enim. Donec nec varius orci, dictum faucibus odio. Mauris tempor sodales fermentum. Nullam euismod lorem quam, ut tristique enim elementum sit amet. Pellentesque interdum massa quam, nec tristique ligula tincidunt aliquet. Suspendisse condimentum diam nec nisl semper, et faucibus dui porta. Fusce porta id ligula a elementum. Nullam laoreet odio a turpis sollicitudin, et convallis justo porta. Fusce at ante consequat urna tincidunt aliquam. Proin vitae ligula ipsum. Fusce varius eget purus in euismod.
                 </div>
-                <div class="table-footer">
-                    <a class="btn" href="project-form.html"><i class="la la-plus"></i> Add project</a>
-                    <ul class="pagination pagination-primary">
-                        <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
-                        <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
-                        <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
-                        <li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>
-                        <li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>
-                    </ul>
-                </div> 
+            </div>
+            
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form action="activity-list.html" post="">
+                    <div class="form-group">
+                        <label>Select Activity group </label>
+                        <div class="select-option">
+                            <select class="custom-select show-tick ms select2" multiple data-placeholder="Select">
+                                <option>Gandaki</option>
+                                <option>Karnali</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" placeholder="Name" id="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">description</label>
+                        <textarea class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="target flex">
+                            <div class="target-unit flex">
+                                <label>Target unit</label>
+                                <input type="text" class="form-control" placeholder="1">
+                            </div>
+                            <div class="target-number flex">
+                                <label>Target number</label>
+                                <input type="text" class="form-control" placeholder="1">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>start Date </label>
+                        <div id="start-datepicker" class="input-group date datepicker">
+                            <input type="text" class="form-control" placeholder="start date">
+                            <span class="input-group-addon input-group-append ">
+                            <span class="la la-calendar input-group-text"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date </label>
+                        <div id="end-datepicker" class="input-group date datepicker">
+                            <input type="text" class="form-control" placeholder="end date">
+                            <span class="input-group-addon input-group-append ">
+                            <span class="la la-calendar input-group-text"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-wrap">
+                            <label>Benificiaries</label>
+                            <div class="radio">
+                                <input id="yes" type="radio" name="benificial">
+                                <label for="yes">Yes</label>
+                            </div>
+                            <div class="radio">
+                                <input id="no" type="radio" name="benificial">
+                                <label for="no">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-wrap">
+                            <label>Published</label>
+                            <div class="radio">
+                                <input id="pyes" type="radio" name="Published">
+                                <label for="pyes">Yes</label>
+                            </div>
+                            <div class="radio">
+                                <input id="pno" type="radio" name="Published">
+                                <label for="pno">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-footer pull-right">
+                        <button type="submit" class="btn" role="button">Save</button>
+                    </div>
+                </form>
+                
             </div>
         </div>
     </div>
 </section>
 
+
 <!-- Jquery Core Js --> 
 <script src="js/libscripts.bundle.js"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) --> 
 <script src="js/vendorscripts.bundle.js"></script> <!-- slimscroll, waves Scripts Plugin Js -->
 <script src="js/bootstrap-datepicker.min.js"></script>
+<script src="js/select2.min.js"></script>
 <script src="js/mainscripts.bundle.js"></script>
 <script src="js/dateform.js"></script>
 </body>

@@ -62,7 +62,7 @@ class Activity(models.Model):
 	start_date = models.DateTimeField()
 	end_date = models.DateTimeField()
 
-	form = models.ForeignKey(XForm, related_name='actform')
+	form = models.ForeignKey(XForm, related_name='actform', null=True, blank=True)
 
 	target_complete = models.BooleanField(default=True)
 	beneficiary_level = models.BooleanField(default=True)

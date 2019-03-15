@@ -1,0 +1,91 @@
+.authentication {
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    .auth_form {
+        -moz-transition: all 0.5s;
+        -o-transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        -ms-border-radius: 10px;
+        border-radius: 10px;
+        background: $color-bg;
+        border: 5px solid $color-light;
+        box-shadow: 0 0 16px rgba(41, 42, 51, 0.06), 0 6px 20px rgba(41, 42, 51, 0.02);
+        .header {
+            text-align: center;
+            h5{
+                margin-top: 10px;
+                margin-bottom: 0;
+                font-weight: 600;
+                font-size: 1rem;
+            }
+            .logo, .l_profile{
+                max-width:100px;
+                margin-top:15px;
+            }
+            span{
+                font-size: 0.775rem;
+                margin-top:10px;
+                display: inline-block;
+            }
+        }
+        .body {
+            background: transparent;
+            input.form-control{
+                border-color:$color-light;
+                background-color: transparent;
+                outline: none;
+                &:focus{
+                    outline: none;
+                }
+            }
+            .input-group-text {
+                justify-content: center;
+                min-width: 42px;
+                border-color:$color-light;
+                background-color: transparent;
+            }
+            .btn.google {
+                background: #d5472f
+            }
+            
+            .btn.facebook {
+                background: #3a579b
+            }
+            
+            .btn.twitter {
+                background: #3c94fe
+            }
+            .checkbox{
+                label{
+                    font-size:0.875rem;
+                }
+            }
+        }
+        
+        .signin_with {
+            text-align: center
+        }
+    }
+    .copyright{
+        margin-top:15px;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    .authentication {
+        height: auto;
+        .auth_form {
+            margin: 20px 0;
+        }
+        .copyright {
+            margin-bottom: 20px;
+        }
+    }
+}
+
+
+

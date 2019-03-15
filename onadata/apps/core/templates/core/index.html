@@ -10,45 +10,110 @@
             <div class="col-lg-7 col-md-6 col-sm-12">
                 <h2>Dashboard</h2>
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical</a></li>
+                    <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical</a></li>
                     <li class="breadcrumb-item active">Dashboard</li>
                 </ul>
-                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-sort-amount-desc"></i></button>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
             </div>
             <div class="col-lg-5 col-md-6 col-sm-12">                
-                <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                <button class="btn btn-primary float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                <a class="btn btn-create float-right" type="button" href="project-form.html"><i class="la la-plus"> create project</i></a>
             </div>
         </div>
     </div>
-    <div class="container-fluid">
-        <div class="row clearfix">
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="card widget_2 big_icon traffic">
-                    <div class="body">
+    <div class="dash-top">
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="card card-widget mrb30">
+                        <div class="body">
+                            <a href="output-form.html">
+                                <div class="card-content">
+                                    <div class="card-icon">
+                                        <i class="la la-signal"></i>
+                                    </div>
+                                    <div class="card-text">
+                                        <h3>3500</h3>
+                                        <h5>Output</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="card widget_2 big_icon sales">
-                    <div class="body">
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="card card-widget mrb30">
+                        <div class="body">
+                            <a href="#">
+                                <div class="card-content">
+                                    <div class="card-icon">
+                                        <i class="la la-line-chart"></i>
+                                    </div>
+                                    <div class="card-text">
+                                        <h3>2426</h3>
+                                        <h5>Activities</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="card widget_2 big_icon email">
-                    <div class="body">
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="card card-widget mrb30">
+                        <div class="body">
+                            <a href="#">
+                                <div class="card-content">
+                                    <div class="card-icon">
+                                        <i class="la la-object-group"></i>
+                                    </div>
+                                    <div class="card-text">
+                                        <h3>1456</h3>
+                                        <h5>Activities Group</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-12">
-                <div class="card widget_2 big_icon domains">
-                    <div class="body">
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="card card-widget mrb30">
+                        <div class="body">
+                            <a href="#">
+                                <div class="card-content">
+                                    <div class="card-icon">
+                                        <i class="la la-transgender-alt"></i>
+                                    </div>
+                                    <div class="card-text">
+                                        <h3>1600</h3>
+                                        <h5>Cluster</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="card card-widget mrb30">
+                        <div class="body">
+                            <a href="#">
+                                <div class="card-content">
+                                    <div class="card-icon">
+                                        <i class="la la-sellsy"></i>
+                                    </div>
+                                    <div class="card-text">
+                                        <h3>1256</h3>
+                                        <h5>Benificiaries</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 
 
 {% endblock %}

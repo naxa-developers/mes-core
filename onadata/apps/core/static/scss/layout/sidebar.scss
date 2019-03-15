@@ -7,12 +7,13 @@
     left: 0;
     box-shadow: none;
     z-index: 10;
+    background-color: $color-light;
     .navbar-brand {
         display: flex;
         align-items: center;
         margin: 10px 10px 0 10px;
         padding: 10px 0;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid rgba($color-primary, 0.2);
         .btn-menu {
             @include anim05;
             border: 0;
@@ -20,6 +21,7 @@
             line-height: 15px;
             opacity: 0.6;
             padding: 6px;
+            color:$color-primary;
             &:hover {
                 opacity: 1;
                 cursor: pointer
@@ -34,16 +36,16 @@
         position: relative;
         display: flex;
         align-items: center;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid rgba($color-primary, 0.2);
         .image{
             img {
                 -webkit-border-radius: 8px;
                 -moz-border-radius: 8px;
                 -ms-border-radius: 8px;
                 border-radius: 8px;
-                width: 50px;
+                width: 40px;
                 vertical-align: bottom !important;
-                border: 3px solid #fff;
+                border: 3px solid rgba($color-primary, 0.2);
                 box-shadow: 0px 5px 5px 0px rgba(41, 42, 51, 0.2)
             }
         }
@@ -59,90 +61,99 @@
         .list{
             list-style: none;
             margin: 0 10px;
-            .menu-toggle{
-                &::before,
-                &::after{
-                    @include animZoom-before;
-                    @include anim05;
-                    font-size: 14px;
-                    position: absolute;
-                    top: calc(50% - 11px);
-                    right: 17px;
-                    font-family: "LineAwesome";
-                }
-                &::before{
-                    content: '\f110';
-                    @include animZoom-after;
-                }
-                &::after{
-                    content: '\f113';
-                    @include animZoom-before;
-                }
-                &.toggled{
-                    &::before{
-                        content:'\f105';
-                        @include animZoom-before;
-                    }
+            li{
+                border-bottom: 1px solid  rgba($color-primary, 0.2);
+                .menu-toggle{
+                    &::before,
                     &::after{
+                        @include animZoom-before;
+                        @include anim05;
+                        font-size: 14px;
+                        position: absolute;
+                        top: calc(50% - 11px);
+                        right: 17px;
+                        font-family: "LineAwesome";
+                    }
+                    &::before{
+                        content: '\f110';
                         @include animZoom-after;
                     }
+                    &::after{
+                        content: '\f113';
+                        @include animZoom-before;
+                    }
+                    &.toggled{
+                        color:$color-secondary;
+                        &::before{
+                            content:'\f105';
+                            @include animZoom-before;
+                        }
+                        &::after{
+                            @include animZoom-after;
+                        }
+                    }
                 }
-            }
-            a{
-                color: $color-primary;
-                position: relative;
-                padding: 15px 10px;
-                display: block;
-                i{
-                    -moz-transform: rotate(20deg);
-                    -ms-transform: rotate(20deg);
-                    -o-transform: rotate(20deg);
-                    -webkit-transform: rotate(20deg);
-                    transform: rotate(20deg);
-                    @include anim05;
-                    width: 16px;
+                a{
+                    color: $color-primary;
+                    position: relative;
+                    padding: 15px 10px;
+                    display: block;
+                    i{
+                        -moz-transform: rotate(20deg);
+                        -ms-transform: rotate(20deg);
+                        -o-transform: rotate(20deg);
+                        -webkit-transform: rotate(20deg);
+                        transform: rotate(20deg);
+                        @include anim05;
+                        width: 16px;
+                        &:hover{
+                            -moz-transform: rotate(-20deg);
+                            -ms-transform: rotate(-20deg);
+                            -o-transform: rotate(-20deg);
+                            -webkit-transform: rotate(-20deg);
+                            transform: rotate(-20deg)
+                        }
+                    }
+                    small {
+                        position: absolute;
+                        top: calc(50% - 7.5px);
+                        right: 15px
+                    }
+                    span {
+                        margin: 0 0 0 12px
+                    }
                     &:hover{
-                        -moz-transform: rotate(-20deg);
-                        -ms-transform: rotate(-20deg);
-                        -o-transform: rotate(-20deg);
-                        -webkit-transform: rotate(-20deg);
-                        transform: rotate(-20deg)
+                        color:$color-secondary;
                     }
                 }
-                small {
-                    position: absolute;
-                    top: calc(50% - 7.5px);
-                    right: 15px
-                }
-                span {
-                    margin: 0 0 0 12px
-                }
-            }
-            .ml-menu {
-                list-style: none;
-                display: none;
-                li{
-                    a {
-                        font-size: 14px;
-                        padding-left: 40px;
-                        padding-top: 7px;
-                        padding-bottom: 7px;
-                        span {
-                            font-weight: 400;
-                            margin: 3px 0 1px 6px
-                        }
-                        &:before {
-                            font-size: 12px;
-                            color: #999;
-                            content: '\f274';
-                            position: absolute;
-                            left: 14px;
-                            font-family: "LineAwesome";
-                            top: 8px
+                .ml-menu {
+                    list-style: none;
+                    display: none;
+                    background-color: $color-light;
+                    li{
+                        a {
+                            font-size: 14px;
+                            padding-left: 40px;
+                            padding-top: 7px;
+                            padding-bottom: 7px;
+                            span {
+                                font-weight: 400;
+                                margin: 3px 0 1px 6px
+                            }
+                            &:before {
+                                font-size: 12px;
+                                color: $color-primary;
+                                content: '\f112';
+                                position: absolute;
+                                left: 14px;
+                                font-family: "LineAwesome";
+                                top: 8px
+                            }
                         }
                     }
                 }
             }
+            
         }
     }
     &.open {
@@ -184,6 +195,7 @@
     }
 }
 .navbar-right{
+    background-color: $color-light;
     .navbar-nav {
         @include anim05;
         position: fixed;
@@ -212,6 +224,13 @@
                     background-color: $color-orange;
                 }
             }
+            &.dropdown{
+                a.dropdown-toggle{
+                    &::after{
+                        display: none !important;
+                    }
+                }
+            }
 
         }
         .dropdown-menu {
@@ -220,8 +239,9 @@
             right: 60px;
             left: auto !important;
             transform: none !important;
+            background-color: $color-light;
             &:before {
-                color: $color-white;
+                color: rgba($color-primary, 0.2);
                 display: inline-block;
                 position: absolute;
                 width: 0;
@@ -238,10 +258,11 @@
             li{
                 a{
                     @include anim05;
-                    color: #777;
+                    color: $color-primary;
                     font-size: 14px;
                     padding: 7px 18px;
-                    line-height: 25px
+                    line-height: 25px;
+                    
                 }
                 ul.menu{
                     li{
@@ -268,7 +289,7 @@
                                 margin-left: 10px;
                                 h4{
                                     font-size: 14px;
-                                    color: #444
+                                    color: $color-primary;
                                 }
                                 p{
                                     font-size:0.675rem;
@@ -284,15 +305,16 @@
                 }
                 &.footer{
                     a{
-                        border-top: 1px solid #eee;
+                        border-top: 1px solid rgba($color-primary, 0.2);
                         width:100%;
                     }
                 }
                 &.header {
                     font-weight: 600;
-                    border-bottom: 1px solid #eee;
+                    border-bottom: 1px solid rgba($color-primary, 0.2);
                     min-width: 280px;
-                    padding: 15px
+                    padding: 15px;
+                    color: $color-primary;
                 }
             }
             
