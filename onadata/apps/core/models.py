@@ -93,6 +93,11 @@ class UserRole(models.Model):
 	group = models.ForeignKey(Group)
 
 
+class ClusterActivity(models.Model):
+	activity = models.ForeignKey('Activity', related_name='clusteractivity')
+
+class ClusterActivityGroup(models.Model):
+	activity_group = models.ForeignKey('ActivityGroup', related_name='clusteractivitygroup')
 
 
 

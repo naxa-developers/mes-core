@@ -19,9 +19,21 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ActivitySerializer(serializers.ModelSerializer):
+	id_string = serializers.SerializerMethodField()
+
+
+	def get_id_string(self, obj):
+		if obj.form:
+			return obj.form.id_string
+		else:
+			return ''
+
+
 	class Meta:
 		model = Activity
-		fields = ('activity_group', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'target_complete', 'beneficiary_level', 'published', 'target_met')
+		fields = ('name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'id_string', 'target_complete', 'beneficiary_level', 'published', 'target_met')
+
+
 
 	
 class ActivityGroupSerializer(serializers.ModelSerializer):
