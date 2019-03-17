@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html class="no-js " lang="en">
 <head>
@@ -8,10 +9,10 @@
 <title>Practical Action</title>
 <link rel="icon" href="favicon.ico" type="image/x-icon">
  <!-- Favicon-->
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/line-awesome.min.css">
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/line-awesome.min.css' %}">
 <!-- Custom Css -->
-<link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body class="theme-blush">
@@ -22,7 +23,7 @@
             <div class="col-lg-4 col-sm-12">
                 <form class="card auth_form">
                     <div class="header">
-                        <img class="logo" src="images/logo.png" alt="">
+                        <img class="logo" src="{% static 'images/logo.png' %}" alt="">
                         <h5>Log in</h5>
                     </div>
                     <div class="body">
@@ -42,13 +43,13 @@
                             <input id="remember_me" type="checkbox">
                             <label for="remember_me">Remember Me</label>
                         </div>
-                        <a href="index.html" class="btn btn-primary btn-block waves-effect waves-light">SIGN IN</a>                        
-                        <div class="signin_with mt-3">
+                        <a href="{% url 'home' %}" class="btn btn-primary btn-block waves-effect waves-light">SIGN IN</a>                        
+<!--                         <div class="signin_with mt-3">
                             <p class="mb-0">or Sign Up using</p>
                             <button class="btn btn-primary btn-icon btn-icon-mini btn-round facebook"><i class="la la-facebook"></i></button>
                             <button class="btn btn-primary btn-icon btn-icon-mini btn-round twitter"><i class="la la-twitter"></i></button>
                             <button class="btn btn-primary btn-icon btn-icon-mini btn-round google"><i class="la la-google-plus"></i></button>
-                        </div>
+                        </div> -->
                     </div>
                 </form>
                 <div class="copyright text-center">
@@ -59,7 +60,7 @@
             </div>
             <div class="col-lg-8 col-sm-12">
                 <div class="card">
-                    <img src="images/signin.svg" alt="Sign In"/>
+                    <img src="{% static 'images/signin.svg' %}" alt="Sign In"/>
                 </div>
             </div>
         </div>
@@ -67,10 +68,10 @@
 </div>
 
 <!-- Jquery Core Js --> 
-<script src="js/libscripts.bundle.js"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) --> 
-<script src="js/vendorscripts.bundle.js"></script> <!-- slimscroll, waves Scripts Plugin Js -->
+<script src="{% static 'js/libscripts.bundle.js' %}"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) --> 
+<script src="{% static 'js/vendorscripts.bundle.js' %}"></script> <!-- slimscroll, waves Scripts Plugin Js -->
 
-<script src="js/mainscripts.bundle.js"></script>
+<script src="{% static 'js/mainscripts.bundle.js' %}"></script>
 </body>
 
 

@@ -55,7 +55,7 @@ class Activity(models.Model):
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
 
-	AG_Id = models.IntegerField('Activity Group ID')
+	AG_Id = models.IntegerField('Activity Group ID', blank=True, null=True)
 	target_number = models.IntegerField()
 	target_unit = models.CharField(max_length=200)
 
@@ -91,6 +91,8 @@ class UserRole(models.Model):
 	user = models.ForeignKey(User)
 	project = models.ForeignKey('Project', null=True, blank=True)
 	group = models.ForeignKey(Group)
+
+
 
 
 

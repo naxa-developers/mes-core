@@ -57,6 +57,14 @@ class SignUpView(TemplateView):
 		return render(request, 'core/sign-up.html', {'form': form})
 
 
+class ForgotView(TemplateView):
+	template_name = 'core/forgot-password.html'
+
+
+class ErrorView(TemplateView):
+	template_name = 'core/404.html'
+
+
 class ProjectListView(ListView):
 	model = Project
 	template_name = 'core/project-list.html'

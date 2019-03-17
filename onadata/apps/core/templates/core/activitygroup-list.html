@@ -10,57 +10,60 @@
         <div class="block-header">
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2>Activity-Group list</h2>
+                    <h2>Activity Group list</h2>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html"><i class="aa la-home"></i> Practical Action</a></li>
-                        <li class="breadcrumb-item">Activity-Group</li>
-                        <li class="breadcrumb-item active">list</li>
+                        <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item">Project</li>
+                        <li class="breadcrumb-item active">Activity Group list</li>
                     </ul>
-                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
                 </div>
                 <div class="col-lg-5 col-md-6 col-sm-12">                
-                    <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
-                    <a href="{% url 'activitygroup_add' %}" ><button class="btn btn-success btn-icon float-right" type="button"><i class="la la-plus"></i></button></a>
+                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                    
                 </div>
             </div>
         </div>
         <div class="container-fluid">
-            <div class="row clearfix">
-                <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="card project_list">
-                        <div class="table-responsive">
-                            <table class="table table-hover c_table theme-color">
-                                <thead>
-                                    <tr> 
-                                        <th>Output</th>
-                                        <th>Project</th> 
-                                        <th>Name</th>                                        
-                                        <th>Description</th>
-                                        <th>Cluster</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for actgroup in object_list %}
-                                
-                                    <tr>
-                                       <td>{{ actgroup.output }}</td>
-                                       <td>{{ actgroup.project }}</td>
-                                       <td>{{ actgroup.name }}</td>
-                                       <td>{{ actgroup.description }}</td>
-                                       <td>{{ actgroup.cluster }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        <ul class="pagination pagination-primary mt-4">
-                            <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
-                            <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
-                            <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
-                            <li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>
-                            <li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>
-                        </ul>
-                    </div>
+            <div class="card project_list">
+                <div class="table-responsive">
+                    <table class="table table-hover c_table">
+                        <thead>
+                            <tr>                                       
+                                <th>Output </th>
+                                <th>Project </th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Cluster</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                {% for actgroup in object_list %}
+                                <tr>
+                                    <td>{{ actgroup.output }}</td>
+                                    <td>{{ actgroup.project }}</td>
+                                    <td>{{ actgroup.name }}</td>
+                                    <td>{{ actgroup.description }}</td>
+                                    <td>{{ actgroup.cluster }}</td>
+                                    <td class="table-action">
+                                        <a href="{% url 'activitygroup_delete' actgroup.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
+                                        <a href="{% url 'activitygroup_edit' actgroup.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <a class="btn" href="{% url 'activitygroup_add' %}"><i class="la la-plus"></i> Add Activity group</a>
+<!--                     <ul class="pagination pagination-primary">
+                        <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>
+                    </ul> -->
                 </div>
             </div>
         </div>

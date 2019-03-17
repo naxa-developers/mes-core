@@ -18,6 +18,8 @@ urlpatterns = [
 	url(r'^$', views.HomeView.as_view(), name='home'),
 	url(r'sign-in', views.SignInView.as_view(), name='sign_in'),
 	url(r'sign-up', views.SignUpView.as_view(), name='sign_up'),
+	url(r'forgot-password', views.ForgotView.as_view(), name='forgot_password'),
+	url(r'404 error', views.ErrorView.as_view(), name='404_error'),
 
 	url(r'project-list', views.ProjectListView.as_view(), name='project_list'),
 	url(r'project-add', views.ProjectCreateView.as_view(), name='project_add'),
