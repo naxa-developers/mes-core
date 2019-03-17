@@ -55,7 +55,6 @@ class Activity(models.Model):
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
 
-	AG_Id = models.IntegerField('Activity Group ID', blank=True, null=True)
 	target_number = models.IntegerField()
 	target_unit = models.CharField(max_length=200)
 
@@ -64,11 +63,10 @@ class Activity(models.Model):
 
 	form = models.ForeignKey(XForm, related_name='actform', null=True, blank=True)
 
-	target_complete = models.BooleanField(default=True)
 	beneficiary_level = models.BooleanField(default=True)
 
-	published = models.BooleanField(default=True)
-	target_met = models.BooleanField(default=True)
+	# published = models.BooleanField(default=True)
+	# target_met = models.BooleanField(default=True)
 
 	def __str__(self):
 		return self.name
