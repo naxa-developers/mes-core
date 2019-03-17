@@ -76,11 +76,11 @@ class Activity(models.Model):
 
 
 class Beneficiary(models.Model):
-	identifier = models.IntegerField()
 	name = models.CharField(max_length=200)
 	address = models.CharField(max_length=400)
+	ward_no = models.IntegerField('ward number')
 	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
-	type_id = models.IntegerField()
+	Type = models.CharField(max_length=100)
 
 	def __str__(self):
 		return self.name

@@ -53,7 +53,7 @@ class BeneficiaryForm(forms.ModelForm):
 
 	class Meta:
 		model = Beneficiary
-		fields = ('identifier', 'name', 'address', 'cluster', 'type_id')
+		fields = ('name', 'address', 'ward_no', 'cluster', 'Type')
 
 
 class UserRoleForm(forms.ModelForm):

@@ -29,22 +29,22 @@
                 <div class="table-responsive">
                     <table class="table table-hover c_table">
                         <thead>
-                            <tr>                                       
-                                <th>Identifier</th>
+                            <tr>
                                 <th>Project Name</th>
                                 <th>Address</th>
+                                <th>Ward Number</th>
                                 <th>Cluster</th>
-                                <th>Type-id</th>
+                                <th>Typed</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for beneficiary in object_list %}
                             <tr>
-                                <td>{{ beneficiary.identifier }}</td>
                                 <td>{{ beneficiary.name }}</td>
                                 <td>{{ beneficiary.address }}</td>
+                                <td>{{ beneficiary.ward_no }}
                                 <td>{{ beneficiary.cluster }}</td>
-                                <td>{{ beneficiary.type_id }}</td>
+                                <td>{{ beneficiary.Type }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

@@ -48,7 +48,7 @@ class ActivityGroupSerializer(serializers.ModelSerializer):
 class BeneficiarySerialzier(serializers.ModelSerializer):
 	class Meta:
 		model = Beneficiary
-		fields = ('id', 'identifier', 'name', 'address', 'cluster', 'type_id')
+		fields = ('id', 'name', 'address', 'ward_no', 'cluster', 'Type')
 
 
 
