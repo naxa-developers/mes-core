@@ -211,41 +211,41 @@
             </li>
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-tasks"></i><span>Projects</span></a>
                 <ul class="ml-menu">
-                    <li><a href="project-list.html">Projects List</a></li>
+                    <li><a href="{% url 'project_list' %}">Projects List</a></li>
                     <li><a href="{% url 'project_add' %}">create Projects</a></li>
                 </ul>
             </li>
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-signal"></i><span>Output</span></a>
                 <ul class="ml-menu">
-                    <li><a href="output-list.html">output List</a></li>
+                    <li><a href="{% url 'output_list' %}">output List</a></li>
                     <li><a href="{% url 'output_add' %}">add output</a></li>
                 </ul>
             </li>
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-object-group"></i><span>Activity group</span></a>
                 <ul class="ml-menu">
-                    <li><a href="activitygroup-list.html">Activity group List</a></li>
+                    <li><a href="{% url 'activitygroup_list' %}">Activity group List</a></li>
                     <li><a href="{% url 'activitygroup_add' %}">add activity group</a></li>
                 </ul>
             </li>
 
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-line-chart"></i><span>Activities</span></a>
                 <ul class="ml-menu">
-                    <li><a href="activity-list.html">activity List</a></li>
+                    <li><a href="{% url 'activity_list' %}">activity List</a></li>
                     <li><a href="{% url 'activity_add' %}">add activity</a></li>
                 </ul>
             </li>
             
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>
                 <ul class="ml-menu">
-                    <li><a href="cluster-list.html">activity assign</a></li>
+                    <li><a href="{% url 'cluster_list' %}">activity assign</a></li>
                     <li><a href="{% url 'cluster_add' %}">add cluster</a></li>
                 </ul>
             </li>
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-sellsy"></i><span>Benificiaries</span></a>
                 <ul class="ml-menu">
-                    <li><a href="beneficiary-list.html">beneficiary list</a></li>
-                    <li><a href="benificiary.html">upload Beneficiaries</a></li>
-                    <li><a href="benificiary-form.html">edit Beneficiaries</a></li>
+                    <li><a href="{% url 'beneficiary_list' %}">beneficiary list</a></li>
+                    <li><a href="benificiary.html">upload beneficiaries</a></li>
+                    <li><a href="{% url 'beneficiary_add' %}">add beneficiaries</a></li>
                 </ul>
             </li>
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="la la-lock"></i><span>Authentication</span></a>

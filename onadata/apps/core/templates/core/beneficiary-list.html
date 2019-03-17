@@ -45,6 +45,10 @@
                                 <td>{{ beneficiary.ward_no }}
                                 <td>{{ beneficiary.cluster }}</td>
                                 <td>{{ beneficiary.Type }}</td>
+                                <td class="table-action">
+                                    <a href="{% url 'beneficiary_delete' beneficiary.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
+                                    <a href="{% url 'beneficiary_edit' beneficiary.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
