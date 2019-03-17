@@ -39,7 +39,7 @@ class ActivityForm(forms.ModelForm):
 
 	class Meta:
 		model = Activity
-		fields = ('activity_group', 'name', 'description', 'AG_Id', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'target_complete', 'beneficiary_level', 'published', 'target_met')
+		fields = ('activity_group', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'beneficiary_level')
 
 
 class ClusterForm(forms.ModelForm):

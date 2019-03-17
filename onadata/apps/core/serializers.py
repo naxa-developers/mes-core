@@ -31,7 +31,7 @@ class ActivitySerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Activity
-		fields = ('id', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'id_string', 'target_complete', 'beneficiary_level', 'published', 'target_met')
+		fields = ('id', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'id_string', 'beneficiary_level')
 
 
 
