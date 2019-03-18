@@ -191,7 +191,7 @@ MIDDLEWARE_CLASSES = (
     #'django.middleware.transaction.TransactionMiddleware',
     'onadata.libs.utils.middleware.HTTPResponseNotAllowedMiddleware',
     'readonly.middleware.DatabaseReadOnlyMiddleware',
-    'onadata.apps.core.middleware.RoleMiddleware',
+    # 'onadata.apps.core.middleware.RoleMiddleware',
 )
 
 
