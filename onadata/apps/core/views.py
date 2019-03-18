@@ -222,6 +222,11 @@ class ClusterDeleteView(DeleteView):
 	success_url = reverse_lazy('cluster_list')
 
 
+class ClusterAssignView(ListView):
+	model = Cluster
+	template_name = 'core/cluster-assign.html'
+
+
 class BeneficiaryListView(ListView):
 	model = Beneficiary
 	template_name = 'core/beneficiary-list.html'
