@@ -22,7 +22,7 @@ class Project(models.Model):
 class Output(models.Model):
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
-  	project = models.ForeignKey('Project', related_name='output')
+	project = models.ForeignKey('Project', related_name='output')
 
 	def __str__(self):
 		return self.name
@@ -86,7 +86,7 @@ class Beneficiary(models.Model):
 
 
 class UserRole(models.Model):
-	user = models.ForeignKey(User)
+	user = models.ForeignKey(User, related_name="user_roles")
 	project = models.ForeignKey('Project', null=True, blank=True)
 	group = models.ForeignKey(Group)
 

@@ -182,7 +182,7 @@ MIDDLEWARE_CLASSES = (
     'onadata.libs.utils.middleware.LocaleMiddlewareWithTweaks',
     # BrokenClientMiddleware must come before AuthenticationMiddleware
     'onadata.libs.utils.middleware.BrokenClientMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -191,6 +191,7 @@ MIDDLEWARE_CLASSES = (
     #'django.middleware.transaction.TransactionMiddleware',
     'onadata.libs.utils.middleware.HTTPResponseNotAllowedMiddleware',
     'readonly.middleware.DatabaseReadOnlyMiddleware',
+    'onadata.apps.users.middleware.RoleMiddleware',
 )
 
 
