@@ -4,214 +4,72 @@
 {% block title %}Cluster List{% endblock %}
 
 {% block content %}
-<!-- Main Content -->
 
+<!-- Main Content -->
 <section class="content">
-    <div class="block-header">
-        <div class="row">
-            <div class="col-lg-7 col-md-6 col-sm-12">
-                <h2>Cluster</h2>
-                <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical</a></li>
-                    <li class="breadcrumb-item active">cluster list</li>
-                </ul>
-                <button class="btn btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
-            </div>
-            <div class="col-lg-5 col-md-6 col-sm-12">                
-                <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>CLuster list</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item">Project</li>
+                        <li class="breadcrumb-item active">Cluster list</li>
+                    </ul>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">                
+                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="accordion-form project-form">
-        <div class="card">
-            <div class="card-body">
-                <form action="cluster-detail.html" post="">
-                    <!-- accordion -->
-                    <div class="cluster-accordion">
-                        <div id="accordion">
-                            <div class="card">
-                                <div class="card-header" id="heading-2">
-                                    <h5>
-                                        <div class="checkbox">
-                                            <input id="head1" type="checkbox" class="select-all">
-                                            <label for="head1">Social marketing on local FM</label>
-                                        </div>
-                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="true"
-                                            aria-controls="collapse-2">
-                                        </a>
-                                    </h5>
-                                </div>
-                                <div id="collapse-2" class="collapse show" data-parent="#accordion" aria-labelledby="heading-2">
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act18" type="checkbox">
-                                                <label for="act18">Massage airing from local FM</label>
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
-                                                <div class="handle"></div>
-                                            </button>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act2" type="checkbox">
-                                                <label for="act2">Reached out the information ( coverage of FM stations)</label>
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
-                                                <div class="handle"></div>
-                                            </button>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act3" type="checkbox">
-                                                <label for="act3">Number of IEC materials preparation </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act4" type="checkbox">
-                                                <label for="act4">Number of IEC materials dissemination </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <div class="card-header" id="heading-3">
-                                    <h5>
-                                        <div class="checkbox">
-                                            <input id="head2" type="checkbox" class="select-all">
-                                            <label for="head2">IEC material prepartion and dissemination</label>
-                                        </div>
-                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false"
-                                            aria-controls="collapse-3">
-                                        </a>
-                                    </h5>
-                                </div>
-                                <div id="collapse-3" class="collapse" data-parent="#accordion" aria-labelledby="heading-3">
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act13" type="checkbox">
-                                                <label for="act3">Massage airing from local FM</label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act14" type="checkbox">
-                                                <label for="act14">Reached out the information ( coverage of FM stations)</label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act15" type="checkbox">
-                                                <label for="act15">Number of IEC materials preparation </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act16" type="checkbox">
-                                                <label for="act16">Number of IEC materials dissemination </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <div class="card-header" id="heading-4">
-                                    <h5>
-                                        <div class="checkbox">
-                                            <input id="head3" type="checkbox" class="select-all">
-                                            <label for="head3">Hoarding board and leaflet</label>
-                                        </div>
-                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-4" aria-expanded="false"
-                                            aria-controls="collapse-4">
-                                        </a>
-                                    </h5>
-                                </div>
-                                <div id="collapse-4" class="collapse" data-parent="#accordion" aria-labelledby="heading-3">
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act9" type="checkbox">
-                                                <label for="act9">Massage airing from local FM</label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act10" type="checkbox">
-                                                <label for="act10">Reached out the information ( coverage of FM stations)</label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act11" type="checkbox">
-                                                <label for="act11">Number of IEC materials preparation </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act12" type="checkbox">
-                                                <label for="act12">Number of IEC materials dissemination </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <div class="card-header" id="heading-5">
-                                    <h5>
-                                        <div class="checkbox">
-                                            <input id="head" type="checkbox" class="select-all">
-                                            <label for="head4">Establishment of commercial CSEB enterprise</label>
-                                        </div>
-                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-5" aria-expanded="false"
-                                            aria-controls="collapse-5">
-                                            
-                                        </a>
-                                    </h5>
-                                </div>
-                                <div id="collapse-5" class="collapse" data-parent="#accordion" aria-labelledby="heading-5">
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act5" type="checkbox">
-                                                <label for="act5">Massage airing from local FM</label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act6" type="checkbox">
-                                                <label for="act6">Reached out the information ( coverage of FM stations)</label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act7" type="checkbox">
-                                                <label for="act7">Number of IEC materials preparation </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="checkbox">
-                                                <input id="act8" type="checkbox">
-                                                <label for="act8">Number of IEC materials dissemination </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-footer pull-right">
-                        <button type="submit" class="btn" role="button">Save</button>
-                        <a class="btn remove" href="{% url 'cluster_add' %}"><i class="la la-plus"></i> Add cluster</a>
-                    </div>
-                </form>
+        <div class="container-fluid">
+            <div class="card project_list">
+                <div class="table-responsive">
+                    <table class="table table-hover c_table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>                                        
+                                <th>project</th>
+                                <th>district</th>
+                                <th>municipality</th>
+                                <th>ward</th>
+                                <th>action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cluster in object_list %}
+                                <tr>
+                                    <td>{{ cluster.name }}</td>
+                                    <td>{{ cluster.project }}</td>
+                                    <td>{{ cluster.district }}</td>
+                                    <td>{{ cluster.municipality }}</td>
+                                    <td>{{ cluster.ward }}</td>
+                                    <td class="table-action">
+                                        <a href="{% url 'cluster_delete' cluster.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
+                                        <a href="{% url 'cluster_edit' cluster.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <a class="btn" href="{% url 'cluster_add' %}"><i class="la la-plus"></i> Add Cluster</a>
+<!--                     <ul class="pagination pagination-primary">
+                        <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>
+                    </ul> -->
+                </div>
+                
             </div>
         </div>
     </div>
 </section>
-
 
 
 {% endblock %}
