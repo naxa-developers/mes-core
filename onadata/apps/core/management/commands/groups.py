@@ -9,6 +9,6 @@ class Command(BaseCommand):
         group_list = ['super-admin', 'project-manager', 'project-management-unit', 'project-coordinator', 'social-mobilizer']
         for group in group_list:
             new_group, created = Group.objects.get_or_create(name=group)
-self.stdout.write('Successfully created group .. "%s"' % group)
+            self.stdout.write('Successfully created group .. "%s"' % group)
 
 
