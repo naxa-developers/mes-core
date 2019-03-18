@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import View, TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
@@ -32,6 +32,10 @@ class LoginRequiredMixin(object):
 
 class HomeView(LoginRequiredMixin, TemplateView):
 	template_name = 'core/index.html'
+
+	# def get(self, request, *args, **kwargs):
+	# 	print(self.request.group)
+
 
 
 class SignInView(TemplateView):
@@ -222,9 +226,19 @@ class ClusterDeleteView(DeleteView):
 	success_url = reverse_lazy('cluster_list')
 
 
-class ClusterAssignView(ListView):
-	model = Cluster
-	template_name = 'core/cluster-assign.html'
+class ClusterAssignView(View):
+
+	def get(self, request, **kwargs):
+		return render(request, 'core/cluster-assign.html')
+
+	def post(self, request, **kwargs):
+		import ipdb
+		ipdb.set_trace()
+
+
+
+
+
 
 
 class BeneficiaryListView(ListView):

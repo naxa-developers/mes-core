@@ -44,8 +44,6 @@ class ActivityGroup(models.Model):
 	project = models.ForeignKey('Project', related_name='activity_group')
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
-	cluster = models.ForeignKey('Cluster', related_name='activitygroup')
-
 	def __str__(self):
 		return self.name
 
@@ -64,9 +62,6 @@ class Activity(models.Model):
 	form = models.ForeignKey(XForm, related_name='actform', null=True, blank=True)
 
 	beneficiary_level = models.BooleanField(default=True)
-
-	# published = models.BooleanField(default=True)
-	# target_met = models.BooleanField(default=True)
 
 	def __str__(self):
 		return self.name
@@ -91,18 +86,11 @@ class UserRole(models.Model):
 	group = models.ForeignKey(Group)
 
 
-# class ClusterActivity(models.Model):
-# 	activity = models.ForeignKey('Activity', related_name='clusteractivity')
-
-# class ClusterActivityGroup(models.Model):
-# 	activity_group = models.ForeignKey('ActivityGroup', related_name='clusteractivitygroup')
+	def __str__(self):
+		return self.name
 
 
 
-# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-# def create_auth_token(sender, instance=None, created=False, **kwargs):
-# 	if created:
-# 		Token.objects.create(user=instance)
 
 
 

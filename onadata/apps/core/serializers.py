@@ -41,7 +41,7 @@ class ActivityGroupSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = ActivityGroup
-		fields = ('id', 'output', 'name', 'description', 'activity', 'cluster')
+		fields = ('id', 'output', 'name', 'description', 'activity')
 
 
 
