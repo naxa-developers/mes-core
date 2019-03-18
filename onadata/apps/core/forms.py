@@ -36,6 +36,10 @@ class ActivityGroupForm(forms.ModelForm):
 
 
 class ActivityForm(forms.ModelForm):
+	def __init__(self, *args, **Kwargs):
+		super(ActivityForm, self).__init__(*args, **Kwargs)
+		self.fields['form'].queryset = Activity.objects.all()
+		self.fields['form'].label_from_instance = lambda obj: "%s" % (obj.title)
 
 	class Meta:
 		model = Activity

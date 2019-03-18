@@ -35,15 +35,20 @@
                                         <th>User</th> 
                                         <th>Project</th>                                        
                                         <th>Group</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for userrole in object_list %}
                                 
                                     <tr>
-                                       <td>{{ userrole.user }}</td>
-                                       <td>{{ userrole.project }}</td>
-                                       <td>{{ userrole.group }}</td>
+                                        <td>{{ userrole.user }}</td>
+                                        <td>{{ userrole.project }}</td>
+                                        <td>{{ userrole.group }}</td>
+                                        <td class="table-action">
+                                            <a href="{% url 'userrole_delete' userrole.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
+                                            <a href="{% url 'userrole_edit' userrole.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                        </td>
                                     </tr>
 
                                     {% endfor %}
