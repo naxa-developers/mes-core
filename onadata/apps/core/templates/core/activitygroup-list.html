@@ -34,7 +34,6 @@
                                 <th>Project </th>
                                 <th>Name</th>
                                 <th>Description</th>
-                                <th>Cluster</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -45,7 +44,6 @@
                                     <td>{{ actgroup.project }}</td>
                                     <td>{{ actgroup.name }}</td>
                                     <td>{{ actgroup.description }}</td>
-                                    <td>{{ actgroup.cluster }}</td>
                                     <td class="table-action">
                                         <a href="{% url 'activitygroup_delete' actgroup.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
                                         <a href="{% url 'activitygroup_edit' actgroup.pk %}" class="btn"> <i class="la la-edit"></i></a>

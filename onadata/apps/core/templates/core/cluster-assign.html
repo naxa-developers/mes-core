@@ -25,7 +25,8 @@
     <div class="accordion-form project-form">
         <div class="card">
             <div class="card-body">
-                <form action="cluster-detail.html" post="">
+                <form method="post" >
+                    {% csrf_token %}
                     <!-- accordion -->
                     <div class="cluster-accordion">
                         <div id="accordion">
