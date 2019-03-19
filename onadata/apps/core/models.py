@@ -44,6 +44,7 @@ class ActivityGroup(models.Model):
 	project = models.ForeignKey('Project', related_name='activity_group')
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
+	cluster = models.ForeignKey("Cluster", related_name="activity_group")
 	def __str__(self):
 		return self.name
 

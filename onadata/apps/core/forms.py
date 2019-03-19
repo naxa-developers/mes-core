@@ -33,7 +33,7 @@ class ActivityGroupForm(forms.ModelForm):
 
 	class Meta:
 		model = ActivityGroup
-		fields = ('output', 'project', 'name', 'description')
+		fields = ('output', 'project', 'name', 'description', 'cluster')
 
 
 
