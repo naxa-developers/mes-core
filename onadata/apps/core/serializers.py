@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary
+from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary, ClusterAG, ClusterA
 
 
 
@@ -52,10 +52,48 @@ class BeneficiarySerialzier(serializers.ModelSerializer):
 
 
 
+class CASerializer(serializers.ModelSerializer):
+	id_string = serializers.SerializerMethodField()
+
+
+	def get_id_string(self, obj):
+		if obj.activity.form:
+			return obj.activity.form.id_string
+		else:
+			return None
+
+	name = serializers.ReadOnlyField(source='activity.name')
+	description = serializers.ReadOnlyField(source='activity.description')
+	target_number = serializers.ReadOnlyField(source='activity.target_number')
+	target_unit = serializers.ReadOnlyField(source='activity.target_unit')
+	start_date = serializers.ReadOnlyField(source='activity.start_date')
+	end_date = serializers.ReadOnlyField(source='activity.end_date')
+	form = serializers.ReadOnlyField(source='activity.form')
+	beneficiary_level = serializers.ReadOnlyField(source='activity.beneficiary_level')
+
+	class Meta:
+		model = ClusterA
+		# fields = ('id', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'id_string', 'beneficiary_level')
+		fields = ('id', 'name','description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'id_string', 'beneficiary_level')
+
+
+class CAGSerializer(serializers.ModelSerializer):
+	ca = CASerializer(many=True, read_only=True)
+	output = serializers.ReadOnlyField(source='activity_group.output.name')
+	name = serializers.ReadOnlyField(source='activity_group.name')
+	description = serializers.ReadOnlyField(source='activity_group.description')
+
+
+	class Meta:
+		model = ClusterAG
+		fields = ('id', 'output', 'name', 'description', 'ca')
+
+
+
 class ClusterSerializer(serializers.ModelSerializer):
-	activitygroup = ActivityGroupSerializer(many=True, read_only=True)
+	clusterag = CAGSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Cluster
-		fields = ('id', 'name', 'district', 'municipality', 'ward', 'activitygroup')
+		fields = ('id', 'name', 'district', 'municipality', 'ward', 'clusterag')
 
