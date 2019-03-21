@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Beneficiary List{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>Beneficiary list</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item">Project</li>
+                        <li class="breadcrumb-item active">Beneficiary Upload</li>
+                    </ul>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">
+                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="card project_list">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    Choose File To Upload: <input class="form-control" id="id_inputFile" name="inputFile" type="file">
+                    <div class="form-footer">
+                        {% if messages %}
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="form-footer pull-left">
+                            <button type="submit" class="btn">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}

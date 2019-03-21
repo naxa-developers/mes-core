@@ -5,12 +5,15 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponseRedirect
 
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
+import pandas as pd
+from django.contrib import messages
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
 	ClusterSerializer, BeneficiarySerialzier
@@ -240,7 +243,7 @@ class ClusterAssignView(View):
 			elif item.startswith('a_'):
 				item = item.strip('a_')
 				activity = Activity.objects.get(id=int(item))
-				cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster, activity_group=activity.activity_group)
+				cluster_ag = ClusterAG.objects.get(cluster=cluster, activity_group=activity.activity_group)
 				ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag)
 		return redirect(reverse_lazy('cluster_list'))
 
@@ -339,3 +342,30 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		cluster = self.request.query_params['cluster']
 		return self.queryset.filter(cluster=cluster)
+
+
+class BeneficiaryUploadViewSet(View):
+	template_name = 'core/beneficiary-upload.html'
+
+	def post(self, request):
+		try:
+			filename = request.FILES['inputFile']
+			df = pd.read_excel(filename).fillna(value='')
+
+			total = df['SN'].count()
+
+			for row in range(0, total):
+				cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
+				obj, created = Beneficiary.objects.get_or_create(name=df['Name'][row],
+																ward_no=df['Ward'][row],
+																cluster=cluster,
+																Type=df['Type_MPV'][row]
+																)
+			return HttpResponseRedirect('/core/beneficiary-upload')
+		except Exception as e:
+			print("Error occured", e)
+			messages.error(request, "Error while uploading file.")
+			return HttpResponseRedirect('/core/beneficiary-upload')
+
+	def get(self, request):
+		return render(request, self.template_name)
