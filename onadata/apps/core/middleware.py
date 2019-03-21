@@ -15,11 +15,11 @@ def clear_roles(request):
 
 class RoleMiddleware(object):
     def process_request(self, request):
-
         if request.META.get('HTTP_AUTHORIZATION'):
             token_key = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
             try:
-                request.user = Token.objects.get(key=token_key).user
+                if not request.user:
+                    request.user = Token.objects.get(key=token_key).user
             except:
                 pass
 
@@ -50,6 +50,7 @@ class RoleMiddleware(object):
                 else:
                     request.__class__.group = role.group
                     request.__class__.is_super_admin = False
+                return None
             else:
                 request = clear_roles(request)
                 logout(request)
