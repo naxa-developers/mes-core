@@ -12,22 +12,25 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 
-from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, ClusterSerializer, BeneficiarySerialzier
+from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
+	ClusterSerializer, BeneficiarySerialzier
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole
-from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, UserRoleForm
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG
+from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
+	UserRoleForm
 
 
 def logout_view(request):
-    logout(request)
+	logout(request)
 
-    return render()
+	return render()
+
 
 class LoginRequiredMixin(object):
-    @classmethod
-    def as_view(cls, **initkwargs):
-        view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
-        return login_required(view)
+	@classmethod
+	def as_view(cls, **initkwargs):
+		view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
+		return login_required(view)
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -37,7 +40,6 @@ class HomeView(LoginRequiredMixin, TemplateView):
 	# 	print(self.request.group)
 
 
-
 class SignInView(TemplateView):
 	template_name = 'core/sign-in.html'
 
@@ -45,7 +47,7 @@ class SignInView(TemplateView):
 class SignUpView(TemplateView):
 	template_name = 'core/sign-up.html'
 
-	def signup(request):
+	def signup(self, request):
 		if request.method == 'POST':
 			form = SignUpForm(request.POST)
 			if form.is_valid():
@@ -100,7 +102,6 @@ class ProjectDeleteView(DeleteView):
 	success_url = reverse_lazy('project_list')
 
 
-
 class OutputListView(ListView):
 	model = Output
 	template_name = 'core/output-list.html'
@@ -131,11 +132,9 @@ class OutputDeleteView(DeleteView):
 	success_url = reverse_lazy('output_list')
 
 
-
 class ActivityGroupListVeiw(ListView):
 	model = ActivityGroup
 	template_name = 'core/activitygroup-list.html'
-
 
 
 class ActivityGroupDeleteView(DeleteView):
@@ -161,8 +160,6 @@ class ActivityGroupUpdateView(UpdateView):
 class ActivityGroupDetailView(DetailView):
 	model = ActivityGroup
 	template_name = 'core/activitygroup-detail.html'
-
-
 
 
 class ActivityListView(ListView):
@@ -193,7 +190,6 @@ class ActivityDeleteView(DeleteView):
 	model = Activity
 	template_name = 'core/activity-delete.html'
 	success_url = reverse_lazy('activity_list')
-
 
 
 class ClusterListView(ListView):
@@ -229,16 +225,24 @@ class ClusterDeleteView(DeleteView):
 class ClusterAssignView(View):
 
 	def get(self, request, **kwargs):
-		return render(request, 'core/cluster-assign.html')
+		activity_group = ActivityGroup.objects.all()
+		pk = kwargs.get('pk')
+		return render(request, 'core/cluster-assign.html', {'activity_group': activity_group, 'pk': pk})
 
 	def post(self, request, **kwargs):
-		import ipdb
-		ipdb.set_trace()
-
-
-
-
-
+		cluster = Cluster.objects.get(pk=kwargs.get('pk'))
+		checked = [name for name, value in request.POST.iteritems()]
+		for item in checked:
+			if item.startswith('ag_'):
+				item = item.strip('ag_')
+				activity_group = ActivityGroup.objects.get(id=int(item))
+				ClusterAG.objects.get_or_create(activity_group=activity_group, cluster=cluster)
+			elif item.startswith('a_'):
+				item = item.strip('a_')
+				activity = Activity.objects.get(id=int(item))
+				cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster, activity_group=activity.activity_group)
+				ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag)
+		return redirect(reverse_lazy('cluster_list'))
 
 
 class BeneficiaryListView(ListView):
@@ -269,7 +273,6 @@ class BeneficiaryDeleteView(DeleteView):
 	model = Beneficiary
 	template_name = 'core/beneficiary-delete.html'
 	success_url = reverse_lazy('beneficiary_list')
-
 
 
 class UserRoleListView(ListView):
@@ -310,7 +313,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
 
 
 class ActivityGroupViewSet(viewsets.ModelViewSet):
-	queryset =  ActivityGroup.objects.all()
+	queryset = ActivityGroup.objects.all()
 	serializer_class = ActivityGroupSerializer
 
 
@@ -336,8 +339,3 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		cluster = self.request.query_params['cluster']
 		return self.queryset.filter(cluster=cluster)
-
-
-
-
-
