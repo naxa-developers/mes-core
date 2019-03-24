@@ -57,6 +57,7 @@ urlpatterns = [
 	url(r'beneficiary-detail/(?P<pk>[0-9]+)/$', views.BeneficiaryDetailView.as_view(), name='beneficiary_detail'),
 	url(r'beneficiary-edit/(?P<pk>[0-9]+)/$', views.BeneficiaryUpdateView.as_view(), name='beneficiary_edit'),
 	url(r'beneficiary-delete/(?P<pk>[0-9]+)/$', views.BeneficiaryDeleteView.as_view(), name='beneficiary_delete'),
+	url(r'beneficiary-upload', views.BeneficiaryUploadViewSet.as_view(), name='beneficiary_upload'),
 
 	url(r'userrole-list', views.UserRoleListView.as_view(), name='userrole_list'),
 	url(r'userrole-add', views.UserRoleCreateView.as_view(), name='userrole_add'),
