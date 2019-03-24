@@ -68,7 +68,7 @@ class CASerializer(serializers.ModelSerializer):
 	target_unit = serializers.ReadOnlyField(source='activity.target_unit')
 	start_date = serializers.ReadOnlyField(source='activity.start_date')
 	end_date = serializers.ReadOnlyField(source='activity.end_date')
-	form = serializers.ReadOnlyField(source='activity.form')
+	form = serializers.ReadOnlyField(source='activity.form.id')
 	beneficiary_level = serializers.ReadOnlyField(source='activity.beneficiary_level')
 
 	class Meta:

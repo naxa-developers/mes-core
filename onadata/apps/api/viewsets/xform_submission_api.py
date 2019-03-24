@@ -19,7 +19,7 @@ from rest_framework.authentication import (
 from rest_framework.response import Response
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 
-from onadata.apps.core.models import Beneficiary, Submission
+from onadata.apps.core.models import Beneficiary, Submission, ClusterA
 from onadata.apps.logger.models import Instance
 from onadata.apps.main.models.user_profile import UserProfile
 from onadata.libs import filters
@@ -166,7 +166,8 @@ Here is some example JSON, it would replace `[the JSON]` above:
 
     def create(self, request, *args, **kwargs):
         params = self.request.query_params
-        cluster_activity = params['activity']
+        print(params)
+        cluster_activity = int(params['activity'][0])
         username = self.kwargs.get('username')
         if self.request.user.is_anonymous():
             if username is None:
@@ -197,12 +198,16 @@ Here is some example JSON, it would replace `[the JSON]` above:
 
         if error or not instance:
             return self.error_response(error, is_json_request, request)
+        cluster_activity = ClusterA.objects.get(pk=cluster_activity)
         s = Submission(cluster_activity = cluster_activity,instance=instance)
         s.save()
-        beneficiary = params.get('beneficiary', False)
-        if beneficiary:
+        beneficiary = params['beneficiary'][0]
+        try:
+            beneficiary = int(beneficiary)
             s.beneficiary = Beneficiary.objects.get(pk=beneficiary)
             s.save()
+        except:
+            pass
 
         context = self.get_serializer_context()
         serializer = SubmissionSerializer(instance, context=context)

@@ -296,7 +296,7 @@ def create_instance(username, xml_file, media_files,
     xml = xml_file.read()
     xml_hash = Instance.get_hash(xml)
     xform = get_xform_from_submission(xml, username, uuid)
-    check_submission_permissions(request, xform)
+    # check_submission_permissions(request, xform)
 
     # Dorey's rule from 2012 (commit 890a67aa):
     #   Ignore submission as a duplicate IFF
