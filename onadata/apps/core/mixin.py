@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 
-from onadata.apps.fieldsight.models import Project
+from onadata.apps.core.models import Project
 from onadata.apps.core.models import UserRole
 
 
