@@ -15,14 +15,17 @@ def clear_roles(request):
 
 class RoleMiddleware(object):
     def process_request(self, request):
+        if  'v1/forms/' in request.path_info:
+            return None
+
         if request.META.get('HTTP_AUTHORIZATION'):
             token_key = request.META.get('HTTP_AUTHORIZATION').split(' ')[-1]
             try:
-                if not request.user:
+                if request.user.is_anonymous():
                     request.user = Token.objects.get(key=token_key).user
             except:
                 pass
-
+        # print(request.user)
         if not request.user.is_anonymous():
 
             role = None
