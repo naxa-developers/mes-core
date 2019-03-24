@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.db import models
 
+from onadata.apps.logger.models import Instance
 from onadata.apps.logger.models.xform import XForm
 
 class Project(models.Model):
@@ -98,6 +99,13 @@ class ClusterAG(models.Model):
 class ClusterA(models.Model):
 	activity = models.ForeignKey('Activity', related_name='clustera')
 	cag = models.ForeignKey('ClusterAG', related_name='ca')
+
+
+class Submission(models.Model):
+	cluster_activity = models.ForeignKey('ClusterA', related_name='submissions')
+	instance = models.OneToOneField(Instance, related_name="submission")
+	beneficiary = models.ForeignKey('Beneficiary',null=True, blank=True, on_delete=models.SET_NULL, related_name="submissions" )
+
 
 
 
