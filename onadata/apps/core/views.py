@@ -81,14 +81,14 @@ class ProjectListView(ListView):
 
 class ProjectDetailView(DetailView):
 	model = Project
-	template_name = 'core/project-detail.html' 
+	template_name = 'core/project-detail.html'
 
 
 class ProjectCreateView(CreateView):
 	model = Project
 	form_class = ProjectForm
 	template_name = 'core/project-form.html'
-	
+
 	success_url = reverse_lazy('project_list')
 
 
@@ -204,7 +204,7 @@ class ClusterCreateView(CreateView):
 	model = Cluster
 	template_name = 'core/cluster-form.html'
 	form_class = ClusterForm
-	success_url = reverse_lazy('cluster_list') 
+	success_url = reverse_lazy('cluster_list')
 
 
 class ClusterDetailView(DetailView):
@@ -269,7 +269,7 @@ class BeneficiaryUpdateView(UpdateView):
 	model = Beneficiary
 	template_name = 'core/beneficiary-form.html'
 	form_class = BeneficiaryForm
-	success_url = reverse_lazy('beneficiary_list')	
+	success_url = reverse_lazy('beneficiary_list')
 
 
 class BeneficiaryDeleteView(DeleteView):
@@ -355,17 +355,32 @@ class BeneficiaryUploadViewSet(View):
 			total = df['SN'].count()
 
 			for row in range(0, total):
-				cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
-				obj, created = Beneficiary.objects.get_or_create(name=df['Name'][row],
-																ward_no=df['Ward'][row],
-																cluster=cluster,
-																Type=df['Type_MPV'][row]
-																)
-			return HttpResponseRedirect('/core/beneficiary-upload')
-		except Exception as e:
-			print("Error occured", e)
-			messages.error(request, "Error while uploading file.")
+				if 'Project' in df:
+					project = Project.objects.get(id=df['Project'][row])
+				else:
+					project = Project.objects.get(id=1)
+				try:
+					cluster, created = Cluster.objects.get_or_create(
+						id=df['ClusterNumber'][row],
+						district=df['District'][row],
+						municipality=df['Municipality'][row],
+						ward=df['Ward'][row],
+						project=project,
+						name=df['ClusterNumber'][row])
+
+				except:
+					cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
+				obj, created = Beneficiary.objects.get_or_create(
+					name=df['Name'][row],
+					ward_no=df['Ward'][row],
+					cluster=cluster,
+					address=df['Settlement'][row],
+					Type=df['Type_MPV'][row])
+			return HttpResponseRedirect('/core/beneficiary-list')
+		except:
+			messages.error(request, "Beneficiary upload failed. Unsupported format, or corrupt file.")
 			return HttpResponseRedirect('/core/beneficiary-upload')
 
 	def get(self, request):
 		return render(request, self.template_name)
+
