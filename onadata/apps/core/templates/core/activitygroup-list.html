@@ -29,21 +29,21 @@
                 <div class="table-responsive">
                     <table class="table table-hover c_table">
                         <thead>
-                            <tr>                                       
+                            <tr>                 
+                                <th>Name</th>
+                                <th>Description</th>                      
                                 <th>Output </th>
                                 <th>Project </th>
-                                <th>Name</th>
-                                <th>Description</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                                 {% for actgroup in object_list %}
                                 <tr>
+                                    <td>{{ actgroup.name }}</td>
+                                    <td>{{ actgroup.description }}</td>                                   
                                     <td>{{ actgroup.output }}</td>
                                     <td>{{ actgroup.project }}</td>
-                                    <td>{{ actgroup.name }}</td>
-                                    <td>{{ actgroup.description }}</td>
                                     <td class="table-action">
                                         <a href="{% url 'activitygroup_delete' actgroup.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
                                         <a href="{% url 'activitygroup_edit' actgroup.pk %}" class="btn"> <i class="la la-edit"></i></a>
