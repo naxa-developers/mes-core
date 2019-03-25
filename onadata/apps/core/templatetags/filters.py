@@ -5,6 +5,7 @@ from django.template import Library
 from django import template
 from django.contrib.auth.models import Group
 from onadata.apps.core.mixin import USER_PERMS
+from onadata.apps.core.models import Submission, ClusterA
 
 register = Library()
 
@@ -84,3 +85,17 @@ def setting(path):
     attr_name = path.split('.')[-1]
     val = getattr(group, attr_name)
     return val
+
+
+@register.filter
+def cluster_activity_submission_count(obj):
+    return Submission.objects.filter(cluster_activity=obj).count()
+
+
+@register.filter
+def cluster_activity_group_submission_count(obj):
+    ca = ClusterA.objects.filter(cag=obj)
+    count = 0
+    for item in ca:
+        count += Submission.objects.filter(cluster_activity=item).count()
+    return count

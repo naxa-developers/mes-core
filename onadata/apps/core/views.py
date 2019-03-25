@@ -278,6 +278,51 @@ class BeneficiaryDeleteView(DeleteView):
 	success_url = reverse_lazy('beneficiary_list')
 
 
+class BeneficiaryUploadView(View):
+	template_name = 'core/beneficiary-upload.html'
+
+	def post(self, request):
+		try:
+			filename = request.FILES['inputFile']
+			df = pd.read_excel(filename).fillna(value='')
+
+			total = df['SN'].count()
+
+			for row in range(0, total):
+				if 'Project' in df:
+					project = Project.objects.get(id=df['Project'][row])
+				else:
+					project = Project.objects.get(id=1)
+				try:
+					cluster, created = Cluster.objects.get_or_create(
+						id=df['ClusterNumber'][row],
+						district=df['District'][row],
+						municipality=df['Municipality'][row],
+						ward=df['Ward'][row],
+						project=project,
+						name=df['ClusterNumber'][row])
+
+				except:
+					cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
+				obj, created = Beneficiary.objects.get_or_create(
+					name=df['Name'][row],
+					ward_no=df['Ward'][row],
+					cluster=cluster,
+					address=df['Settlement'][row],
+					Type=df['Type_MPV'][row],
+					GovernmentTranch=df['GovernmentTranch'][row],
+					ConstructionPhase=df['ConstructionPhase'][row],
+					Typesofhouse=df['Typesofhouse'][row],
+					Remarks=df['Remarks'][row]
+				)
+			return HttpResponseRedirect('/core/beneficiary-list')
+		except:
+			messages.error(request, "Beneficiary upload failed. Unsupported format, or corrupt file.")
+			return HttpResponseRedirect('/core/beneficiary-upload')
+
+	def get(self, request):
+		return render(request, self.template_name)
+
 class UserRoleListView(ListView):
 	model = UserRole
 	template_name = 'core/userrole-list.html'
@@ -312,10 +357,9 @@ class UserRoleDeleteView(DeleteView):
 class SubmissionView(View):
 
 	def get(self, request, **kwargs):
-		activity_group = ActivityGroup.objects.all()
-		cluster_activity = ClusterA.activity.objects.all()
 		pk = kwargs.get('pk')
-		return render(request, 'core/submission.html', {'cluster_activity': cluster_activity, 'pk': pk})
+		cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
+		return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
 
 
 
@@ -355,44 +399,4 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
 		cluster = self.request.query_params['cluster']
 		return self.queryset.filter(cluster=cluster)
 
-
-class BeneficiaryUploadViewSet(View):
-	template_name = 'core/beneficiary-upload.html'
-
-	def post(self, request):
-		try:
-			filename = request.FILES['inputFile']
-			df = pd.read_excel(filename).fillna(value='')
-
-			total = df['SN'].count()
-
-			for row in range(0, total):
-				if 'Project' in df:
-					project = Project.objects.get(id=df['Project'][row])
-				else:
-					project = Project.objects.get(id=1)
-				try:
-					cluster, created = Cluster.objects.get_or_create(
-						id=df['ClusterNumber'][row],
-						district=df['District'][row],
-						municipality=df['Municipality'][row],
-						ward=df['Ward'][row],
-						project=project,
-						name=df['ClusterNumber'][row])
-
-				except:
-					cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
-				obj, created = Beneficiary.objects.get_or_create(
-					name=df['Name'][row],
-					ward_no=df['Ward'][row],
-					cluster=cluster,
-					address=df['Settlement'][row],
-					Type=df['Type_MPV'][row])
-			return HttpResponseRedirect('/core/beneficiary-list')
-		except:
-			messages.error(request, "Beneficiary upload failed. Unsupported format, or corrupt file.")
-			return HttpResponseRedirect('/core/beneficiary-upload')
-
-	def get(self, request):
-		return render(request, self.template_name)
 
