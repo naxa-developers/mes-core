@@ -364,7 +364,8 @@ class SubmissionView(View):
 class SubmissionListView(View):
 
 	def get(self, request, **kwargs):
-		submissions = Submission.objects.filter(cluster_activity_id=kwargs.get('pk'))
+		cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
+		submissions = Submission.objects.filter(cluster_activity=cluster_activity)
 		return render(request, 'core/submission_list.html', {'submissions': submissions})
 
 ################################################################################################################
