@@ -3,7 +3,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 
@@ -14,11 +14,13 @@ from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 import pandas as pd
 from django.contrib import messages
+from django.template import RequestContext
+
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
 	ClusterSerializer, BeneficiarySerialzier
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
 	UserRoleForm
 
@@ -353,7 +355,6 @@ class UserRoleDeleteView(DeleteView):
 	success_url = reverse_lazy('userrole_list')
 
 
-
 class SubmissionView(View):
 
 	def get(self, request, **kwargs):
@@ -362,6 +363,56 @@ class SubmissionView(View):
 		return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
 
 
+class SubmissionListView(View):
+
+	def get(self, request, **kwargs):
+		submissions = Submission.objects.filter(cluster_activity_id=kwargs.get('pk'))
+		return render(request, 'core/submission_list.html', {'submissions': submissions})
+
+
+def view_data(request,  id_string, data_id):
+    context = RequestContext(request)
+    xform = get_object_or_404(
+        XForm, id_string__exact=id_string)
+    instance = get_object_or_404(
+        Instance, pk=data_id, xform=xform)
+    instance_attachments = image_urls_dict(instance)
+    # check permission
+    # if not has_edit_permission(xform, owner, request, xform.shared):
+    #     return HttpResponseForbidden(_(u'Not shared.'))
+    if not hasattr(settings, 'ENKETO_URL'):
+        return HttpResponseRedirect(reverse(
+            'onadata.apps.main.views.show',
+            kwargs={'username': xform.user.username, 'id_string': id_string}))
+
+    url = '%sdata/edit_url' % settings.ENKETO_URL
+    # see commit 220f2dad0e for tmp file creation
+    injected_xml = inject_instanceid(instance.xml, instance.uuid)
+    form_url = _get_form_url(request, xform.user.username, settings.ENKETO_PROTOCOL)
+    print(form_url, "TRANSFORM FORM URLl")
+
+    try:
+        url = enketo_view_url(
+            form_url, xform.id_string, instance_xml=injected_xml,
+            instance_id=instance.uuid, return_url="",
+            instance_attachments=instance_attachments
+        )
+    except Exception as e:
+        context.message = {
+            'type': 'alert-error',
+            'text': u"Enketo error, reason: %s" % e}
+        messages.add_message(
+            request, messages.WARNING,
+            _("Enketo error: enketo replied %s") % e, fail_silently=True)
+    else:
+        if url:
+            context.enketo = url
+            return HttpResponseRedirect(url)
+    # return HttpResponseRedirect(
+    #     reverse('onadata.apps.main.views.show',
+    #             kwargs={'username': xform.user.username,
+    #                     'id_string': id_string}))
+    return HttpResponse("This form cannot be viewed in enketo. Please Report With submission id")
 
 ################################################################################################################
 
