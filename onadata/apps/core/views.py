@@ -307,6 +307,18 @@ class UserRoleDeleteView(DeleteView):
 	template_name = 'core/userrole-delete.html'
 	success_url = reverse_lazy('userrole_list')
 
+
+
+class SubmissionView(View):
+
+	def get(self, request, **kwargs):
+		activity_group = ActivityGroup.objects.all()
+		cluster_activity = ClusterA.activity.objects.all()
+		pk = kwargs.get('pk')
+		return render(request, 'core/submission.html', {'cluster_activity': cluster_activity, 'pk': pk})
+
+
+
 ################################################################################################################
 
 
