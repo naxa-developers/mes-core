@@ -292,7 +292,7 @@ class BeneficiaryUploadView(View):
 				if 'Project' in df:
 					project = Project.objects.get(id=df['Project'][row])
 				else:
-					project = Project.objects.get(id=1)
+					project = Project.objects.last()
 				try:
 					cluster, created = Cluster.objects.get_or_create(
 						id=df['ClusterNumber'][row],
