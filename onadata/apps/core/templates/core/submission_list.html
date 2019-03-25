@@ -30,7 +30,7 @@
                     <table class="table table-hover c_table">
                         <thead>
                             <tr>
-                                <th>UUID</th>
+                                <th>Date</th>
                                 <th>Activity</th>
                                 <th>Beneficiary</th>
                                 <th>Action</th>
@@ -39,14 +39,12 @@
                         <tbody>
                             {% for submission in submissions %}
                                 <tr>
-                                    <td>{{ submission.instance.uuid }}</td>
+                                    <td>{{ submission.instance.date_created }}</td>
                                     <td>{{ submission.cluster_activity.activity.name }}</td>
                                     <td>{{ submission.beneficiary.name }}</td>
                                     <td class="table-action">
                                         {% with submission.instance.xform as xform %}
-                                            {% url 'onadata.apps.viewer.views.instance' xform.username xform.id_string as submission_url %}
-
-                                            <a href="{{ submission_url }}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank"><i class="la la-eye"></a>
+                                        <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank"><i class="la la-eye"></i></a>
                                         {% endwith %}
                                     </td>
                                 </tr>
