@@ -18,7 +18,7 @@ from django.contrib import messages
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
 	ClusterSerializer, BeneficiarySerialzier
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
 	UserRoleForm
 
@@ -353,7 +353,6 @@ class UserRoleDeleteView(DeleteView):
 	success_url = reverse_lazy('userrole_list')
 
 
-
 class SubmissionView(View):
 
 	def get(self, request, **kwargs):
@@ -362,6 +361,11 @@ class SubmissionView(View):
 		return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
 
 
+class SubmissionListView(View):
+
+	def get(self, request, **kwargs):
+		submissions = Submission.objects.filter(cluster_activity_id=kwargs.get('pk'))
+		return render(request, 'core/submission_list.html', {'submissions': submissions})
 
 ################################################################################################################
 

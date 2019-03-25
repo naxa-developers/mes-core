@@ -65,7 +65,7 @@
                                             <ul>
                                                 {% for cluster_activity in cluster_activity_group.ca.all %}
                                                 <li>
-                                                    <a href="#">{{ cluster_activity.activity.name }}</a>
+                                                    <a href="{% url 'submission_list' cluster_activity.id %}">{{ cluster_activity.activity.name }}</a>
                                                     <span class="submission-count">
                                                         <small>{{ cluster_activity|cluster_activity_submission_count }}</small><sup><i class="la la-bell"></i></sup>
                                                     </span>

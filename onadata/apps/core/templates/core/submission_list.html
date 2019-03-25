@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Submission List{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>CLuster list</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item">Project</li>
+                        <li class="breadcrumb-item active">Submission list</li>
+                    </ul>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">
+                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="card project_list">
+                <div class="table-responsive">
+                    <table class="table table-hover c_table">
+                        <thead>
+                            <tr>
+                                <th>UUID</th>
+                                <th>Activity</th>
+                                <th>Beneficiary</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for submission in submission %}
+                                <tr>
+                                    <td>{{ submission.instance.uuid }}</td>
+                                    <td>{{ submission.cluster_activity.activity.name }}</td>
+                                    <td>{{ submission.beneficiary.name }}</td>
+                                    <td class="table-action">
+                                        {% with submission.instance.xform as xform %}
+                                            {% url 'onadata.apps.viewer.views.instance' xform.username xform.id_string as submission_url %}
+
+                                            <a href="{{ submission_url }}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank"><i class="la la-eye"></a>
+                                            <!--<a href="{% url 'cluster_edit' cluster.pk %}" class="btn"> <i class="la la-edit"></i></a>-->
+                                            <!--<a href="{% url 'cluster_assign' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>-->
+                                            <!--<a href="{% url 'submission' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>-->
+                                        {% endwith %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!--<div class="table-footer">-->
+                    <!--<a class="btn" href="{% url 'cluster_add' %}"><i class="la la-plus"></i> Add Cluster</a>-->
+<!--                     <ul class="pagination pagination-primary">
+                        <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>
+                    </ul> -->
+                <!--</div>-->
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}
