@@ -17,16 +17,21 @@ class SignUpForm(UserCreationForm):
 
 
 # class DivWrapperWidget(widgets.TextInput):
-# 	# def render(self, id, max_length, name, placeholder, type):
-# 		return mark_safe(u'''<div class="form-group">%s</div>''' % (super(DivWrapperWidget, self).render(id, max_length, name, placeholder, type)))
+# 	def render(self, id, max_length, name, placeholder, type):
+# 		return mark_safe(u'''<div class="form-group"><select class="custom-select">%s</select></div>''' % (super(DivWrapperWidget, self).render(id, max_length, name, placeholder, type)))
+
+class BootstrapDivWidget(forms.Form):
+	def as_div(self):
+        "Return this form rendered as HTML <tr>s -- excluding the <table></table>."
+        return self._html_output(
+            normal_row='<div>%(html_class_attr)s><br>%(label)s</br><br>%(errors)s%(field)s%(help_text)s</br></div>',
+            error_row='<div colspan="2">%s</div>',
+            row_ender='<div></div>',
+            help_text_html='<br><span class="helptext">%s</span>',
+            errors_on_separate_row=False,
+)
 
 class ProjectForm(forms.ModelForm):
-	# FORM_CHOICES = (
-	# 		('yes', 'yes'),('no', 'no'),
-	# 	)
-
-
-	# beneficiaries = forms.ChoiceField(widget=forms.RadioSelect(),choices=FORM_CHOICES)
 
 	class Meta:
 		model = Project
@@ -39,6 +44,7 @@ class ProjectForm(forms.ModelForm):
 			'sector': forms.TextInput(attrs={'placeholder': 'Sector','class': 'form-control'}),
 			'start_date': forms.TextInput(attrs={'placeholder': 'Start date','class': 'form-control', 'type': 'date'}),
 			'end_date': forms.TextInput(attrs={'placeholder': 'End date','class': 'form-control', 'type': 'date'}),
+			'reporting_period': forms.Select(attrs={'class': "custom-select"}),
 		}
 
 
