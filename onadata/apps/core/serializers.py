@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from datetime import datetime
+
 from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary, ClusterAG, ClusterA, Config
 
 
@@ -101,6 +103,16 @@ class ClusterSerializer(serializers.ModelSerializer):
 class ConfigSerializer(serializers.ModelSerializer):
 	beneficiary_updated = serializers.SerializerMethodField()
 	activity_group_updated = serializers.SerializerMethodField()
+
+	def get_beneficiary_update(self, obj):
+		date = obj.instance.date_modified
+		dt_obj = datetime.strptime(date,'%d.%m.%Y %H:%M:%S,%f')
+		millisec = dt_obj.timestamp() * 1000
+
+	def get_activity_group_update(self, obj):
+		date = obj.instance.date_modified
+		dt_obj = datetime.strptime(date,'%d.%m.%Y %H:%M:%S,%f')
+		millisec = dt_obj.timestamp() * 1000
 
 
 	class Meta:

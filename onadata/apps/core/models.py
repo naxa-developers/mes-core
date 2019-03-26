@@ -45,6 +45,10 @@ class ActivityGroup(models.Model):
 	project = models.ForeignKey('Project', related_name='activity_group')
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
+	created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+	updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+
 	def __str__(self):
 		return self.name
 
@@ -75,6 +79,8 @@ class Beneficiary(models.Model):
 	ward_no = models.IntegerField('ward number')
 	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
 	Type = models.CharField(max_length=100)
+	created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+	updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
 	def __str__(self):
 		return self.name
