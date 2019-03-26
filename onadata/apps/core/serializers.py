@@ -102,20 +102,14 @@ class ClusterSerializer(serializers.ModelSerializer):
 
 class ConfigSerializer(serializers.ModelSerializer):
 	beneficiary_updated = serializers.SerializerMethodField()
-	activity_group_updated = serializers.SerializerMethodField()
 
 	def get_beneficiary_update(self, obj):
-		date = obj.instance.date_modified
+		date = obj.Beneficiary.updated_at
 		dt_obj = datetime.strptime(date,'%d.%m.%Y %H:%M:%S,%f')
 		millisec = dt_obj.timestamp() * 1000
-
-	def get_activity_group_update(self, obj):
-		date = obj.instance.date_modified
-		dt_obj = datetime.strptime(date,'%d.%m.%Y %H:%M:%S,%f')
-		millisec = dt_obj.timestamp() * 1000
-
+		return millisec
 
 	class Meta:
 		model = Config
-		fields = ('id', 'available_version', 'updates', 'beneficiary_updated', 'activity_group_updated')
+		fields = ('id', 'available_version', 'updates', 'activity_group_updated', 'beneficiary_updated')
 

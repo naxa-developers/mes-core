@@ -116,6 +116,7 @@ class Submission(models.Model):
 class Config(models.Model):
 	available_version = models.FloatField('Available Version')
 	updates = models.CharField(max_length=500)
+	activity_group_updated = models.DateTimeField(null=True, blank=True)
 	
 
 
