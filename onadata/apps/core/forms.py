@@ -73,4 +73,4 @@ class ConfigForm(forms.ModelForm):
 
 	class Meta:
 		model = Config
-		fields = ('available_version', 'updates', 'activity_group_updated')
+		fields = ('available_version', 'updates')

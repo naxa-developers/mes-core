@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from django.db.models import Max
 
 from datetime import datetime
+import time
 
 from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary, ClusterAG, ClusterA, Config
 
@@ -102,14 +104,20 @@ class ClusterSerializer(serializers.ModelSerializer):
 
 class ConfigSerializer(serializers.ModelSerializer):
 	beneficiary_updated = serializers.SerializerMethodField()
+	activity_updated = serializers.SerializerMethodField()
 
-	def get_beneficiary_update(self, obj):
-		date = obj.Beneficiary.updated_at
-		dt_obj = datetime.strptime(date,'%d.%m.%Y %H:%M:%S,%f')
-		millisec = dt_obj.timestamp() * 1000
-		return millisec
+	def get_beneficiary_updated(self, obj):
+		date = Beneficiary.objects.all().aggregate(Max('updated_at'))['updated_at__max']
 
-	class Meta:
+		if date:
+			return time.mktime(date.timetuple())*1000
+		else:
+			return 0
+
+	def get_activity_updated(self, obj):
+		date = obj.activity_group_updated
+		return time.mktime(date.timetuple())*1000
+
+	class Meta():
 		model = Config
-		fields = ('id', 'available_version', 'updates', 'activity_group_updated', 'beneficiary_updated')
-
+		fields = ('id', 'available_version', 'updates', 'beneficiary_updated', 'activity_updated') 

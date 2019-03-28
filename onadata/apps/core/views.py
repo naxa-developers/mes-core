@@ -322,7 +322,7 @@ class ConfigUpdateView(UpdateView):
 	model = Config
 	template_name = 'core/config-form.html'
 	form_class = ConfigForm
-	success_url = reverse_lazy('')
+	success_url = reverse_lazy('config_edit:pk')
 
 
 ################################################################################################################

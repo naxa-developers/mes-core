@@ -2,8 +2,11 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 from rest_framework.authtoken.models import Token
 from django.db import models
+
+from datetime import datetime  
 
 from onadata.apps.logger.models import Instance
 from onadata.apps.logger.models.xform import XForm
@@ -80,7 +83,7 @@ class Beneficiary(models.Model):
 	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
 	Type = models.CharField(max_length=100)
 	created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-	updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+	updated_at = models.DateTimeField(auto_now=True)
 
 	def __str__(self):
 		return self.name
@@ -116,8 +119,4 @@ class Submission(models.Model):
 class Config(models.Model):
 	available_version = models.FloatField('Available Version')
 	updates = models.CharField(max_length=500)
-	activity_group_updated = models.DateTimeField(null=True, blank=True)
-	
-
-
-
+	activity_group_updated = models.DateTimeField(default=datetime.now(), blank=True)
