@@ -245,7 +245,7 @@ class ClusterAssignView(View):
 				if item[1] == 'true':
 					item = item[0].strip('a_')
 					activity = Activity.objects.get(id=int(item))
-					cluster_ag, _ = ClusterAG.objects.get_or_create(cluster=cluster, activity_group=activity.activity_group)
+					cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster, activity_group=activity.activity_group)
 					ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag)
 		return redirect(reverse_lazy('cluster_list'))
 
