@@ -11,7 +11,8 @@ router.register(r'actgroup', views.ActivityGroupViewSet),
 router.register(r'output', views.OutputViewSet),
 router.register(r'project', views.ProjectViewSet),
 router.register(r'cluster', views.ClusterViewSet),
-router.register(r'beneficiary', views.BeneficiaryViewSet)
+router.register(r'beneficiary', views.BeneficiaryViewSet),
+router.register(r'config', views.ConfigViewSet),
 
 
 urlpatterns = [
@@ -64,6 +65,8 @@ urlpatterns = [
 	url(r'userrole-edit/(?P<pk>[0-9]+)/$', views.UserRoleUpdateView.as_view(), name='userrole_edit'),
 	url(r'userrole-detail/(?P<pk>[0-9]+)/$', views.UserRoleDetailView.as_view(), name='userrole_detail'),
 	url(r'userrole-delete/(?P<pk>[0-9]+)/$', views.UserRoleDeleteView.as_view(), name='userrole_delete'),
+
+	url(r'config-edit/(?P<pk>[0-9]+)/$', views.ConfigUpdateView.as_view(), name='config_edit'),
 
 	url(r'submission/(?P<pk>[0-9]+)/$', views.SubmissionView.as_view(), name='submission'),
 	url(r'submission-list/(?P<pk>[0-9]+)/$', views.SubmissionListView.as_view(), name='submission_list'),

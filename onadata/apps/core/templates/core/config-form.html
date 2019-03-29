@@ -1,6 +1,6 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Activity Create{% endblock %}
+{% block title %}Config Create{% endblock %}
 
 {% block content %}
 <section class="content">
@@ -9,7 +9,7 @@
             <div class="widget-head">
                 <div class="widget-body mt-2 horizontalForm">
                     <div class="widget-body">
-                        <h3>Activity {% if config %}Edit{% else %}Add{% endif %}</h3>
+                        <h3>Config {% if config %}Edit{% else %}Add{% endif %}</h3>
                         <form action="" method="POST" >
                             {%csrf_token %}
                             {{ form.as_p }}

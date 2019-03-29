@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 from onadata.apps.logger.models import XForm
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config
 
 
 class SignUpForm(UserCreationForm):
@@ -67,3 +67,10 @@ class UserRoleForm(forms.ModelForm):
 	class Meta:
 		model = UserRole
 		fields = ('user', 'project', 'group')
+
+
+class ConfigForm(forms.ModelForm):
+
+	class Meta:
+		model = Config
+		fields = ('available_version', 'updates')

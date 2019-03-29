@@ -16,11 +16,13 @@ import pandas as pd
 from django.contrib import messages
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
-	ClusterSerializer, BeneficiarySerialzier
+	ClusterSerializer, BeneficiarySerialzier, ConfigSerializer
+
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission
+
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
-	UserRoleForm
+				   UserRoleForm, ConfigForm
 
 
 def logout_view(request):
@@ -363,6 +365,14 @@ class SubmissionView(View):
 		return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
 
 
+
+class ConfigUpdateView(UpdateView):
+	model = Config
+	template_name = 'core/config-form.html'
+	form_class = ConfigForm
+	success_url = reverse_lazy('')
+
+
 class SubmissionListView(View):
 
 	def get(self, request, **kwargs):
@@ -370,7 +380,6 @@ class SubmissionListView(View):
 		submissions = Submission.objects.filter(cluster_activity=cluster_activity)
 		return render(request, 'core/submission_list.html', {'submissions': submissions})
 
-################################################################################################################
 
 
 class ActivityViewSet(viewsets.ModelViewSet):
@@ -396,6 +405,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class ClusterViewSet(viewsets.ModelViewSet):
 	queryset = Cluster.objects.all()
 	serializer_class = ClusterSerializer
+
+class ConfigViewSet(viewsets.ModelViewSet):
+	queryset = Config.objects.all()
+	serializer_class = ConfigSerializer
 
 
 class BeneficiaryViewSet(viewsets.ModelViewSet):
