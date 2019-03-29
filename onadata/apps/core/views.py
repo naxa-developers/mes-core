@@ -39,9 +39,6 @@ class LoginRequiredMixin(object):
 class HomeView(LoginRequiredMixin, TemplateView):
 	template_name = 'core/index.html'
 
-	# def get(self, request, *args, **kwargs):
-	# 	print(self.request.group)
-
 
 class SignInView(TemplateView):
 	template_name = 'core/sign-in.html'
@@ -322,7 +319,7 @@ class ConfigUpdateView(UpdateView):
 	model = Config
 	template_name = 'core/config-form.html'
 	form_class = ConfigForm
-	success_url = reverse_lazy('config_edit:pk')
+	# success_url = reverse_lazy('config_edit:pk')
 
 
 ################################################################################################################
