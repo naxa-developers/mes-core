@@ -322,7 +322,7 @@ class ConfigUpdateView(UpdateView):
 	form_class = ConfigForm
 
 	def get_success_url(self):
-		return reverse('config_edit', kwargs={'pk': 2})
+		return reverse('config_edit', kwargs={'pk': 1})
 
 ################################################################################################################
 
