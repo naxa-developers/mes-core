@@ -1,4 +1,4 @@
-from django.views.generic import View, TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import View, TemplateView, ListView, DetailView
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
@@ -22,18 +22,14 @@ from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficia
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
 	UserRoleForm
 
+from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, ProjectMixin,\
+	group_required
+
 
 def logout_view(request):
 	logout(request)
 
 	return render()
-
-
-class LoginRequiredMixin(object):
-	@classmethod
-	def as_view(cls, **initkwargs):
-		view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
-		return login_required(view)
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -84,7 +80,7 @@ class ProjectDetailView(DetailView):
 	template_name = 'core/project-detail.html'
 
 
-class ProjectCreateView(CreateView):
+class ProjectCreateView(ProjectMixin, CreateView):
 	model = Project
 	form_class = ProjectForm
 	template_name = 'core/project-form.html'
@@ -92,14 +88,14 @@ class ProjectCreateView(CreateView):
 	success_url = reverse_lazy('project_list')
 
 
-class ProjectUpdateView(UpdateView):
+class ProjectUpdateView(ProjectMixin, UpdateView):
 	model = Project
 	template_name = 'core/project-form.html'
 	form_class = ProjectForm
 	success_url = reverse_lazy('project_list')
 
 
-class ProjectDeleteView(DeleteView):
+class ProjectDeleteView(ProjectMixin, DeleteView):
 	model = Project
 	template_name = 'core/project-delete.html'
 	success_url = reverse_lazy('project_list')
@@ -228,9 +224,10 @@ class ClusterDeleteView(DeleteView):
 class ClusterAssignView(View):
 
 	def get(self, request, **kwargs):
-		activity_group = ActivityGroup.objects.all()
+		activity_group = ActivityGroup.objects.filter(clusterag__isnull=True)
 		pk = kwargs.get('pk')
-		return render(request, 'core/cluster-assign.html', {'activity_group': activity_group, 'pk': pk})
+		selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group')
+		return render(request, 'core/cluster-assign.html', {'activity_group': activity_group, 'pk': pk, 'selected_activity_group':selected_activity_group})
 
 	def post(self, request, **kwargs):
 		cluster = Cluster.objects.get(pk=kwargs.get('pk'))
@@ -238,15 +235,28 @@ class ClusterAssignView(View):
 		print(checked)
 		for item in checked:
 			if item[0].startswith('ag_'):
-				item = item[0].strip('ag_')
-				activity_group = ActivityGroup.objects.get(id=int(item))
-				ClusterAG.objects.get_or_create(activity_group=activity_group, cluster=cluster)
+				if item[1] == 'on':
+					item = item[0].strip('ag_')
+					activity_group = ActivityGroup.objects.get(id=int(item))
+					ClusterAG.objects.get_or_create(activity_group=activity_group, cluster=cluster)
+				else:
+					item = item[0].strip('ag_')
+					activity_group = ActivityGroup.objects.get(id=int(item))
+					if ClusterAG.objects.filter(activity_group=activity_group, cluster=cluster).exists():
+						ClusterAG.objects.filter(activity_group=activity_group, cluster=cluster).delete()
 			elif item[0].startswith('a_'):
 				if item[1] == 'true':
 					item = item[0].strip('a_')
 					activity = Activity.objects.get(id=int(item))
 					cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster, activity_group=activity.activity_group)
 					ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag)
+				else:
+					item = item[0].strip('a_')
+					activity = Activity.objects.get(id=int(item))
+					cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster,
+																		  activity_group=activity.activity_group)
+					if ClusterA.objects.filter(activity=activity, cag=cluster_ag).exists():
+						ClusterA.objects.filter(activity=activity, cag=cluster_ag).delete()
 		return redirect(reverse_lazy('cluster_list'))
 
 

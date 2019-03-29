@@ -99,3 +99,11 @@ def cluster_activity_group_submission_count(obj):
     for item in ca:
         count += Submission.objects.filter(cluster_activity=item).count()
     return count
+
+
+@register.filter
+def check_cluster_activity(obj):
+    if ClusterA.objects.filter(activity=obj).exists():
+        return True
+    else:
+        return False
