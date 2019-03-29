@@ -21,3 +21,15 @@
     </div>
 </section>
 {% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+   $(document).ready(function(){
+       $('#id_target_number').prop('disabled', true);
+       $('#id_target_unit').prop('disabled', true);
+       $('#id_beneficiary_level').on('click', function(){
+          $('#id_target_number').attr('disabled', $(this).is(':checked'));
+          $('#id_target_unit').attr('disabled', $(this).is(':checked'));
+       });
+    });
+</script>
+{% endblock %}
