@@ -50,6 +50,7 @@
                                         <a href="{% url 'cluster_delete' cluster.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
                                         <a href="{% url 'cluster_edit' cluster.pk %}" class="btn"> <i class="la la-edit"></i></a>
                                         <a href="{% url 'cluster_assign' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>
+                                        <a href="{% url 'submission' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>
                                     </td>
                                 </tr>
                             {% endfor %}

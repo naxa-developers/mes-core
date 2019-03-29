@@ -75,6 +75,11 @@ class Beneficiary(models.Model):
 	ward_no = models.IntegerField('ward number')
 	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
 	Type = models.CharField(max_length=100)
+	GovernmentTranch = models.CharField(max_length=100, blank=True)
+	ConstructionPhase = models.CharField(max_length=100, blank=True)
+	Typesofhouse = models.CharField(max_length=100, blank=True)
+	Remarks = models.CharField(max_length=100, blank=True)
+
 
 	def __str__(self):
 		return self.name

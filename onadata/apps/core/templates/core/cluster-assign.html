@@ -58,35 +58,14 @@
                                             {% for item in object.activity.all %}
                                             <div class="form-group">
                                                 <div class="checkbox">
-                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}">
+                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
                                                     <label for="a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
-                                                <!--<button type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">-->
-                                                    <!--<div class="handle"></div>-->
-                                                <!--</button>-->
+                                                <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="false" autocomplete="off">
+                                                    <div class="handle"></div>
+                                                </button>
                                             </div>
                                             {% endfor %}
-                                            <!--<div class="form-group">-->
-                                                <!--<div class="checkbox">-->
-                                                    <!--<input id="act2" type="checkbox">-->
-                                                    <!--<label for="act2">Reached out the information ( coverage of FM stations)</label>-->
-                                                <!--</div>-->
-                                                <!--<button type="button" class="btn btn-sm btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">-->
-                                                    <!--<div class="handle"></div>-->
-                                                <!--</button>-->
-                                            <!--</div>-->
-                                            <!--<div class="form-group">-->
-                                                <!--<div class="checkbox">-->
-                                                    <!--<input id="act3" type="checkbox">-->
-                                                    <!--<label for="act3">Number of IEC materials preparation </label>-->
-                                                <!--</div>-->
-                                            <!--</div>-->
-                                            <!--<div class="form-group">-->
-                                                <!--<div class="checkbox">-->
-                                                    <!--<input id="act4" type="checkbox">-->
-                                                    <!--<label for="act4">Number of IEC materials dissemination </label>-->
-                                                <!--</div>-->
-                                            <!--</div>-->
                                         </div>
                                     </div>
                                 </div>
@@ -102,7 +81,18 @@
         </div>
     </div>
 </section>
+{% endblock %}
 
-
-
+{% block scripts %}
+<script type="text/javascript">
+    function changeValue(elem){
+        var parentDiv = elem.parentNode.children[0];
+        if(parentDiv.children[0].value === "false"){
+            parentDiv.children[0].value = "true";
+        }
+        else if(parentDiv.children[0].value === "true"){
+            parentDiv.children[0].value = "false";
+        }
+    }
+</script>
 {% endblock %}
