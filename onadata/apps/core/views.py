@@ -234,17 +234,19 @@ class ClusterAssignView(View):
 
 	def post(self, request, **kwargs):
 		cluster = Cluster.objects.get(pk=kwargs.get('pk'))
-		checked = [name for name, value in request.POST.iteritems()]
+		checked = [(name, value) for name, value in request.POST.iteritems()]
+		print(checked)
 		for item in checked:
-			if item.startswith('ag_'):
-				item = item.strip('ag_')
+			if item[0].startswith('ag_'):
+				item = item[0].strip('ag_')
 				activity_group = ActivityGroup.objects.get(id=int(item))
 				ClusterAG.objects.get_or_create(activity_group=activity_group, cluster=cluster)
-			elif item.startswith('a_'):
-				item = item.strip('a_')
-				activity = Activity.objects.get(id=int(item))
-				cluster_ag, _ = ClusterAG.objects.get_or_create(cluster=cluster, activity_group=activity.activity_group)
-				ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag)
+			elif item[0].startswith('a_'):
+				if item[1] == 'true':
+					item = item[0].strip('a_')
+					activity = Activity.objects.get(id=int(item))
+					cluster_ag, _ = ClusterAG.objects.get_or_create(cluster=cluster, activity_group=activity.activity_group)
+					ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag)
 		return redirect(reverse_lazy('cluster_list'))
 
 
