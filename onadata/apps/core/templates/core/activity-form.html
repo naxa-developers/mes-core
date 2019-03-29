@@ -10,8 +10,14 @@
                 <div class="widget-body mt-2 horizontalForm">
                     <div class="widget-body">
                         <h3>Activity {% if activity %}Edit{% else %}Add{% endif %}</h3>
-                        <form action="" method="POST" enctype="multipart/form-data" novalidate>     {%csrf_token %}
-                            {{ form.as_p }}
+                        <form action="" method="POST" enctype="multipart/form-data" novalidate>
+                            {%csrf_token %}
+                            {% for field in form %}
+                                <div class="form-group" id="{{ forloop.counter }}">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                </div>
+                            {% endfor %}
                             <button type="submit" class="btn btn-xs btn-primary">Submit</button>
                         </form>
                     </div>
@@ -24,11 +30,17 @@
 {% block scripts %}
 <script type="text/javascript">
    $(document).ready(function(){
-       $('#id_target_number').prop('disabled', true);
-       $('#id_target_unit').prop('disabled', true);
-       $('#id_beneficiary_level').on('click', function(){
-          $('#id_target_number').attr('disabled', $(this).is(':checked'));
-          $('#id_target_unit').attr('disabled', $(this).is(':checked'));
+       $('#5').hide();
+       $('#6').hide();
+       $('#id_beneficiary_level').change(function(){
+          if ($(this).is(":checked")){
+            $('#5').hide();
+            $('#6').hide();
+          }
+          else{
+            $('#5').show();
+            $('#6').show();
+          }
        });
     });
 </script>
