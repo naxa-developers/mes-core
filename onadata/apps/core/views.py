@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -319,8 +320,9 @@ class ConfigUpdateView(UpdateView):
 	model = Config
 	template_name = 'core/config-form.html'
 	form_class = ConfigForm
-	# success_url = reverse_lazy('config_edit:pk')
 
+	def get_success_url(self):
+		return reverse('config_edit', kwargs={'pk': 2})
 
 ################################################################################################################
 
