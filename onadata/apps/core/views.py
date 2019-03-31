@@ -20,7 +20,7 @@ from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSeri
 	ClusterSerializer, BeneficiarySerialzier, ConfigSerializer
 
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission, Config
 
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
 				   UserRoleForm, ConfigForm
