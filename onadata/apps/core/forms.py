@@ -131,7 +131,7 @@ class BeneficiaryForm(forms.ModelForm):
 
 	class Meta:
 		model = Beneficiary
-		fields = ('name', 'address', 'ward_no', 'Type', 'cluster')
+		fields = ('name', 'address', 'ward_no', 'Type', 'GovernmentTranch', 'ConstructionPhase', 'Typesofhouse', 'Remarks', 'cluster')
 
 
 		widgets = {
@@ -139,6 +139,10 @@ class BeneficiaryForm(forms.ModelForm):
 			'address': forms.TextInput(attrs={'placeholder': 'Address', 'class': 'form-control'}),
 			'ward_no': forms.TextInput(attrs={'placeholder': 'Ward Number', 'class': 'form-control'}),
 			'Type': forms.TextInput(attrs={'placeholder': 'Type', 'class': 'form-control'}),
+			'GovernmentTranch': forms.TextInput(attrs={'placeholder': 'Government Tranch', 'class': 'form-control'}),
+			'ConstructionPhase': forms.TextInput(attrs={'placeholder': 'Construction Phase', 'class': 'form-control'}),
+			'Typesofhouse': forms.TextInput(attrs={'placeholder': 'Types of house', 'class': 'form-control'}),
+			'Remarks': forms.TextInput(attrs={'placeholder': 'Remarks', 'class': 'form-control'}),
 			'cluster': forms.Select(attrs={'class': "custom-select"}),
 		}
 
