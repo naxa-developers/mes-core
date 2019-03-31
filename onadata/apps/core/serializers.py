@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary, ClusterAG, ClusterA
+from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary, ClusterAG, ClusterA, Config
 
 
 
@@ -96,4 +96,14 @@ class ClusterSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Cluster
 		fields = ('id', 'name', 'district', 'municipality', 'ward', 'clusterag')
+
+
+class ConfigSerializer(serializers.ModelSerializer):
+	beneficiary_updated = serializers.SerializerMethodField()
+	activity_group_updated = serializers.SerializerMethodField()
+
+
+	class Meta:
+		model = Config
+		fields = ('id', 'available_version', 'updates', 'beneficiary_updated', 'activity_group_updated')
 

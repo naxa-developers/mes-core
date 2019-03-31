@@ -124,7 +124,10 @@ class Submission(models.Model):
 	beneficiary = models.ForeignKey('Beneficiary',null=True, blank=True, on_delete=models.SET_NULL, related_name="submissions" )
 
 
-
+class Config(models.Model):
+	available_version = models.FloatField('Available Version')
+	updates = models.CharField(max_length=500)
+	
 
 
 

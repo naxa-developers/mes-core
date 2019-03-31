@@ -18,14 +18,14 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 
-
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
-    ClusterSerializer, BeneficiarySerialzier
+    ClusterSerializer, BeneficiarySerialzier, ConfigSerializer
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
-    Submission
+    Submission, Config
+
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
-    UserRoleForm
+    UserRoleForm, ConfigForm
 
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, \
@@ -43,7 +43,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         if self.request.group.name in ['project-coordinator', 'social-mobilizer']:
-            return HttpResponseRedirect(reverse('user_cluster_list', kwargs={'pk':self.request.user.pk}))
+            return HttpResponseRedirect(reverse('user_cluster_list', kwargs={'pk': self.request.user.pk}))
         elif self.request.group.name in ['project-manager', 'super-admin']:
             return render(request, self.template_name)
         else:
@@ -215,7 +215,7 @@ class UserClusterListView(LoginRequiredMixin, TemplateView):
         user = User.objects.get(pk=kwargs.get('pk'))
         user_roles = UserRole.objects.filter(Q(user=user) & ~Q(group__name="community-social-mobilizer"))
         clusters = Cluster.objects.filter(userrole_cluster__in=user_roles)
-        return render(request, self.template_name, {'clusters':clusters})
+        return render(request, self.template_name, {'clusters': clusters})
 
 
 class ClusterCreateView(ManagerMixin, CreateView):
@@ -278,14 +278,14 @@ class ClusterAssignView(ManagerMixin, View):
                     cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster,
                                                                           activity_group=activity.activity_group)
                     ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag)
-                # ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag, start_date=start_date, end_date=end_date)
-            # else:
-            # 	item = item[0].strip('a_')
-            # 	activity = Activity.objects.get(id=int(item))
-            # 	cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster,
-            # 														  activity_group=activity.activity_group)
-            # 	if ClusterA.objects.filter(activity=activity, cag=cluster_ag).exists():
-            # 		ClusterA.objects.filter(activity=activity, cag=cluster_ag).delete()
+            # ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag, start_date=start_date, end_date=end_date)
+        # else:
+        # 	item = item[0].strip('a_')
+        # 	activity = Activity.objects.get(id=int(item))
+        # 	cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster,
+        # 														  activity_group=activity.activity_group)
+        # 	if ClusterA.objects.filter(activity=activity, cag=cluster_ag).exists():
+        # 		ClusterA.objects.filter(activity=activity, cag=cluster_ag).delete()
         return redirect(reverse_lazy('cluster_list'))
 
 
@@ -411,7 +411,33 @@ class SubmissionListView(LoginRequiredMixin, View):
         return render(request, 'core/submission_list.html', {'submissions': submissions})
 
 
-################################################################################################################
+class UserRoleDeleteView(DeleteView):
+    model = UserRole
+    template_name = 'core/userrole-delete.html'
+    success_url = reverse_lazy('userrole_list')
+
+
+class SubmissionView(View):
+
+    def get(self, request, **kwargs):
+        pk = kwargs.get('pk')
+        cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
+        return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
+
+
+class ConfigUpdateView(UpdateView):
+    model = Config
+    template_name = 'core/config-form.html'
+    form_class = ConfigForm
+    success_url = reverse_lazy('')
+
+
+class SubmissionListView(View):
+
+    def get(self, request, **kwargs):
+        cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
+        submissions = Submission.objects.filter(cluster_activity=cluster_activity)
+        return render(request, 'core/submission_list.html', {'submissions': submissions})
 
 
 class ActivityViewSet(viewsets.ModelViewSet):
@@ -437,6 +463,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class ClusterViewSet(viewsets.ModelViewSet):
     queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
+
+
+class ConfigViewSet(viewsets.ModelViewSet):
+    queryset = Config.objects.all()
+    serializer_class = ConfigSerializer
 
 
 class BeneficiaryViewSet(viewsets.ModelViewSet):
