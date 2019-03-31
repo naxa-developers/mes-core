@@ -4,6 +4,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.db import models
+from django.core.exceptions import ValidationError
+from datetime import datetime
 
 from onadata.apps.logger.models import Instance
 from onadata.apps.logger.models.xform import XForm
@@ -54,8 +56,8 @@ class Activity(models.Model):
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
 
-	target_number = models.IntegerField()
-	target_unit = models.CharField(max_length=200)
+	target_number = models.IntegerField(null=True, blank=True)
+	target_unit = models.CharField(max_length=200, null=True, blank=True)
 
 	start_date = models.DateTimeField()
 	end_date = models.DateTimeField()
@@ -89,8 +91,16 @@ class Beneficiary(models.Model):
 class UserRole(models.Model):
 	user = models.ForeignKey(User, related_name="user_roles")
 	project = models.ForeignKey('Project', null=True, blank=True)
-	group = models.ForeignKey(Group)
+	group = models.ForeignKey(Group, related_name="userrole_group")
+	cluster = models.ForeignKey(Cluster, null=True, blank=True, related_name="userrole_cluster")
 
+	def save(self, *args, **kwargs):
+		if UserRole.objects.filter(group=self.group, cluster=self.cluster).exists():
+			raise ValidationError('A cluster can contain only a single ' + self.group.name)
+		if self.group.name == 'community-social-mobilizer':
+			if UserRole.objects.filter(user=self.user, group=self.group).exists():
+				raise ValidationError('CSM user can be assigned to only one cluster.')
+		return super(UserRole, self).save(*args, **kwargs)
 
 	def __str__(self):
 		return self.group.name
@@ -104,6 +114,8 @@ class ClusterAG(models.Model):
 class ClusterA(models.Model):
 	activity = models.ForeignKey('Activity', related_name='clustera')
 	cag = models.ForeignKey('ClusterAG', related_name='ca')
+	start_date = models.DateTimeField(default=datetime.now)
+	end_date = models.DateTimeField(default=datetime.now)
 
 
 class Submission(models.Model):

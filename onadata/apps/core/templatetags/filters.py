@@ -5,7 +5,8 @@ from django.template import Library
 from django import template
 from django.contrib.auth.models import Group
 from onadata.apps.core.mixin import USER_PERMS
-from onadata.apps.core.models import Submission, ClusterA
+from onadata.apps.core.models import Submission, ClusterA, UserRole
+from django.db.models import Q
 
 register = Library()
 
@@ -104,6 +105,19 @@ def cluster_activity_group_submission_count(obj):
 @register.filter
 def check_cluster_activity(obj):
     if ClusterA.objects.filter(activity=obj).exists():
+        return True
+    else:
+        return False
+
+
+@register.filter
+def check_manager_permission(obj, cluster):
+    try:
+        user_role = UserRole.objects.get(Q(user=obj), Q(cluster=cluster))
+    except:
+        user_role = UserRole.objects.get(user=obj)
+
+    if user_role.group.name in ['project-manager', 'super-admin']:
         return True
     else:
         return False

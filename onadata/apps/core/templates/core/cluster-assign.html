@@ -61,6 +61,8 @@
                                                 <div class="checkbox">
                                                     <input id="selected_a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" checked value="true">
                                                     <label for="selected_a_id_{{ item.id }}">{{ item.name }}</label>
+                                                    <!--<p>Start Date: <input type="text" class="datetimepicker" name="{{ item.id }}_start_date"></p>-->
+                                                    <!--<p>End Date: <input type="text" class="datetimepicker" name="{{ item.id }}_end_date"></p>-->
                                                 </div>
                                                 <button type="button" class="btn btn-sm btn-toggle active" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="true" autocomplete="off">
                                                     <div class="handle"></div>
@@ -70,7 +72,9 @@
                                             <div class="form-group">
                                                 <div class="checkbox">
                                                     <input id="selected_a_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
-                                                    <label for="selected_a_{{ item.id }}">{{ item.name }}</label>
+                                                    <label for="selected_a_{{ item.id }}">{{ item.name }}</label>&nbsp;
+                                                    <!--<p>Start Date: <input type="text" class="datetimepicker" name="{{ item.id }}_start_date"></p>-->
+                                                    <!--<p>End Date: <input type="text" class="datetimepicker" name="{{ item.id }}_end_date"></p>-->
                                                 </div>
                                                 <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="false" autocomplete="off">
                                                     <div class="handle"></div>
@@ -102,6 +106,8 @@
                                                 <div class="checkbox">
                                                     <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
                                                     <label for="a_id_{{ item.id }}">{{ item.name }}</label>
+                                                    <!--<p>Start Date: <input type="text" class="datetimepicker" name="{{ item.id }}_start_date"></p>-->
+                                                    <!--<p>End Date: <input type="text" class="datetimepicker" name="{{ item.id }}_end_date"></p>-->
                                                 </div>
                                                 <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="false" autocomplete="off">
                                                     <div class="handle"></div>
@@ -127,6 +133,10 @@
 
 {% block scripts %}
 <script type="text/javascript">
+    <!--$( function() {-->
+    <!--$( ".datetimepicker" ).datepicker();-->
+  <!--} );-->
+
     function changeValue(elem){
         var parentDiv = elem.parentNode.children[0];
         if(parentDiv.children[0].value === "false"){

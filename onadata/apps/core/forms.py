@@ -66,4 +66,4 @@ class UserRoleForm(forms.ModelForm):
 
 	class Meta:
 		model = UserRole
-		fields = ('user', 'project', 'group')
+		fields = ('user', 'project', 'group', 'cluster')
