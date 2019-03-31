@@ -64,27 +64,24 @@
           $(this).closest('.card-header').find('.select-all').prop('checked', true);
           } else {
             $(this).closest('.card-header').find('.select-all').prop('checked', false);
-            
           }
       });
     };
     checkbox();
+
+    $(".cluster-accordion .card-body input").change(function () {
+      $(this).closest('.card').find('.card-header .select-all').prop('checked', true);
+     });
    
+     $('.add-unit').on('click',function(){
+       console.log('add div');
+      var newTarget = $('<div class="target flex"><div class="target-unit flex"><label>Target unit</label><input type="text" class="form-control" placeholder="1"></div><div class="target-number flex"><label>Target number</label><input type="text" class="form-control" placeholder="1"></div></div>');
+     
+      $('.target-group').append(newTarget);
+    });
+
     $('.select2').select2();
     
   })(jQuery);
 
-//   $(".select-all").change(function () {
-//     $(".checkbox input").prop('checked', $(this).prop("checked"));
-// });
 
-// $(".checkbox input").change(function() {
-//     var checkboxes = $('.checkbox input');
-//     var checkedboxes = checkboxes.filter(':checked');
-
-//     if(checkboxes.length === checkedboxes.length) {
-//      $('.select-all').prop('checked', true);
-//     } else {
-//     $('.select-all').prop('checked', false);
-//     }
-// });

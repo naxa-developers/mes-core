@@ -21,6 +21,7 @@ build
 /onadata/test_media
 /onadata/media
 /onadata/static
+media/
 
 .~lock.*
 .DS_Store

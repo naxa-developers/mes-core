@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from django.forms import widgets
 
 from onadata.apps.logger.models import XForm
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config
 
 
 class SignUpForm(UserCreationForm):
@@ -20,16 +20,16 @@ class SignUpForm(UserCreationForm):
 # 	def render(self, id, max_length, name, placeholder, type):
 # 		return mark_safe(u'''<div class="form-group"><select class="custom-select">%s</select></div>''' % (super(DivWrapperWidget, self).render(id, max_length, name, placeholder, type)))
 
-class BootstrapDivWidget(forms.Form):
-	def as_div(self):
-        "Return this form rendered as HTML <tr>s -- excluding the <table></table>."
-        return self._html_output(
-            normal_row='<div>%(html_class_attr)s><br>%(label)s</br><br>%(errors)s%(field)s%(help_text)s</br></div>',
-            error_row='<div colspan="2">%s</div>',
-            row_ender='<div></div>',
-            help_text_html='<br><span class="helptext">%s</span>',
-            errors_on_separate_row=False,
-)
+# class BootstrapDivWidget(forms.Form):
+# 	def as_div(self):
+#         "Return this form rendered as HTML <tr>s -- excluding the <table></table>."
+#         return self._html_output(
+#             normal_row='<div>%(html_class_attr)s><br>%(label)s</br><br>%(errors)s%(field)s%(help_text)s</br></div>',
+#             error_row='<div colspan="2">%s</div>',
+#             row_ender='<div></div>',
+#             help_text_html='<br><span class="helptext">%s</span>',
+#             errors_on_separate_row=False,
+# )
 
 class ProjectForm(forms.ModelForm):
 
@@ -57,11 +57,12 @@ class OutputForm(forms.ModelForm):
 		widgets = {
 			'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
 			'description': forms.Textarea(attrs={'placeholder': 'Description', 'class': 'form-control'}),
+			'project': forms.Select(attrs={'class': "custom-select"}),
 		}
 
-		def __init__(self, *args, **kwargs):
-			super().__init__(*args, **kwargs)
-			self.fields['project'].queryset = Project.objects.none()
+		# def __init__(self, *args, **kwargs):
+		# 	super().__init__(*args, **kwargs)
+		# 	self.fields['project'].queryset = Project.objects.none()
 
 
 
@@ -74,6 +75,8 @@ class ActivityGroupForm(forms.ModelForm):
 		widgets = {
 			'name' : forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
 			'description' : forms.Textarea(attrs={'placeholder': 'Description', 'class': 'form-control'}),
+			'output' : forms.Select(attrs={'class': "custom-select"}),
+			'project' : forms.Select(attrs={'class': "custom-select"}),
 		}
 
 		# def __init__(self, *args, **kwargs):
@@ -93,12 +96,14 @@ class ActivityForm(forms.ModelForm):
 		fields = ('activity_group', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'beneficiary_level')
 
 		widgets = {
+			'activity_group' : forms.Select(attrs={'class': "custom-select"}),
 			'name': forms.TextInput(attrs={'placeholder': 'Name','class': 'form-control'}),
 			'description': forms.Textarea(attrs={'placeholder': 'Description','class': 'form-control'}),
 			'target_number': forms.TextInput(attrs={'placeholder': 'Target Number','class': 'form-control'}),
 			'target_unit': forms.TextInput(attrs={'placeholder': 'Target Unit','class': 'form-control'}),
 			'start_date': forms.TextInput(attrs={'placeholder': 'Start date','class': 'form-control', 'type': 'date'}),
 			'end_date': forms.TextInput(attrs={'placeholder': 'End date','class': 'form-control', 'type': 'date'}),
+			'form': forms.Select(attrs={'class': "custom-select"}),
 		}
 
 
@@ -114,11 +119,12 @@ class ClusterForm(forms.ModelForm):
 			'district': forms.TextInput(attrs={'placeholder': 'District', 'class': 'form-control'}),
 			'municipality': forms.TextInput(attrs={'placeholder': 'Municipality', 'class': 'form-control'}),
 			'ward': forms.TextInput(attrs={'placeholder': 'Ward', 'class': 'form-control'}),
+			'project': forms.Select(attrs={'class': "custom-select"}),
 		}
 
-		def __init__(self, *args, **kwargs):
-			super().__init__(*args, **kwargs)
-			self.fields['project'].queryset = Project.objects.none()
+		# def __init__(self, *args, **kwargs):
+		# 	super().__init__(*args, **kwargs)
+		# 	self.fields['project'].queryset = Project.objects.none()
 
 
 class BeneficiaryForm(forms.ModelForm):
@@ -133,6 +139,7 @@ class BeneficiaryForm(forms.ModelForm):
 			'address': forms.TextInput(attrs={'placeholder': 'Address', 'class': 'form-control'}),
 			'ward_no': forms.TextInput(attrs={'placeholder': 'Ward Number', 'class': 'form-control'}),
 			'Type': forms.TextInput(attrs={'placeholder': 'Type', 'class': 'form-control'}),
+			'cluster': forms.Select(attrs={'class': "custom-select"}),
 		}
 
 
@@ -141,3 +148,10 @@ class UserRoleForm(forms.ModelForm):
 	class Meta:
 		model = UserRole
 		fields = ('user', 'project', 'group')
+
+
+class ConfigForm(forms.ModelForm):
+
+	class Meta:
+		model = Config
+		fields = ('available_version', 'updates')

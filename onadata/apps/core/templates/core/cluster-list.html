@@ -13,7 +13,7 @@
                 <div class="col-lg-7 col-md-6 col-sm-12">
                     <h2>CLuster list</h2>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
                         <li class="breadcrumb-item">Project</li>
                         <li class="breadcrumb-item active">Cluster list</li>
                     </ul>
@@ -50,6 +50,7 @@
                                         <a href="{% url 'cluster_delete' cluster.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
                                         <a href="{% url 'cluster_edit' cluster.pk %}" class="btn"> <i class="la la-edit"></i></a>
                                         <a href="{% url 'cluster_assign' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>
+                                        <a href="{% url 'submission' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>
                                     </td>
                                 </tr>
                             {% endfor %}

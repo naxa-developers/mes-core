@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary, ClusterAG, ClusterA
+from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary, ClusterAG, ClusterA, Config
 
 
 
@@ -68,7 +68,7 @@ class CASerializer(serializers.ModelSerializer):
 	target_unit = serializers.ReadOnlyField(source='activity.target_unit')
 	start_date = serializers.ReadOnlyField(source='activity.start_date')
 	end_date = serializers.ReadOnlyField(source='activity.end_date')
-	form = serializers.ReadOnlyField(source='activity.form')
+	form = serializers.ReadOnlyField(source='activity.form.id')
 	beneficiary_level = serializers.ReadOnlyField(source='activity.beneficiary_level')
 
 	class Meta:
@@ -96,4 +96,14 @@ class ClusterSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Cluster
 		fields = ('id', 'name', 'district', 'municipality', 'ward', 'clusterag')
+
+
+class ConfigSerializer(serializers.ModelSerializer):
+	beneficiary_updated = serializers.SerializerMethodField()
+	activity_group_updated = serializers.SerializerMethodField()
+
+
+	class Meta:
+		model = Config
+		fields = ('id', 'available_version', 'updates', 'beneficiary_updated', 'activity_group_updated')
 

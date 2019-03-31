@@ -205,6 +205,7 @@
             textarea{
                 min-height: 200px;
             }
+            
             .target{
                 @include flexjust;
                 justify-content: flex-start;
@@ -230,11 +231,25 @@
                 .select2-selection__arrow{
                     display: none;
                 }
+                
             }
-	
+            &.target-group{
+                position: relative;
+                button.add-unit{
+                    position: absolute;
+                    right:0;
+                    bottom:0;
+                    border:1px solid $color-primary;
+                    background-color: transparent;
+                    color:$color-orange;
+                    @include radius50;
+                }
+            }
+            
         }
     }
 }
+
 .custom-upload{
     position: relative;
     min-height: 200px;
@@ -262,6 +277,13 @@
     }
 }
 .project-form{
+    ul{
+        margin:0;
+        padding: 0;
+        li{
+            list-style: none;
+        }
+    }
     &.accordion-form{
         max-width: 100%;
         .cluster-accordion{
@@ -323,6 +345,107 @@
                     top:5px;
                 }
               }
+            }
+            &.submission-acc{
+                .card{
+                    .card-header{
+                        padding-bottom: 7px !important;
+                        border-bottom: 1px solid $color-light;
+                        
+                        h5{
+                            position: relative;
+                            a {
+                                display: block;
+                                position: relative;
+                                &:after {
+                                  content: "\f110"; /* fa-chevron-down */
+                                  font-family: 'LineAwesome';
+                                  position: absolute;
+                                  right: 0;
+                                }
+                              }
+                              a[aria-expanded="true"]:after {
+                                content: "\f113"; /* fa-chevron-up */
+                              }
+                            .submission-count{
+                                position: absolute;
+                                right:2rem;
+                                @include translatey;
+                                small{
+                                width:24px;
+                                height: 24px;
+                                display: inline-block;
+                                text-align: center;
+                                line-height: 24px;
+                                border:1px solid $color-primary;
+                                @include radius50;
+                                font-size:0.675rem;
+                                color:$color-orange;
+                                }
+                                sup{
+                                    @extend .pulse-fast;
+                                    @include radius50;
+                                    color:$color-secondary;
+                                }
+                            }
+                        }
+                    }
+                    .card-body{
+                        ul{
+                            li{
+                                padding:5px 0;
+                                .submission-count{
+                                    margin-left: 15px;
+                                    small{
+                                        width:18px;
+                                        height: 18px;
+                                        display: inline-block;
+                                        text-align: center;
+                                        line-height: 18px;
+                                        border:1px solid $color-primary;
+                                        @include radius50;
+                                        font-size:0.6rem;
+                                        color:$color-orange;
+                                    }
+                                    sup{
+                                        @extend .pulse-fast;
+                                        @include radius50;
+                                        color:$color-secondary;
+                                    }
+                                }
+                                &:first-child{
+                                    padding-top:0;
+                                }
+                                &:last-child{
+                                    padding-bottom:0;
+                                }
+                                &:hover{
+                                    a{
+                                        color:$color-secondary;
+                                    }
+                                }
+                                .checkbox{
+                                    position: relative;
+                                    margin:0;
+                                    margin-left:7px;
+                                    input{
+                                        display: none;
+                                    }
+                                    label{
+                                        padding:0;
+                                        margin:0;
+                                        position: initial;
+                                        line-height: 20px;
+                                        &::after, &::before {
+                                            width: 20px;
+                                            height: 20px;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
           }
           button.btn-toggle{

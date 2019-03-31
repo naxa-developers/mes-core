@@ -5,29 +5,37 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponseRedirect
 
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
+import pandas as pd
+from django.contrib import messages
 
-from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, ClusterSerializer, BeneficiarySerialzier
+from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
+	ClusterSerializer, BeneficiarySerialzier, ConfigSerializer
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole
-from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, UserRoleForm
+
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission, Config
+
+from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
+				   UserRoleForm, ConfigForm
 
 
 def logout_view(request):
-    logout(request)
+	logout(request)
 
-    return render()
+	return render()
+
 
 class LoginRequiredMixin(object):
-    @classmethod
-    def as_view(cls, **initkwargs):
-        view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
-        return login_required(view)
+	@classmethod
+	def as_view(cls, **initkwargs):
+		view = super(LoginRequiredMixin, cls).as_view(**initkwargs)
+		return login_required(view)
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -37,7 +45,6 @@ class HomeView(LoginRequiredMixin, TemplateView):
 	# 	print(self.request.group)
 
 
-
 class SignInView(TemplateView):
 	template_name = 'core/sign-in.html'
 
@@ -45,7 +52,7 @@ class SignInView(TemplateView):
 class SignUpView(TemplateView):
 	template_name = 'core/sign-up.html'
 
-	def signup(request):
+	def signup(self, request):
 		if request.method == 'POST':
 			form = SignUpForm(request.POST)
 			if form.is_valid():
@@ -76,14 +83,14 @@ class ProjectListView(ListView):
 
 class ProjectDetailView(DetailView):
 	model = Project
-	template_name = 'core/project-detail.html' 
+	template_name = 'core/project-detail.html'
 
 
 class ProjectCreateView(CreateView):
 	model = Project
 	form_class = ProjectForm
 	template_name = 'core/project-form.html'
-	
+
 	success_url = reverse_lazy('project_list')
 
 
@@ -98,7 +105,6 @@ class ProjectDeleteView(DeleteView):
 	model = Project
 	template_name = 'core/project-delete.html'
 	success_url = reverse_lazy('project_list')
-
 
 
 class OutputListView(ListView):
@@ -131,11 +137,9 @@ class OutputDeleteView(DeleteView):
 	success_url = reverse_lazy('output_list')
 
 
-
 class ActivityGroupListVeiw(ListView):
 	model = ActivityGroup
 	template_name = 'core/activitygroup-list.html'
-
 
 
 class ActivityGroupDeleteView(DeleteView):
@@ -161,8 +165,6 @@ class ActivityGroupUpdateView(UpdateView):
 class ActivityGroupDetailView(DetailView):
 	model = ActivityGroup
 	template_name = 'core/activitygroup-detail.html'
-
-
 
 
 class ActivityListView(ListView):
@@ -195,7 +197,6 @@ class ActivityDeleteView(DeleteView):
 	success_url = reverse_lazy('activity_list')
 
 
-
 class ClusterListView(ListView):
 	model = Cluster
 	template_name = 'core/cluster-list.html'
@@ -205,7 +206,7 @@ class ClusterCreateView(CreateView):
 	model = Cluster
 	template_name = 'core/cluster-form.html'
 	form_class = ClusterForm
-	success_url = reverse_lazy('cluster_list') 
+	success_url = reverse_lazy('cluster_list')
 
 
 class ClusterDetailView(DetailView):
@@ -229,16 +230,26 @@ class ClusterDeleteView(DeleteView):
 class ClusterAssignView(View):
 
 	def get(self, request, **kwargs):
-		return render(request, 'core/cluster-assign.html')
+		activity_group = ActivityGroup.objects.all()
+		pk = kwargs.get('pk')
+		return render(request, 'core/cluster-assign.html', {'activity_group': activity_group, 'pk': pk})
 
 	def post(self, request, **kwargs):
-		import ipdb
-		ipdb.set_trace()
-
-
-
-
-
+		cluster = Cluster.objects.get(pk=kwargs.get('pk'))
+		checked = [(name, value) for name, value in request.POST.iteritems()]
+		print(checked)
+		for item in checked:
+			if item[0].startswith('ag_'):
+				item = item[0].strip('ag_')
+				activity_group = ActivityGroup.objects.get(id=int(item))
+				ClusterAG.objects.get_or_create(activity_group=activity_group, cluster=cluster)
+			elif item[0].startswith('a_'):
+				if item[1] == 'true':
+					item = item[0].strip('a_')
+					activity = Activity.objects.get(id=int(item))
+					cluster_ag, _ = ClusterAG.objects.get_or_create(cluster=cluster, activity_group=activity.activity_group)
+					ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag)
+		return redirect(reverse_lazy('cluster_list'))
 
 
 class BeneficiaryListView(ListView):
@@ -262,7 +273,7 @@ class BeneficiaryUpdateView(UpdateView):
 	model = Beneficiary
 	template_name = 'core/beneficiary-form.html'
 	form_class = BeneficiaryForm
-	success_url = reverse_lazy('beneficiary_list')	
+	success_url = reverse_lazy('beneficiary_list')
 
 
 class BeneficiaryDeleteView(DeleteView):
@@ -271,6 +282,50 @@ class BeneficiaryDeleteView(DeleteView):
 	success_url = reverse_lazy('beneficiary_list')
 
 
+class BeneficiaryUploadView(View):
+	template_name = 'core/beneficiary-upload.html'
+
+	def post(self, request):
+		try:
+			filename = request.FILES['inputFile']
+			df = pd.read_excel(filename).fillna(value='')
+
+			total = df['SN'].count()
+
+			for row in range(0, total):
+				if 'Project' in df:
+					project = Project.objects.get(id=df['Project'][row])
+				else:
+					project = Project.objects.last()
+				try:
+					cluster, created = Cluster.objects.get_or_create(
+						id=df['ClusterNumber'][row],
+						district=df['District'][row],
+						municipality=df['Municipality'][row],
+						ward=df['Ward'][row],
+						project=project,
+						name=df['ClusterNumber'][row])
+
+				except:
+					cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
+				obj, created = Beneficiary.objects.get_or_create(
+					name=df['Name'][row],
+					ward_no=df['Ward'][row],
+					cluster=cluster,
+					address=df['Settlement'][row],
+					Type=df['Type_MPV'][row],
+					GovernmentTranch=df['GovernmentTranch'][row],
+					ConstructionPhase=df['ConstructionPhase'][row],
+					Typesofhouse=df['Typesofhouse'][row],
+					Remarks=df['Remarks'][row]
+				)
+			return HttpResponseRedirect('/core/beneficiary-list')
+		except:
+			messages.error(request, "Beneficiary upload failed. Unsupported format, or corrupt file.")
+			return HttpResponseRedirect('/core/beneficiary-upload')
+
+	def get(self, request):
+		return render(request, self.template_name)
 
 class UserRoleListView(ListView):
 	model = UserRole
@@ -301,7 +356,30 @@ class UserRoleDeleteView(DeleteView):
 	template_name = 'core/userrole-delete.html'
 	success_url = reverse_lazy('userrole_list')
 
-################################################################################################################
+
+class SubmissionView(View):
+
+	def get(self, request, **kwargs):
+		pk = kwargs.get('pk')
+		cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
+		return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
+
+
+
+class ConfigUpdateView(UpdateView):
+	model = Config
+	template_name = 'core/config-form.html'
+	form_class = ConfigForm
+	success_url = reverse_lazy('')
+
+
+class SubmissionListView(View):
+
+	def get(self, request, **kwargs):
+		cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
+		submissions = Submission.objects.filter(cluster_activity=cluster_activity)
+		return render(request, 'core/submission_list.html', {'submissions': submissions})
+
 
 
 class ActivityViewSet(viewsets.ModelViewSet):
@@ -310,7 +388,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
 
 
 class ActivityGroupViewSet(viewsets.ModelViewSet):
-	queryset =  ActivityGroup.objects.all()
+	queryset = ActivityGroup.objects.all()
 	serializer_class = ActivityGroupSerializer
 
 
@@ -328,6 +406,10 @@ class ClusterViewSet(viewsets.ModelViewSet):
 	queryset = Cluster.objects.all()
 	serializer_class = ClusterSerializer
 
+class ConfigViewSet(viewsets.ModelViewSet):
+	queryset = Config.objects.all()
+	serializer_class = ConfigSerializer
+
 
 class BeneficiaryViewSet(viewsets.ModelViewSet):
 	queryset = Beneficiary.objects.all()
@@ -336,8 +418,5 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		cluster = self.request.query_params['cluster']
 		return self.queryset.filter(cluster=cluster)
-
-
-
 
 

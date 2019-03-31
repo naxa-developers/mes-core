@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.db import models
 
+from onadata.apps.logger.models import Instance
 from onadata.apps.logger.models.xform import XForm
 
 class Project(models.Model):
@@ -74,6 +75,11 @@ class Beneficiary(models.Model):
 	ward_no = models.IntegerField('ward number')
 	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
 	Type = models.CharField(max_length=100)
+	GovernmentTranch = models.CharField(max_length=100, blank=True)
+	ConstructionPhase = models.CharField(max_length=100, blank=True)
+	Typesofhouse = models.CharField(max_length=100, blank=True)
+	Remarks = models.CharField(max_length=100, blank=True)
+
 
 	def __str__(self):
 		return self.name
@@ -100,6 +106,16 @@ class ClusterA(models.Model):
 	cag = models.ForeignKey('ClusterAG', related_name='ca')
 
 
+class Submission(models.Model):
+	cluster_activity = models.ForeignKey('ClusterA', related_name='submissions')
+	instance = models.OneToOneField(Instance, related_name="submission")
+	beneficiary = models.ForeignKey('Beneficiary',null=True, blank=True, on_delete=models.SET_NULL, related_name="submissions" )
+
+
+class Config(models.Model):
+	available_version = models.FloatField('Available Version')
+	updates = models.CharField(max_length=500)
+	
 
 
 
