@@ -153,6 +153,12 @@ class UserRoleForm(forms.ModelForm):
 		model = UserRole
 		fields = ('user', 'project', 'group')
 
+		widgets = {
+			'user': forms.Select(attrs={'class': "custom-select"}),		
+			'project': forms.Select(attrs={'class': "custom-select"}),
+			'group': forms.Select(attrs={'class': "custom-select"}),
+		}
+
 
 class ConfigForm(forms.ModelForm):
 
