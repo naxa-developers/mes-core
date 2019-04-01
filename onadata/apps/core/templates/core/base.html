@@ -254,6 +254,11 @@
                     <li><a href="{% url 'beneficiary_add' %}">add beneficiaries</a></li>
                 </ul>
             </li>
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-asterisk"></i><span>Config</span></a>
+                <ul class="ml-menu">
+                    <li><a href="{% url 'config_edit' 1 %}">config-edit</a></li>
+                </ul>
+            </li>
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-user"></i><span>User-Role</span></a>
                 <ul class="ml-menu">
                     <li><a href="{% url 'userrole_list' %}">user-role list</a></li>
