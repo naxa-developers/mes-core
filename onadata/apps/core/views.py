@@ -19,7 +19,7 @@ from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSeri
 	ClusterSerializer, BeneficiarySerialzier, ConfigSerializer
 
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission, Config
 
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
 				   UserRoleForm, ConfigForm
@@ -74,6 +74,14 @@ class ForgotView(TemplateView):
 
 class ErrorView(TemplateView):
 	template_name = 'core/404.html'
+
+
+class Dashboard1View(TemplateView):
+	template_name = 'core/dashboard-1.html'
+
+
+class Dashboard2View(TemplateView):
+	template_name = 'core/dashboard-2.html'
 
 
 class ProjectListView(ListView):
