@@ -1,3 +1,9 @@
+.col-5{
+    @include rowcol;
+    flex:0 0 20%;
+    -ms-flex:0 0 20%;
+    max-width: 20%;
+}
 .dash-top{
     .card.card-widget{
         text-align: center;
@@ -68,4 +74,295 @@
         
     }
     
+}
+
+.project-section{
+    margin-bottom: 2rem;
+    .card{
+        background-color: $color-light;
+        .card-header{
+            border-bottom: 1px solid rgba($color-primary, 0.2);
+            h5{
+                margin-bottom: 0;
+                text-transform: uppercase;
+                font-size: 0.775rem;
+                font-weight: 600;
+            }
+        }
+    }
+    .project-list{
+        .card-body{
+            ul{
+                li{
+                    font-size: 0.875rem;
+                    label{
+                        font-weight: 700;
+                        font-size: 0.775rem;
+                        margin-right: 0.5rem;
+                        text-transform: capitalize;
+                        min-width: 150px;
+                    }
+                }
+            }
+        }
+    }
+}
+.map-view{
+    .card{
+        
+    }
+    .card.card-widget{
+        @include anim05;
+        transform: translateZ(0);
+        background-color:$color-bg;
+        .body{
+            background-color:$color-bg;
+            padding: 15px;
+            .card-content{
+                @include flexjust;
+                justify-content: flex-start;
+                align-content: center;
+                padding:0.4rem 0;
+                .card-icon{
+                    width:40px;
+                    height: 40px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: rgba($color-orange, 0.7);
+                    @include radius50;
+                    -ms-box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
+                    -moz-box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
+                    -webkit-box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
+                    box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
+                    @include anim05;
+                    margin-right: 1rem;
+                    i{
+                        font-size:1.5rem;
+                        font-weight: 600;
+                        color: rgba($color-white, 0.9);
+                        @include anim05;
+                    }
+                }
+                .card-text{
+                    color:$color-primary;
+                    h3{
+                        font-weight: 600;
+                        font-size: 1rem; 
+                    }
+                    h5{
+                        text-transform: uppercase;
+                        font-size:0.675rem;
+                        color:$color-secondary;
+                        @include anim05;
+                        font-weight: 600;
+                    }
+                }
+            }
+        }
+        &:hover{
+            transform: translate(0, -4px);
+            .body{
+                .card-content{
+                    .card-icon{
+                        -ms-box-shadow: 0 1px 13px 0 rgba($color-secondary, 0.4);
+                        -moz-box-shadow: 0 1px 13px 0 rgba($color-secondary, 0.4);
+                        -webkit-box-shadow: 0 1px 13px 0 rgba($color-secondary, 0.4);
+                        box-shadow: 0 1px 13px 0 rgba($color-secondary, 0.4);
+                        background-color: $color-secondary;
+                    }
+                    .card-text{
+                        h5{
+                            color:$color-orange;
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+}
+.graph{
+    form{
+        @include flexjust;
+        justify-content: flex-start;
+        align-items: center;
+        .form-group{
+            max-width: 12rem;
+            width:100%;
+            min-width: 10rem;
+            margin-right: 1rem;
+            .project-id{
+                @include flexjust;
+                justify-content: flex-start;
+                align-items: center;
+                label{
+                    margin-right: 15px;
+                }
+                span{
+                    padding:5px 15px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: $color-bg;
+                    color:$color-primary;
+                    border:1px solid rgba($color-primary, 0.2);
+                    @include radius5;
+                }
+            }
+            input.form-control, textarea{
+                background-color: $color-bg;
+                border-color:rgba($color-primary, 0.2);
+                border-color: none!important;
+                -webkit-outline:none!important;
+                outline:none !important;
+                box-shadow: none !important;
+                &::placeholder{
+                    font-size: 0.775rem;
+                    color:$color-primary;
+                }
+                &:focus{
+                    border-color: none!important;
+                    -webkit-outline:none!important;
+                    outline:none !important;
+                    box-shadow: none !important;
+                }
+            }
+            .input-group-append{
+                .input-group-text{
+                    background-color:transparent;
+                    color:$color-secondary;
+                    border-color:rgba($color-primary, 0.2);
+                    @include anim05;
+                    &:hover{
+                        background-color:$color-orange;
+                    }
+                }
+            }
+            .select-option{
+                position: relative;
+                border:1px solid rgba($color-primary, 0.2);
+                @include radius5;
+                font-size:0.775rem;
+                &::after{
+                    content:'\f110';
+                    font-family: 'LineAwesome';
+                    @include translatey;
+                    right:10px;
+                    color:$color-secondary;
+                    pointer-events: none;
+                }
+                span{
+                    display: block;
+                    padding:0.5rem 1rem;
+                    cursor: pointer;
+                    font-size:0.775rem;
+                }
+                .select-list{
+                    position: absolute;
+                    top:100%;
+                    width:100%;
+                    left:0;
+                    background-color: $color-light;
+                    border:1px solid rgba($color-primary, 0.2);
+                    @include radius5;
+                    padding:10px;
+                    z-index:999;
+                    opacity:0;
+                    visibility: hidden;
+                    -webkit-transition: all 0.3s ease-in-out;
+                    -moz-transition: all 0.3s ease-in-out;
+                    -o-transition: all 0.3s ease-in-out;
+                    transition: all 0.3s ease-in-out;
+                    -webkit-transform:scale(0, 0);
+                    -moz-transform: scale(0, 0);
+                    -o-transform: scale(0, 0);
+                    -ms-transform: scale(0, 0);
+                    transform:scale(0, 0);
+                    ul{
+                        li{
+                            .checkbox{
+                                label{
+                                    text-transform: capitalize;
+                                    margin:0;
+                                    line-height: 14px;
+                                    padding-left: 20px;
+                                    &::after,
+                                    &::before{
+                                        width: 14px;
+                                        height: 14px;
+                                        line-height: 14px;
+                                        border: 1px solid $color-primary;
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
+                    &.select-open{
+                        -webkit-transform:scale(1, 1);
+                        -moz-transform: scale(1, 1);
+                        -o-transform: scale(1, 1);
+                        -ms-transform: scale(1, 1);
+                        transform:scale(1, 1);
+                        opacity: 1;
+                        visibility: visible;
+                    }
+                }
+                
+            }
+            &:last-child{
+                margin-right: 0;
+            }
+            
+        }
+    }
+}
+.graph-column{
+    .card{
+        background-color: $color-light;
+        margin-bottom: 3rem;
+        .card-header{
+            border-bottom: 1px solid rgba($color-primary, 0.2);
+            h5{
+                margin-bottom: 0;
+                text-transform: uppercase;
+                font-size: 0.775rem;
+                font-weight: 600;
+            }
+        }
+        .progress {
+            border-radius: 0;
+            overflow: visible;
+            background-color: $color-primary;
+            position: relative;
+            height: 4px;
+            @include radius5;
+            .progress-bar{
+                background-color: $color-secondary;
+                -webkit-transition: width 1.5s ease-in-out;
+                transition: width 1.5s ease-in-out;
+                position: relative;
+                height: 4px;
+                @include radius5;
+                .popOver{
+                    position: absolute;
+                    bottom:5px;
+                    right:-15px;
+                    color:$color-secondary;
+                    font-size: 0.675rem;
+                  }
+            }
+        }
+        
+    }
+}
+.c3-chart-arcs-title {
+    fill: $color-primary;
+}
+.c3-legend-item text {
+    fill: $color-primary;
+    font-size: 12px;
 }

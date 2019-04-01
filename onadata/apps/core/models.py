@@ -2,8 +2,11 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 from rest_framework.authtoken.models import Token
 from django.db import models
+
+from datetime import datetime  
 
 from onadata.apps.logger.models import Instance
 from onadata.apps.logger.models.xform import XForm
@@ -45,6 +48,10 @@ class ActivityGroup(models.Model):
 	project = models.ForeignKey('Project', related_name='activity_group')
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
+	created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+	updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+
 	def __str__(self):
 		return self.name
 
@@ -75,11 +82,16 @@ class Beneficiary(models.Model):
 	ward_no = models.IntegerField('ward number')
 	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
 	Type = models.CharField(max_length=100)
+<<<<<<< HEAD
+	created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+	updated_at = models.DateTimeField(auto_now=True)
+=======
 	GovernmentTranch = models.CharField(max_length=100, blank=True)
 	ConstructionPhase = models.CharField(max_length=100, blank=True)
 	Typesofhouse = models.CharField(max_length=100, blank=True)
 	Remarks = models.CharField(max_length=100, blank=True)
 
+>>>>>>> a77c1e2b624a1bae95fdcbdbbe1f7d7961cf1525
 
 	def __str__(self):
 		return self.name
@@ -115,7 +127,4 @@ class Submission(models.Model):
 class Config(models.Model):
 	available_version = models.FloatField('Available Version')
 	updates = models.CharField(max_length=500)
-	
-
-
-
+	activity_group_updated = models.DateTimeField(default=datetime.now(), blank=True)
