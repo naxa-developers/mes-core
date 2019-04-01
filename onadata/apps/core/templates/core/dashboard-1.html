@@ -1,0 +1,871 @@
+{% load static %}
+<!doctype html>
+<html class="no-js " lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<meta name="description" content="Responsive Practical action dashboard.">
+<title>Practical Action</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+ <!-- Favicon-->
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/line-awesome.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/c3.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+      crossorigin="" 
+<!-- Data Tables -->
+<link rel="stylesheet" href="{% static 'plugins/datatable/dataTables.bs4.css' %}" 
+<link rel="stylesheet" href="{% static 'plugins/datatable/dataTables.bs4-custom.css' %}" 
+<!-- Custom Css -->
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body class="">
+    <!-- Main Search -->
+<div id="search">
+    <button id="close" type="button" class="close btn btn-primary btn-icon btn-icon-mini btn-round">x</button>
+    <form>
+        <input type="search" value="" placeholder="Search..." />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+<div class="navbar-right">
+    <ul class="navbar-nav">
+        <li><a href="#search" class="main_search" title="Search..."><i class="la la-search"></i></a></li>
+        <li class="dropdown show">
+            <a href="javascript:void(0);" class="dropdown-toggle" title="Notifications" data-toggle="dropdown" role="button" aria-expanded="true"><i class="la la-bell"></i>
+                <div class="notify"><span class="heartbit"></span><span class="point"></span></div>
+            </a>
+            <ul class="dropdown-menu slideUp2" >
+                <li class="header">Notifications</li>
+                
+                <li class="body">
+                    <ul class="menu list-unstyled">
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4>8 New Members joined</h4>
+                                    <p><i class="la la-history"></i> 14 mins ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Shyam</b> changes project list</h4>
+                                    <p><i class="la la-history"></i> 22 mins ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Nancy Doe</b> add output</h4>
+                                    <p><i class="la la-history"></i> 3 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Nancy</b> Changed name</h4>
+                                    <p><i class="zmdi zmdi-time"></i> 2 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>John</b> updated activity</h4>
+                                    <p><i class="la la-history"></i> 4 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>John</b> Updated cluster</h4>
+                                    <p><i class="la la-history"></i> 3 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4>Settings Updated</h4>
+                                    <p><i class="la la-history"></i> Yesterday </p>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="footer"> 
+                    <a href="javascript:void(0);">View All Notifications</a> 
+                </li>
+            </ul>
+        </li>
+        <li class="dropdown">
+            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="la la-flag"></i>
+            <div class="notify"><span class="heartbit"></span><span class="point"></span></div>
+            </a>
+            <ul class="dropdown-menu slideUp2">
+                <li class="header">Tasks list</li>
+                <li class="body" style="height: 330px;">
+                    <ul class="menu list-unstyled">
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4>8 New Members joined</h4>
+                                    <p><i class="la la-history"></i> 14 mins ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Shyam</b> changes project list</h4>
+                                    <p><i class="la la-history"></i> 22 mins ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Nancy Doe</b> add output</h4>
+                                    <p><i class="la la-history"></i> 3 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>Nancy</b> Changed name</h4>
+                                    <p><i class="la la-history"></i> 2 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>John</b> updated activity</h4>
+                                    <p><i class="la la-history"></i> 4 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4><b>John</b> Updated cluster</h4>
+                                    <p><i class="la la-history"></i> 3 hours ago </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0);">
+                                <div class="menu-info">
+                                    <h4>Settings Updated</h4>
+                                    <p><i class="la la-history"></i> Yesterday </p>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="footer"> 
+                    <a href="javascript:void(0);">View All Tasks</a> 
+                </li>
+            </ul>
+        </li>
+        <li><a href="javascript:void(0);" class="app_calendar" title="Calendar"><i class="la la-calendar"></i></a></li>
+        <li class="dropdown">
+            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="la la-cog"></i></a>
+            <ul class="dropdown-menu slideUp2" >
+                    <li class="body">
+                        <ul class="menu list-unstyled">
+                            <li>
+                                <a href="javascript:void(0);">Change password</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);">Change profile</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+        </li>
+        <li><a href="sign-in.html" class="mega-menu" title="Sign Out"><i class="la la-power-off"></i></a></li>
+    </ul>
+</div>
+<!-- Left Sidebar -->
+<aside id="leftsidebar" class="sidebar">
+    <div class="navbar-brand">
+        <button class="btn-menu ls-toggle-btn" type="button"><i class="la la-navicon"></i></button>
+        <a href="index.html"><img src="images/logo.png" width="100" alt="Practical Action"></a>
+    </div>
+    <div class="menu">
+        <ul class="list">
+            <li>
+                <div class="user-info">
+                    <a class="image" href="index.html"><img src="images/pf.png" alt="User"></a>
+                    <div class="detail">
+                        <h4>Super Admin</h4>
+                        <small>Super Admin</small>                        
+                    </div>
+                </div>
+            </li>
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-tasks"></i><span>Dashboard</span></a>
+                <ul class="ml-menu">
+                    <li><a href="dashboard-1.html">Dashboard-1</a></li>
+                    <li><a href="dashboard-2.html">Dashboard-2</a></li>
+                </ul>
+            </li>
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-tasks"></i><span>Projects</span></a>
+                <ul class="ml-menu">
+                    <li><a href="project-list.html">Projects List</a></li>
+                    <li><a href="project-form.html">create Projects</a></li>
+                </ul>
+            </li>
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-signal"></i><span>Output</span></a>
+                <ul class="ml-menu">
+                    <li><a href="output-list.html">output List</a></li>
+                    <li><a href="output-list.html">add output</a></li>
+                </ul>
+            </li>
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-object-group"></i><span>Activity group</span></a>
+                <ul class="ml-menu">
+                    <li><a href="activitygroup-list.html">Activity group List</a></li>
+                    <li><a href="activitygroup-form.html">add activity group</a></li>
+                </ul>
+            </li>
+
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-line-chart"></i><span>Activities</span></a>
+                <ul class="ml-menu">
+                    <li><a href="activity-list.html">activity List</a></li>
+                    <li><a href="activity-form.html">add activity</a></li>
+                </ul>
+            </li>
+            
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>
+                <ul class="ml-menu">
+                    <li><a href="cluster-list.html">activity assign</a></li>
+                    <li><a href="cluster-form.html">add cluster</a></li>
+                </ul>
+            </li>
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-sellsy"></i><span>Benificiaries</span></a>
+                <ul class="ml-menu">
+                    <li><a href="banificiary-list.html">banificiary list</a></li>
+                    <li><a href="banificiary.html">upload Benificiaries</a></li>
+                    <li><a href="banificiary-form.html">edit Benificiaries</a></li>
+                </ul>
+            </li>
+            <li><a href="javascript:void(0);" class="menu-toggle"><i class="la la-lock"></i><span>Authentication</span></a>
+                <ul class="ml-menu">
+                    <li><a href="sign-in.html">Sign In</a></li>
+                    <li><a href="sign-up.html">Sign Up</a></li>
+                    <li><a href="forgot-password.html">Forgot Password</a></li>
+                    <li><a href="404.html">Page 404</a></li>
+                </ul>
+            </li>
+            
+        </ul>
+    </div>
+</aside>
+
+<!-- Main Content -->
+
+<section class="content">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Dashboard-1</h2>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn btn-primary float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="project-section">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="project-list">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Project overview</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li><label>Name :</label><span>House Construction</span></li>
+                                    <li><label>Project Manager :</label><span>Mr.Ramesh khadgi</span></li>
+                                    <li><label>Province :</label><span>Province 2, Province 4</span></li>
+                                    <li><label>district :</label><span>Gorkha, Makawanpur</span></li>
+                                    <li><label>Municipality :</label><span>Thaha, Dhordi</span></li>
+                                    <li><label>Start date :</label><span>01/01/2019</span></li>
+                                    <li><label>End date :</label><span>01/05/2020</span></li>
+                                    <li><label>reporting period :</label><span>Quarterly</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="map-view">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Project summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row clearfix">
+                                    <div class="col-lg-4">
+                                        <div class="card card-widget ">
+                                            <div class="body">
+                                                <a href="output-form.html">
+                                                    <div class="card-content">
+                                                        <div class="card-icon">
+                                                            <i class="la la-signal"></i>
+                                                        </div>
+                                                        <div class="card-text">
+                                                            <h3>1</h3>
+                                                            <h5>Output</h5>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 ">
+                                        <div class="card card-widget ">
+                                            <div class="body">
+                                                <a href="#">
+                                                    <div class="card-content">
+                                                        <div class="card-icon">
+                                                            <i class="la la-object-group"></i>
+                                                        </div>
+                                                        <div class="card-text">
+                                                            <h3>3</h3>
+                                                            <h5>Activity Group</h5>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 ">
+                                        <div class="card card-widget ">
+                                            <div class="body">
+                                                <a href="#">
+                                                    <div class="card-content">
+                                                        <div class="card-icon">
+                                                            <i class="la la-line-chart"></i>
+                                                        </div>
+                                                        <div class="card-text">
+                                                            <h3>15</h3>
+                                                            <h5>Activities</h5>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-lg-4 ">
+                                        <div class="card card-widget mrt30">
+                                            <div class="body">
+                                                <a href="#">
+                                                    <div class="card-content">
+                                                        <div class="card-icon">
+                                                            <i class="la la-transgender-alt"></i>
+                                                        </div>
+                                                        <div class="card-text">
+                                                            <h3>31</h3>
+                                                            <h5>Cluster</h5>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 ">
+                                        <div class="card card-widget mrt30">
+                                            <div class="body">
+                                                <a href="#">
+                                                    <div class="card-content">
+                                                        <div class="card-icon">
+                                                            <i class="la la-sellsy"></i>
+                                                        </div>
+                                                        <div class="card-text">
+                                                            <h3>1560</h3>
+                                                            <h5>Benificiaries</h5>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="graph">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <form>
+                        <div class="form-group">
+                            <div class="select-option">
+                                <span>select District</span>
+                                <div class="select-list">
+                                    <ul>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="dist_1" type="checkbox" name="dist_1">
+                                                <label for="dist_1">Gorkha</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="dist_2" type="checkbox" name="dist_2">
+                                                <label for="dist_2">Makawanpur</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="select-option">
+                                <span>select Municipality</span>
+                                <div class="select-list">
+                                    <ul>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="mun_1" type="checkbox" name="mun_1">
+                                                <label for="mun_1">Thaha</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="mun_2" type="checkbox" name="mun_2">
+                                                <label for="mun_2">Dhordi</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="select-option">
+                                <span>select cluster</span>
+                                <div class="select-list">
+                                    <ul>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="cl_1" type="checkbox" name="dist_1">
+                                                <label for="cl_1">1</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="cl_2" type="checkbox" name="cl_2">
+                                                <label for="cl_2">2</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="cl_3" type="checkbox" name="cl_3">
+                                                <label for="cl_3">3</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="select-option">
+                                <span>select type</span>
+                                <div class="select-list">
+                                    <ul>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="tp_1" type="checkbox" name="tp_1">
+                                                <label for="tp_1">Marginalized</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="tp_2" type="checkbox" name="tp_2">
+                                                <label for="tp_2">vulnerable</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="select-option">
+                                <span>select Activity group</span>
+                                <div class="select-list">
+                                    <ul>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="acg_1" type="checkbox" name="acg_1">
+                                                <label for="acg_1">Pre-construction stage</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="acg_2" type="checkbox" name="acg_2">
+                                                <label for="acg_2">Physical construction stage</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="acg_3" type="checkbox" name="acg_3">
+                                                <label for="acg_3">Post construction stage</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="select-option">
+                                <span>select activity</span>
+                                <div class="select-list">
+                                    <ul>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="ac_1" type="checkbox" name="ac_1">
+                                                <label for="ac_1">Verification & Listing</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox">
+                                                <input id="ac_2" type="checkbox" name="ac_2">
+                                                <label for="ac_2">Household Awareness Creation</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn">Filter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="graph-column">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Cluster</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="chart-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>map</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="map" style="height:320px"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Cluster</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="cluseter_time"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Cluster</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="chart-donut"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Cluster</h5>
+                            </div>
+                            <div class="card-body">
+                                <table id="basicExample" class="table table-striped table-bordered ">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2" class="text-center">cluster Name</th>
+                                            <th colspan="7" class="text-center">step to complete house construction</th>
+                                            <th colspan="8" class="text-center">physical construction stage</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Verification & Listing (2%)</th>
+                                            <th>Household Awareness Creation (3%)</th>
+                                            <th>Identification of house type (5%)</th>
+                                            <th>Finaliztion of house design (7%)</th>
+                                            <th>Cost estimation (8%)</th>
+                                            <th>Linkages with service providers (7%)</th>
+                                            <th>Agreement with household (8%)</th>
+                                            <th>Procurement of Materials (6%)</th>
+                                            <th>Constriction upto DPC (12%)</th>
+                                            <th>Construction upto roof (20%)</th>
+                                            <th>Roofing & final completion (12%)</th>
+                                            <th>Receiving 3rd Tranche (12%)</th>
+                                            <th>Verify data (2%)</th>
+                                            <th>Fubak oatnebts for construction (5%)</th>
+                                            <th>Handover house (1%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>CLuster 1</td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 2</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td><span class="completed"></span></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 3</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td><span class="completed"></span></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 4</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 5</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><span class="completed"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 6</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 7</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 8</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 8</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 9</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CLuster 10</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Jquery Core Js --> 
+<script src="{% static 'js/libscripts.bundle.js' %}"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) --> 
+<script src="{% static 'js/vendorscripts.bundle.js' %}"></script> <!-- slimscroll, waves Scripts Plugin Js -->
+<script src="{% static 'js/select2.min.js' %}"></script>
+<script src="{% static 'js/c3.bundle.js' %}"></script>
+<script src="{% static 'js/c3.js' %}"></script>
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+        crossorigin=""></script>
+<!-- Data Tables -->
+<script src="{% static 'plugins/datatable/dataTables.min.js' %}"></script>
+
+<!-- Custom Data tables -->
+<script src="{% static 'plugins/datatable/custom/custom-datatables.js' %}"></script>
+
+
+<script src="{% static 'js/mainscripts.bundle.js' %}"></script>
+<script src="{% static 'js/map.js' %}"></script>
+<script src="{% static 'js/dateform.js' %}"></script>
+</body>
+
+
+</html>

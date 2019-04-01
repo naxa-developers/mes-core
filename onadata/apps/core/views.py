@@ -76,6 +76,14 @@ class ErrorView(TemplateView):
 	template_name = 'core/404.html'
 
 
+class Dashboard1View(TemplateView):
+	template_name = 'core/dashboard-1.html'
+
+
+class Dashboard2View(TemplateView):
+	template_name = 'core/dashboard-2.html'
+
+
 class ProjectListView(ListView):
 	model = Project
 	template_name = 'core/project-list.html'
