@@ -15,8 +15,13 @@ from rest_framework import viewsets
 import pandas as pd
 from django.db.models import Q
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.exceptions import PermissionDenied
+from itertools import chain
+from rest_framework.authtoken import views as restviews
+import json
+from django.utils.decorators import method_decorator
+
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer
@@ -445,6 +450,23 @@ class ActivityViewSet(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
 
 
+class UserActivityViewSet(viewsets.ModelViewSet):
+    serializer_class = ActivitySerializer
+
+    def get_queryset(self):
+        user = User.objects.get(username=self.kwargs.get('username'))
+        roles = UserRole.objects.filter(user=user).select_related('group', 'cluster')
+        for role in roles:
+            print(role.cluster)
+            clusterag = ClusterAG.objects.filter(cluster=role.cluster)
+            activity = ClusterA.objects.filter(cag=clusterag)
+            if role.group.name == 'social-mobilizer':
+                queryset1 = Activity.objects.filter(clustera__in=activity)
+            if role.group.name == 'community-social-mobilizer':
+                queryset2 = Activity.objects.filter(beneficiary_level=True, clustera__in=activity)
+        return list(chain(queryset1, queryset2))
+
+
 class ActivityGroupViewSet(viewsets.ModelViewSet):
     queryset = ActivityGroup.objects.all()
     serializer_class = ActivityGroupSerializer
@@ -477,3 +499,39 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         cluster = self.request.query_params['cluster']
         return self.queryset.filter(cluster=cluster)
+
+class userCred(View):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(userCred, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        return HttpResponse(json.dumps({'success': False, 'message': 'No valid request'}))
+
+    def post(self, request):
+        try:
+            user_name = request.POST.get('username')
+            pwd = request.POST.get('password')
+            user = authenticate(username=user_name, password=pwd)
+            if user is not None:
+                user = User.objects.get(username=user_name)
+                # user.backend = 'django.contrib.auth.backends.ModelBackend'
+                # login(request, user)
+                token = restviews.obtain_auth_token(request)
+                user_dict = {
+                    'token': "" if token is None else token.data['token'],
+                    'name': user.username
+                }
+                userrole = UserRole.objects.filter(user=user)
+                cluster = Cluster.objects.filter(userrole_cluster__in=userrole)
+                cluster_arr = []
+                for c in cluster:
+                    cluster_arr.append(c.toDict())
+                user_dict['cluster'] = cluster_arr
+
+                return HttpResponse(json.dumps(user_dict))
+            else:
+                raise('no user exists')
+        except User.DoesNotExist as e:
+            return HttpResponse(json.dumps({'success': False, 'message': e.message}))

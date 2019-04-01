@@ -38,6 +38,14 @@ class Cluster(models.Model):
 	municipality = models.CharField(max_length=200)
 	ward = models.CharField(max_length=200)
 
+	def toDict(self):
+		return {'id':self.id,
+				'name': self.name,
+				'project': self.project,
+				'district':self.district,
+				'municipality':self.municipality,
+				'ward':self.ward}
+
 	def __str__(self):
 		return self.name
 
