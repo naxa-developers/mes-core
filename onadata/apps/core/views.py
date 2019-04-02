@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
@@ -553,6 +553,6 @@ class userCred(View):
 
                 return HttpResponse(json.dumps(user_dict))
             else:
-                return HttpResponse(json.dumps({'success': False, 'message': 'Not a valid user'}))
+                return HttpResponseBadRequest()
         except User.DoesNotExist as e:
-            return HttpResponse(json.dumps({'success': False, 'message': e.message}))
+            return HttpResponse(json.dumps({'message': e.message}))
