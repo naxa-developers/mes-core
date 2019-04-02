@@ -42,6 +42,14 @@ class ActivityGroupSerializer(serializers.ModelSerializer):
         fields = ('id', 'output', 'name', 'description', 'activity')
 
 
+# for activity group on basis of cluster
+class ClusterActivityGroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ActivityGroup
+        fields = ('id', 'output', 'name', 'description')
+
+
 class BeneficiarySerialzier(serializers.ModelSerializer):
     class Meta:
         model = Beneficiary

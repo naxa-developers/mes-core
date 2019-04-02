@@ -24,7 +24,7 @@ from django.utils.decorators import method_decorator
 
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
-    ClusterSerializer, BeneficiarySerialzier, ConfigSerializer
+    ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
     Submission, Config
@@ -454,17 +454,28 @@ class UserActivityViewSet(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
 
     def get_queryset(self):
-        user = User.objects.get(username=self.kwargs.get('username'))
-        roles = UserRole.objects.filter(user=user).select_related('group', 'cluster')
+        roles = UserRole.objects.filter(user=self.request.user, cluster_id=self.kwargs.get('cluster_id'))
         for role in roles:
-            print(role.cluster)
-            clusterag = ClusterAG.objects.filter(cluster=role.cluster)
-            activity = ClusterA.objects.filter(cag=clusterag)
+            activitygroup = ActivityGroup.objects.get(pk=self.kwargs.get('pk'))
             if role.group.name == 'social-mobilizer':
-                queryset1 = Activity.objects.filter(clustera__in=activity)
-            if role.group.name == 'community-social-mobilizer':
-                queryset2 = Activity.objects.filter(beneficiary_level=True, clustera__in=activity)
-        return list(chain(queryset1, queryset2))
+                queryset = Activity.objects.filter(activity_group=activitygroup)
+            elif role.group.name == 'community-social-mobilizer':
+                queryset = Activity.objects.filter(beneficiary_level=True, activity_group=activitygroup)
+                print('csm')
+            elif role.group.name == 'super-admin':
+                queryset = Activity.objects.all()
+            else:
+                raise PermissionDenied()
+        return queryset
+
+
+class ClusterActivityGroup(viewsets.ModelViewSet):
+    serializer_class = ClusterActivityGroupSerializer
+
+    def get_queryset(self):
+        cluster = Cluster.objects.filter(pk=self.kwargs.get('pk'))
+        clusterag = ClusterAG.objects.filter(cluster=cluster)
+        return ActivityGroup.objects.filter(clusterag__in=clusterag)
 
 
 class ActivityGroupViewSet(viewsets.ModelViewSet):
