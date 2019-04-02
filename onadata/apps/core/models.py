@@ -60,6 +60,7 @@ class ActivityGroup(models.Model):
 	description = models.CharField(max_length=500)
 	created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 	updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+	weight = models.FloatField(default=0)
 
 
 	def __str__(self):

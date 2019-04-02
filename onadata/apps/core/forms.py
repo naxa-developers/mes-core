@@ -1,8 +1,10 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 from django.forms import widgets
+from django.db.models import Sum
 
 from onadata.apps.logger.models import XForm
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config
@@ -65,24 +67,42 @@ class OutputForm(forms.ModelForm):
 		# 	self.fields['project'].queryset = Project.objects.none()
 
 
-
 class ActivityGroupForm(forms.ModelForm):
 
 	class Meta:
 		model = ActivityGroup
-		fields = ('name', 'description', 'output', 'project')
+		fields = ('name', 'description', 'output', 'project', 'weight')
 
 		widgets = {
 			'name' : forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
 			'description' : forms.Textarea(attrs={'placeholder': 'Description', 'class': 'form-control'}),
 			'output' : forms.Select(attrs={'class': "custom-select"}),
 			'project' : forms.Select(attrs={'class': "custom-select"}),
+			'weight': forms.TextInput(attrs={'placeholder': 'Weight', 'class': 'form-control'})
 		}
 
 		# def __init__(self, *args, **kwargs):
 		# 	super().__init__(*args, **kwargs)
 		# 	self.fields['output'].queryset = Output.objects.none()
-		# 	self.fields['project'].queryset = Project.objects.none()			
+		# 	self.fields['project'].queryset = Project.objects.none()
+
+	def clean_weight(self):
+		if not isinstance(self.cleaned_data.get('weight'), int) and not isinstance(self.cleaned_data.get('weight'), float):
+			raise ValidationError({'weight': ['Please enter a valid weight']})
+		else:
+			return self.cleaned_data.get('weight')
+
+	def clean(self):
+		try:
+			other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
+				weights=Sum('weight'))
+			print(other_activity_groups)
+			if self.cleaned_data['weight'] + other_activity_groups['weights'] > 100:
+				raise ValidationError({
+					'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+		except KeyError:
+			raise ValidationError('error occured')
+
 
 
 class ActivityForm(forms.ModelForm):
