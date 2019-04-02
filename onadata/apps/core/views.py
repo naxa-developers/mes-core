@@ -540,15 +540,18 @@ class userCred(View):
                 # user.backend = 'django.contrib.auth.backends.ModelBackend'
                 # login(request, user)
                 token = restviews.obtain_auth_token(request)
+                userrole = UserRole.objects.filter(user=user)
                 user_dict = {
                     'token': "" if token is None else token.data.get('token'),
-                    'name': user.username
+                    'name': user.username,
                 }
-                userrole = UserRole.objects.filter(user=user)
-                cluster = Cluster.objects.filter(userrole_cluster__in=userrole)
+                cluster = Cluster.objects.filter(userrole_cluster__in=userrole).prefetch_related('userrole_cluster')
                 cluster_arr = []
                 for c in cluster:
-                    cluster_arr.append(c.toDict())
+                    group = c.userrole_cluster.first().group.name
+                    c_dict = c.toDict()
+                    c_dict['role'] = group
+                    cluster_arr.append(c_dict)
                 user_dict['cluster'] = cluster_arr
 
                 return HttpResponse(json.dumps(user_dict))
