@@ -25,14 +25,93 @@
             <div class="card-body">
                 <form method="POST">
                     {% csrf_token %}
-                    {% for field in form %}
-                        <div class="form-group">
-                            <label class="mylabel">{{ field.label }}</label>
-                            <font color="crimson">{{ field.errors }}</font>
-                            {{ field }}
-                            {{ field.help_text }}
+                    <div class="form-group">
+                        <label>{{ form.activity_group.label }}</label>
+                        <div class="select-option">
+                            {{ form.activity_group }}
                         </div>
-                    {% endfor %}
+                    </div>
+                    {% if form.activity_group.errors %}
+                    <font color="crimson">{{ form.name.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>{{ form.name.label }}</label>
+                        {{ form.name }}
+                    </div>
+                    {% if form.name.errors %}
+                    <font color="crimson">{{ form.name.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>{{ form.description.label }}</label>
+                        {{ form.description }}
+                    </div>
+                    {% if form.description.errors %}
+                    <font color="crimson">{{ form.name.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>{{ form.beneficiary_level.label }}</label>
+                        <div class="select-option">
+                            {{ form.beneficiary_level }}
+                        </div>
+                    </div>
+                    {% if form.beneficiary_level.errors %}
+                    <font color="crimson">{{ form.name.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>{{ form.target_number.label }}</label>
+                        <div class="select-option">
+                            {{ form.target_number }}
+                        </div>
+                    </div>
+                    {% if form.target_number.errors %}
+                    <font color="crimson">{{ form.name.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>{{ form.target_unit.label }}</label>
+                        <div class="select-option">
+                            {{ form.target_unit }}
+                        </div>
+                    </div>
+                    {% if form.target_unit.errors %}
+                    <font color="crimson">{{ form.name.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>{{ form.start_date.label }}</label>
+                        <div class="select-option">
+                            {{ form.start_date }}
+                        </div>
+                    </div>
+                    {% if form.start_date.errors %}
+                    <font color="crimson">{{ form.name.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>{{ form.end_date.label }}</label>
+                        <div class="select-option">
+                            {{ form.end_date }}
+                        </div>
+                    </div>
+                    {% if form.end_date.errors %}
+                    <font color="crimson">{{ form.name.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>{{ form.form.label }}</label>
+                        <div class="select-option">
+                            {{ form.form }}
+                        </div>
+                    </div>
+                    {% if form.form.errors %}
+                    <font color="crimson">{{ form.name.errors }}</font>
+                    {% endif %}
+
+
                     <button type="submit" class="btn btn-xs btn-primary">Submit</button>
                 </form>
             </div>
@@ -43,16 +122,16 @@
 {% block scripts %}
 <script type="text/javascript">
    $(document).ready(function(){
-       $('#5').hide();
-       $('#6').hide();
+       $('#id_target_number').hide();
+       $('#id_target_unit').hide();
        $('#id_beneficiary_level').change(function(){
           if ($(this).is(":checked")){
-            $('#5').hide();
-            $('#6').hide();
+            $('#id_target_number').hide();
+            $('#id_target_unit').hide();
           }
           else{
-            $('#5').show();
-            $('#6').show();
+            $('#id_target_number').show();
+            $('#id_target_unit').show();
           }
        });
     });
