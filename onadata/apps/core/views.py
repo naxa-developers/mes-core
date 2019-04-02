@@ -541,7 +541,7 @@ class userCred(View):
                 # login(request, user)
                 token = restviews.obtain_auth_token(request)
                 user_dict = {
-                    'token': "" if token is None else token.data['token'],
+                    'token': "" if token is None else token.data.get('token'),
                     'name': user.username
                 }
                 userrole = UserRole.objects.filter(user=user)
