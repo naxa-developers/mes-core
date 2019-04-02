@@ -177,6 +177,7 @@ class UserRoleForm(forms.ModelForm):
 			'user': forms.Select(attrs={'class': "custom-select"}),		
 			'project': forms.Select(attrs={'class': "custom-select"}),
 			'group': forms.Select(attrs={'class': "custom-select"}),
+			'cluster': forms.Select(attrs={'class': "custom-select"}),
 		}
 
 
