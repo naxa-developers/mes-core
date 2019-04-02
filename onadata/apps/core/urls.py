@@ -14,7 +14,6 @@ router.register(r'cluster', views.ClusterViewSet),
 router.register(r'beneficiary', views.BeneficiaryViewSet),
 router.register(r'config', views.ConfigViewSet),
 
-
 urlpatterns = [
 	url(r'^$', views.HomeView.as_view(), name='home'),
 	url(r'sign-in', views.SignInView.as_view(), name='sign_in'),
@@ -49,6 +48,7 @@ urlpatterns = [
 	url(r'activity-delete/(?P<pk>[0-9]+)/$', views.ActivityDeleteView.as_view(), name='activity_delete'),
 
 	url(r'cluster-list', views.ClusterListView.as_view(), name='cluster_list'),
+    url(r'my-clusters/(?P<pk>[0-9]+)/$', views.UserClusterListView.as_view(), name='user_cluster_list'),
 	url(r'cluster-add', views.ClusterCreateView.as_view(), name='cluster_add'),
 	url(r'cluster-detail/(?P<pk>[0-9]+)/$', views.ClusterDetailView.as_view(), name='cluster_detail'),
 	url(r'cluster-edit/(?P<pk>[0-9]+)/$', views.ClusterUpdateView.as_view(), name='cluster_edit'),
@@ -74,6 +74,10 @@ urlpatterns = [
 	url(r'submission-list/(?P<pk>[0-9]+)/$', views.SubmissionListView.as_view(), name='submission_list'),
 
 	url(r'^api-token-auth/', restviews.obtain_auth_token),
+    url(r'^login', views.userCred.as_view()),
+
+    url(r'^activitygroup/(?P<pk>[0-9]+)/$', views.ClusterActivityGroup.as_view({'get':'list', 'head': 'list'})),
+    url(r'^activity/(?P<cluster_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.UserActivityViewSet.as_view({'get': 'list', 'head': 'list'})),
 ]
 
 urlpatterns += router.urls

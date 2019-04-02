@@ -1,6 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
-
+{% load filters %}
 {% block title %}Cluster List{% endblock %}
 
 {% block content %}
@@ -40,6 +40,52 @@
                     <!-- accordion -->
                     <div class="cluster-accordion">
                         <div id="accordion">
+                            {% for object in selected_activity_group %}
+                            <div class="card">
+                                    <div class="card-header" id="selected_heading-{{ object.activity_group.id }}">
+                                        <h5>
+                                            <div class="checkbox">
+                                                <input id="selected_ag_id_{{ object.activity_group.id }}" type="checkbox" class="select-all" name="ag_{{ object.activity_group.id }}" checked>
+                                                <label for="selected_ag_id_{{ object.activity_group.id }}">{{ object.activity_group.name }}</label>
+                                            </div>
+                                            <a class="collapsed" role="button" data-toggle="collapse" href="#selected_collapse-{{ object.activity_group.id }}" aria-expanded="true"
+                                                aria-controls="selected_collapse-{{ object.activity_group.id }}">
+                                            </a>
+                                        </h5>
+                                    </div>
+                                    <div id="selected_collapse-{{ object.activity_group.id }}" class="collapse show" data-parent="#accordion" aria-labelledby="selected_heading-{{ object.activity_group.id }}">
+                                        <div class="card-body">
+                                            {% for item in object.activity_group.activity.all %}
+                                            {% if item|check_cluster_activity %}
+                                            <div class="form-group">
+                                                <div class="checkbox">
+                                                    <input id="selected_a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" checked value="true">
+                                                    <label for="selected_a_id_{{ item.id }}">{{ item.name }}</label>
+                                                    <!--<p>Start Date: <input type="text" class="datetimepicker" name="{{ item.id }}_start_date"></p>-->
+                                                    <!--<p>End Date: <input type="text" class="datetimepicker" name="{{ item.id }}_end_date"></p>-->
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-toggle active" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="true" autocomplete="off">
+                                                    <div class="handle"></div>
+                                                </button>
+                                            </div>
+                                            {% else %}
+                                            <div class="form-group">
+                                                <div class="checkbox">
+                                                    <input id="selected_a_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
+                                                    <label for="selected_a_{{ item.id }}">{{ item.name }}</label>&nbsp;
+                                                    <!--<p>Start Date: <input type="text" class="datetimepicker" name="{{ item.id }}_start_date"></p>-->
+                                                    <!--<p>End Date: <input type="text" class="datetimepicker" name="{{ item.id }}_end_date"></p>-->
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="false" autocomplete="off">
+                                                    <div class="handle"></div>
+                                                </button>
+                                            </div>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
                             {% for object in activity_group %}
                                 <div class="card">
                                     <div class="card-header" id="heading-{{ object.id }}">
@@ -60,6 +106,8 @@
                                                 <div class="checkbox">
                                                     <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
                                                     <label for="a_id_{{ item.id }}">{{ item.name }}</label>
+                                                    <!--<p>Start Date: <input type="text" class="datetimepicker" name="{{ item.id }}_start_date"></p>-->
+                                                    <!--<p>End Date: <input type="text" class="datetimepicker" name="{{ item.id }}_end_date"></p>-->
                                                 </div>
                                                 <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="false" autocomplete="off">
                                                     <div class="handle"></div>
@@ -85,6 +133,10 @@
 
 {% block scripts %}
 <script type="text/javascript">
+    <!--$( function() {-->
+    <!--$( ".datetimepicker" ).datepicker();-->
+  <!--} );-->
+
     function changeValue(elem){
         var parentDiv = elem.parentNode.children[0];
         if(parentDiv.children[0].value === "false"){

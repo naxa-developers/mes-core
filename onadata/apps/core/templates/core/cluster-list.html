@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load filters %}
 
 {% block title %}Cluster List{% endblock %}
 
@@ -39,7 +40,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for cluster in object_list %}
+                            {% for cluster in clusters %}
                                 <tr>
                                     <td>{{ cluster.name }}</td>
                                     <td>{{ cluster.project }}</td>
@@ -47,10 +48,12 @@
                                     <td>{{ cluster.municipality }}</td>
                                     <td>{{ cluster.ward }}</td>
                                     <td class="table-action">
-                                        <a href="{% url 'cluster_delete' cluster.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
-                                        <a href="{% url 'cluster_edit' cluster.pk %}" class="btn"> <i class="la la-edit"></i></a>
-                                        <a href="{% url 'cluster_assign' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>
-                                        <a href="{% url 'submission' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>
+                                        {% if request.user|check_manager_permission:cluster %}
+                                            <a href="{% url 'cluster_delete' cluster.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
+                                            <a href="{% url 'cluster_edit' cluster.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                            <a href="{% url 'cluster_assign' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>
+                                        {% endif %}
+                                            <a href="{% url 'submission' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>
                                     </td>
                                 </tr>
                             {% endfor %}

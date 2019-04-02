@@ -40,3 +40,21 @@
     </div>
 </section>
 {% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+   $(document).ready(function(){
+       $('#5').hide();
+       $('#6').hide();
+       $('#id_beneficiary_level').change(function(){
+          if ($(this).is(":checked")){
+            $('#5').hide();
+            $('#6').hide();
+          }
+          else{
+            $('#5').show();
+            $('#6').show();
+          }
+       });
+    });
+</script>
+{% endblock %}
