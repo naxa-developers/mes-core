@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -26,8 +27,7 @@ from django.utils.decorators import method_decorator
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
-    Submission, Config
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission, Config
 
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
     UserRoleForm, ConfigForm
@@ -86,9 +86,17 @@ class ErrorView(TemplateView):
     template_name = 'core/404.html'
 
 
-class ProjectListView(ManagerMixin, ListView):
-    model = Project
-    template_name = 'core/project-list.html'
+class Dashboard1View(TemplateView):
+	template_name = 'core/dashboard-1.html'
+
+
+class Dashboard2View(TemplateView):
+	template_name = 'core/dashboard-2.html'
+
+
+class ProjectListView(ListView):
+	model = Project
+	template_name = 'core/project-list.html'
 
 
 class ProjectDetailView(ManagerMixin, DetailView):
@@ -431,11 +439,12 @@ class SubmissionView(View):
 
 
 class ConfigUpdateView(UpdateView):
-    model = Config
-    template_name = 'core/config-form.html'
-    form_class = ConfigForm
-    success_url = reverse_lazy('')
+	model = Config
+	template_name = 'core/config-form.html'
+	form_class = ConfigForm
 
+	def get_success_url(self):
+		return reverse('config_edit', kwargs={'pk': 1})
 
 class SubmissionListView(View):
 

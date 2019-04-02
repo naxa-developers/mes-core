@@ -8,6 +8,7 @@ Please refer to `dist-kobo-devel <https://github.com/kobotoolbox/dist-kobo-devel
 Code Structure
 --------------
 
+
 * **logger** - This app serves XForms to and receives submissions from
   ODK Collect and Enketo.
 
@@ -17,8 +18,16 @@ Code Structure
 
 * **main** - This app is the glue that brings logger and viewer
   together.
+  
+After set up 
+------------
 
-Localization
+
+    Run following steps
+    1. python manage.py groups
+    2. python manage.py superuser <username>
+
+<!-- Localization
 ------------
 
 To generate a locale from scratch (ex. Spanish)
@@ -40,5 +49,8 @@ To compile MO files and update live translations
 .. code-block:: sh
 
     $ django-admin.py compilemessages ;
-    $ for app in {main,viewer} ; do cd kobocat/apps/${app} && django-admin.py compilemessages && cd - ; done
+    $ for app in {main,viewer} ; do cd kobocat/apps/${app} && django-admin.py compilemessages && cd - ; done -->
+    
+    
+    
     

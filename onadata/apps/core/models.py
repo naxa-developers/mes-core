@@ -2,10 +2,13 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 from rest_framework.authtoken.models import Token
 from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
+
+from datetime import datetime  
 
 from onadata.apps.logger.models import Instance
 from onadata.apps.logger.models.xform import XForm
@@ -55,6 +58,10 @@ class ActivityGroup(models.Model):
 	project = models.ForeignKey('Project', related_name='activity_group')
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
+	created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+	updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+
 	def __str__(self):
 		return self.name
 
@@ -135,7 +142,4 @@ class Submission(models.Model):
 class Config(models.Model):
 	available_version = models.FloatField('Available Version')
 	updates = models.CharField(max_length=500)
-	
-
-
-
+	activity_group_updated = models.DateTimeField(default=datetime.now(), blank=True)

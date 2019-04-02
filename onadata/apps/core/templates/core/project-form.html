@@ -4,21 +4,39 @@
 
 {% block content %}
 <section class="content">
-    <div class="formHolder">
-        <div class="widget-info margin-top-large">
-            <div class="widget-head">
-                <div class="widget-body mt-2 horizontalForm">
-                    <div class="widget-body">
-                        <h3>Project {% if project %}Edit{% else %}Add{% endif %}</h3>
-                        <form action="" method="POST" enctype="multipart/form-data" novalidate> 
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <button type="submit" class="btn btn-xs btn-primary">Submit</button>
-                        </form>
-                    </div>
-                </div>
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Dashboard</h2>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="la la-home"></i> Practical</a></li>
+                    <li class="breadcrumb-item active">create project</li>
+                </ul>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn btn-primary float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="project-form">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label class="mylabel">{{ field.label }}</label>
+                            <font color="crimson">{{ field.errors }}</font>
+                            {{ field }}
+                            {{ field.help_text }}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-xs btn-primary">Submit</button>
+                </form>
             </div>
         </div>
     </div>
 </section>
+
 {% endblock %}
