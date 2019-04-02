@@ -553,6 +553,6 @@ class userCred(View):
 
                 return HttpResponse(json.dumps(user_dict))
             else:
-                raise ValidationError({'success': False, 'message': 'Not a valid user'})
+                return HttpResponse(json.dumps({'success': False, 'message': 'Not a valid user'}))
         except User.DoesNotExist as e:
             return HttpResponse(json.dumps({'success': False, 'message': e.message}))
