@@ -103,8 +103,8 @@ def cluster_activity_group_submission_count(obj):
 
 
 @register.filter
-def check_cluster_activity(obj):
-    if ClusterA.objects.filter(activity=obj).exists():
+def check_cluster_activity(obj, cag):
+    if ClusterA.objects.filter(activity=obj, cag=cag).exists():
         return True
     else:
         return False

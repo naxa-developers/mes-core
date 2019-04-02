@@ -246,8 +246,9 @@ class ClusterDeleteView(ManagerMixin, DeleteView):
 class ClusterAssignView(ManagerMixin, View):
 
     def get(self, request, **kwargs):
-        activity_group = ActivityGroup.objects.filter(clusterag__isnull=True)
         pk = kwargs.get('pk')
+        clusterag = ClusterAG.objects.filter(cluster_id=pk)
+        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag))
         selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group')
         return render(request, 'core/cluster-assign.html',
                       {'activity_group': activity_group, 'pk': pk, 'selected_activity_group': selected_activity_group})
