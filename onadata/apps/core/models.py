@@ -81,6 +81,7 @@ class Activity(models.Model):
 	form = models.ForeignKey(XForm, related_name='actform', null=True, blank=True)
 
 	beneficiary_level = models.BooleanField(default=True)
+	weight = models.FloatField(default=0)
 
 	def __str__(self):
 		return self.name
