@@ -10,9 +10,6 @@ from onadata.apps.core.models import Project
 from onadata.apps.core.models import UserRole
 
 
-
-
-
 class LoginRequiredMixin(object):
     @classmethod
     def as_view(cls, **kwargs):
@@ -84,8 +81,9 @@ class ProjectView(LoginRequiredMixin):
 
 
 USER_PERMS = {
-    'project': ['project-management-unit', 'project-coordinator', 'project-manager'],
-    'manager': ['project-manager'],
+    'mobilizer': ['community-social-mobilizer', 'social-mobilizer', 'super-admin'],
+    'project': ['project-management-unit', 'project-coordinator', 'project-manager', 'super-admin'],
+    'manager': ['project-manager', 'super-admin'],
     'admin': ['super-admin'],
 }
 
@@ -111,6 +109,21 @@ class AdminMixin(object):
                 return super(AdminMixin, self).dispatch(request, *args, **kwargs)
         raise PermissionDenied()
 
+
+class CommunitySocialMobilizerMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            if request.role.group.name == 'community-social-mobilizer':
+                return super(CommunitySocialMobilizerMixin, self).dispatch(request, *args, **kwargs)
+        raise PermissionDenied()
+
+
+class SocialMobilizerMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            if request.role.group.name == 'social-mobilizer':
+                return super(SocialMobilizerMixin, self).dispatch(request, *args, **kwargs)
+        raise PermissionDenied()
 
 # use in all view functions
 def group_required(group_name):
