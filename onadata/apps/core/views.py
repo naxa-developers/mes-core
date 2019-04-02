@@ -17,11 +17,12 @@ import pandas as pd
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from itertools import chain
 from rest_framework.authtoken import views as restviews
 import json
 from django.utils.decorators import method_decorator
+
 
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
@@ -552,6 +553,6 @@ class userCred(View):
 
                 return HttpResponse(json.dumps(user_dict))
             else:
-                raise('no user exists')
+                raise ValidationError({'success': False, 'message': 'Not a valid user'})
         except User.DoesNotExist as e:
             return HttpResponse(json.dumps({'success': False, 'message': e.message}))
