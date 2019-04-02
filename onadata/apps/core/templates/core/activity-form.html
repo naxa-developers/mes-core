@@ -43,16 +43,16 @@
 {% block scripts %}
 <script type="text/javascript">
    $(document).ready(function(){
-       $('#5').hide();
-       $('#6').hide();
+       $('#id_target_number').hide();
+       $('#id_target_unit').hide();
        $('#id_beneficiary_level').change(function(){
           if ($(this).is(":checked")){
-            $('#5').hide();
-            $('#6').hide();
+            $('#id_target_number').hide();
+            $('#id_target_unit').hide();
           }
           else{
-            $('#5').show();
-            $('#6').show();
+            $('#id_target_number').show();
+            $('#id_target_unit').show();
           }
        });
     });
