@@ -56,7 +56,7 @@
                                     <div id="selected_collapse-{{ object.activity_group.id }}" class="collapse show" data-parent="#accordion" aria-labelledby="selected_heading-{{ object.activity_group.id }}">
                                         <div class="card-body">
                                             {% for item in object.activity_group.activity.all %}
-                                            {% if item|check_cluster_activity %}
+                                            {% if item|check_cluster_activity:object %}
                                             <div class="form-group">
                                                 <div class="checkbox">
                                                     <input id="selected_a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" checked value="true">
