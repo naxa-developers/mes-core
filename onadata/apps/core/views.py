@@ -22,6 +22,7 @@ from itertools import chain
 from rest_framework.authtoken import views as restviews
 import json
 from django.utils.decorators import method_decorator
+from datetime import datetime
 
 
 
@@ -456,18 +457,29 @@ class SubmissionListView(View):
         return render(request, 'core/submission_list.html', {'submissions': submissions})
 
 
-def accept_submission(request, **kwargs):
+def accept_submission(request):
     submission = Submission.objects.get(pk=request.GET.get('pk'))
     submission.status = 'approved'
     submission.save()
     return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': request.GET.get('clustera_id')}))
 
 
-def reject_submission(request, **kwargs):
+def reject_submission(request):
     submission = Submission.objects.get(pk=request.GET.get('pk'))
     submission.status = 'rejected'
     submission.save()
     return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': request.GET.get('clustera_id')}))
+
+
+def update_target(request, **kwargs):
+    pk = kwargs.get('pk')
+    ca = ClusterA.objects.get(pk=pk)
+    target_number = request.POST.get('target_number')
+    ca.target_number = target_number
+    ca.target_update_at = datetime.now()
+    ca.save()
+
+    return HttpResponseRedirect(reverse('submission', kwargs={'pk': kwargs.get('cluster_id')}))
 
 
 class ActivityViewSet(viewsets.ModelViewSet):

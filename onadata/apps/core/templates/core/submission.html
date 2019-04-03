@@ -1,9 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
-<<<<<<< HEAD
-=======
 {% load filters %}
->>>>>>> a77c1e2b624a1bae95fdcbdbbe1f7d7961cf1525
 
 {% block title %}Submission List{% endblock %}
 
@@ -46,7 +43,6 @@
     <div class="accordion-form project-form">
         <div class="card">
             <div class="card-body">
-                <form action="cluster-detail.html" post="">
                     <!-- accordion -->
                     <div class="cluster-accordion submission-acc">
                         <div id="accordion">
@@ -65,8 +61,11 @@
                                     </div>
                                     <div id="collapse-{{ item.id }}" class="collapse show" data-parent="#accordion" aria-labelledby="heading-{{ item.id }}">
                                         <div class="card-body">
+                                            <br>
                                             <ul>
                                                 {% for c_act in item.ca.all %}
+                                                <form action="/core/update-target/{{ pk }}/{{ c_act.id }}/" method="post">
+                                                    {% csrf_token %}
                                                 <li>
                                                     <a href="{% url 'submission_list' c_act.id %}">{{ c_act.activity.name }}</a>
                                                     <span class="submission-count">
@@ -76,7 +75,13 @@
                                                         <input type="checkbox" id="activity-{{ c_act.id }}" name="activity-{{ c_act.id }}">
                                                         <label for="activity-{{ c_act.id }}"></label>
                                                     </span>
+                                                    <span>
+                                                        <label for="target_number_{{ c_act.id }}"><small>Target Number</small></label>
+                                                        <input type="text" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_number }}">
+                                                        <button type="submit" class="btn"><i class="la la-check"></i></button>
+                                                    </span>
                                                 </li>
+                                                    </form>
                                                 {% endfor %}
 
                                             </ul>
@@ -91,7 +96,6 @@
                         <button type="submit" class="btn" role="button">Save</button>
                         <a class="btn remove" href="cluster-form.html"><i class="la la-plus"></i> Add cluster</a>
                     </div> -->
-                </form>
             </div>
         </div>
     </div>
