@@ -73,8 +73,8 @@ urlpatterns = [
 	url(r'submission/(?P<pk>[0-9]+)/$', views.SubmissionView.as_view(), name='submission'),
 	url(r'submission-list/(?P<pk>[0-9]+)/$', views.SubmissionListView.as_view(), name='submission_list'),
 
-	url(r'approve/(?P<clustera_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.accept_submission, name='approve_submission'),
-	url(r'reject/(?P<clustera_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.reject_submission, name='reject_submission'),
+	url(r'approve', views.accept_submission, name='approve_submission'),
+	url(r'reject', views.reject_submission, name='reject_submission'),
 
 
 	url(r'^api-token-auth/', restviews.obtain_auth_token),

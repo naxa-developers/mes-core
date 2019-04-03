@@ -259,8 +259,9 @@ class ClusterDeleteView(ManagerMixin, DeleteView):
 class ClusterAssignView(ManagerMixin, View):
 
     def get(self, request, **kwargs):
-        activity_group = ActivityGroup.objects.filter(clusterag__isnull=True)
         pk = kwargs.get('pk')
+        clusterag = ClusterAG.objects.filter(cluster_id=pk)
+        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag))
         selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group')
         return render(request, 'core/cluster-assign.html',
                       {'activity_group': activity_group, 'pk': pk, 'selected_activity_group': selected_activity_group})
@@ -456,17 +457,17 @@ class SubmissionListView(View):
 
 
 def accept_submission(request, **kwargs):
-    submission = Submission.objects.get(pk=kwargs.get('pk'))
+    submission = Submission.objects.get(pk=request.GET.get('pk'))
     submission.status = 'approved'
     submission.save()
-    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': kwargs.get('clustera_id')}))
+    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': request.GET.get('clustera_id')}))
 
 
 def reject_submission(request, **kwargs):
-    submission = Submission.objects.get(pk=kwargs.get('pk'))
+    submission = Submission.objects.get(pk=request.GET.get('pk'))
     submission.status = 'rejected'
     submission.save()
-    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': kwargs.get('clustera_id')}))
+    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': request.GET.get('clustera_id')}))
 
 
 class ActivityViewSet(viewsets.ModelViewSet):
@@ -554,15 +555,18 @@ class userCred(View):
                 # user.backend = 'django.contrib.auth.backends.ModelBackend'
                 # login(request, user)
                 token = restviews.obtain_auth_token(request)
-                user_dict = {
-                    'token': "" if token is None else token.data['token'],
-                    'name': user.username
-                }
                 userrole = UserRole.objects.filter(user=user)
-                cluster = Cluster.objects.filter(userrole_cluster__in=userrole)
+                user_dict = {
+                    'token': "" if token is None else token.data.get('token'),
+                    'name': user.username,
+                }
+                cluster = Cluster.objects.filter(userrole_cluster__in=userrole).prefetch_related('userrole_cluster')
                 cluster_arr = []
                 for c in cluster:
-                    cluster_arr.append(c.toDict())
+                    group = c.userrole_cluster.first().group.name
+                    c_dict = c.toDict()
+                    c_dict['role'] = group
+                    cluster_arr.append(c_dict)
                 user_dict['cluster'] = cluster_arr
 
                 return HttpResponse(json.dumps(user_dict))

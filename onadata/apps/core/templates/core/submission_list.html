@@ -49,17 +49,13 @@
                                         {% endwith %}
                                         {% with submission.status as status %}
                                         {% if status == 'pending' %}
-                                        <a href="{% url 'approve_submission' submission.cluster_activity.id submission.instance.pk %}" class="btn"><i class="la la-check"></i></a>
-                                        <a href="{% url 'reject_submission' submission.cluster_activity.id submission.instance.pk %}" class="btn remove"><i class="la la-remove"></i></a>
-                                        {% elif status == 'approved' %}
-                                        <a href="{% url 'reject_submission' submission.cluster_activity.id submission.instance.id %}" class="btn remove"><i class="la la-remove"></i></a>
-                                        {% else %}
-                                        <a href="{% url 'approve_submission' submission.cluster_activity.id submission.instance.pk %}" class="btn"><i class="la la-check"></i></a>
+                                            <button id="accept" ca_id="{{ submission.cluster_activity.id }}" class="btn" value="{{ submission.id }}"><i class="la la-check"></i></button>
+                                            <button id="reject" ca_id="{{ submission.cluster_activity.id }}" class="btn remove" value="{{ submission.id }}"><i class="la la-remove"></i></button>
                                         {% endif %}
-                                        </td>
-                                        <td class="table-action">
-                                            {{ status|title }}
-                                        </td>
+                                    </td>
+                                    <td class="table-action" id="id_status">
+                                        {{ status|title }}
+                                    </td>
                                     {% endwith %}
                                 </tr>
                             {% endfor %}
@@ -72,5 +68,54 @@
     </div>
 </section>
 
+{% endblock %}
 
+{% block scripts %}
+<script>
+$("#accept").click(function (){
+    var submission_id = $(this).val();
+    var clustera_id = $(this).attr('ca_id');
+
+    $.ajax({
+        url:'/core/approve/',
+        data:{
+            'clustera_id': clustera_id,
+            'pk': submission_id
+        },
+        success: function(data){
+            $('#id_status').html('Approved');
+            $('#reject').remove();
+            $('#accept').remove();
+            alert('Submission approved');
+
+        },
+        error: function(data){
+            console.log(data);
+
+        }
+    });
+});
+
+$("#reject").click(function (){
+    var submission_id = $(this).val();
+    var clustera_id = $(this).attr('ca_id');
+
+    $.ajax({
+        url:'/core/reject/',
+        data:{
+            'clustera_id': clustera_id,
+            'pk': submission_id
+        },
+        success: function(data){
+            alert('Submission rejected');
+            $('#id_status').html('Rejected');
+            $('#reject').remove();
+            $('#accept').remove();
+        },
+        error: function(data){
+            console.log(data)
+        }
+    });
+});
+</script>
 {% endblock %}
