@@ -1,6 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
-
+{% load filters %}
 {% block title %}Submission List{% endblock %}
 
 {% block content %}
@@ -47,16 +47,16 @@
                                         {% with submission.instance.xform as xform %}
                                         <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank" class="btn"><i class="la la-eye"></i></a>
                                         {% endwith %}
-                                        {% with submission.status as status %}
-                                        {% if status == 'pending' %}
-                                            <button id="accept" ca_id="{{ submission.cluster_activity.id }}" class="btn" value="{{ submission.id }}"><i class="la la-check"></i></button>
-                                            <button id="reject" ca_id="{{ submission.cluster_activity.id }}" class="btn remove" value="{{ submission.id }}"><i class="la la-remove"></i></button>
+                                        {% if submission|check_status_change_permission:request %}
+                                            {% if submission.status == 'pending' %}
+                                                <button id="accept" ca_id="{{ submission.cluster_activity.id }}" class="btn" value="{{ submission.id }}"><i class="la la-check"></i></button>
+                                                <button id="reject" ca_id="{{ submission.cluster_activity.id }}" class="btn remove" value="{{ submission.id }}"><i class="la la-remove"></i></button>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td class="table-action" id="id_status">
-                                        {{ status|title }}
+                                        {{ submission.status|title }}
                                     </td>
-                                    {% endwith %}
                                 </tr>
                             {% endfor %}
                         </tbody>
