@@ -1,0 +1,2 @@
+[submodule "requirements/src/django-digest"]
+	ignore = untracked
