@@ -139,6 +139,7 @@ class Submission(models.Model):
 	cluster_activity = models.ForeignKey('ClusterA', related_name='submissions')
 	instance = models.OneToOneField(Instance, related_name="submission")
 	beneficiary = models.ForeignKey('Beneficiary',null=True, blank=True, on_delete=models.SET_NULL, related_name="submissions" )
+	status = models.CharField(max_length=10, default='pending')
 
 
 class Config(models.Model):

@@ -37,7 +37,6 @@ from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, Proje
     ProjectMixin, \
     group_required, ManagerMixin, AdminMixin
 
-
 def logout_view(request):
     logout(request)
 
@@ -447,12 +446,27 @@ class ConfigUpdateView(UpdateView):
 	def get_success_url(self):
 		return reverse('config_edit', kwargs={'pk': 1})
 
+
 class SubmissionListView(View):
 
     def get(self, request, **kwargs):
         cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
         submissions = Submission.objects.filter(cluster_activity=cluster_activity)
         return render(request, 'core/submission_list.html', {'submissions': submissions})
+
+
+def accept_submission(request, **kwargs):
+    submission = Submission.objects.get(pk=kwargs.get('pk'))
+    submission.status = 'approved'
+    submission.save()
+    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': kwargs.get('clustera_id')}))
+
+
+def reject_submission(request, **kwargs):
+    submission = Submission.objects.get(pk=kwargs.get('pk'))
+    submission.status = 'rejected'
+    submission.save()
+    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': kwargs.get('clustera_id')}))
 
 
 class ActivityViewSet(viewsets.ModelViewSet):
