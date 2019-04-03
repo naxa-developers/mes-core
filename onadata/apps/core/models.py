@@ -44,7 +44,7 @@ class Cluster(models.Model):
 	def toDict(self):
 		return {'id':self.id,
 				'name': self.name,
-				'project': self.project,
+				'project': self.project_id,
 				'district':self.district,
 				'municipality':self.municipality,
 				'ward':self.ward}
