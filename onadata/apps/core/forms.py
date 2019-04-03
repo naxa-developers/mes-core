@@ -113,7 +113,7 @@ class ActivityForm(forms.ModelForm):
 
 	class Meta:
 		model = Activity
-		fields = ('activity_group', 'name', 'description', 'beneficiary_level', 'target_number', 'target_unit', 'start_date', 'end_date', 'form')
+		fields = ('activity_group', 'name', 'description', 'beneficiary_level', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'weight')
 
 		widgets = {
 			'activity_group' : forms.Select(attrs={'class': "custom-select"}),
@@ -124,7 +124,33 @@ class ActivityForm(forms.ModelForm):
 			'start_date': forms.TextInput(attrs={'placeholder': 'Start date','class': 'form-control', 'type': 'date'}),
 			'end_date': forms.TextInput(attrs={'placeholder': 'End date','class': 'form-control', 'type': 'date'}),
 			'form': forms.Select(attrs={'class': "custom-select"}),
+			'weight': forms.TextInput(attrs={'placeholder': 'Weight', 'class': 'form-control'})
 		}
+
+	def clean_weight(self):
+		if not isinstance(self.cleaned_data.get('weight'), int) and not isinstance(self.cleaned_data.get('weight'), float):
+			raise ValidationError({'weight': ['Please enter a valid weight']})
+		else:
+			return self.cleaned_data.get('weight')
+
+	def clean(self):
+		cleaned_data = self.cleaned_data
+		try:
+			act_g = self.cleaned_data.get('activity_group')
+			# ag = ActivityGroup.objects.get(activity_group=self.cleaned_data.get('activity_group'))
+			other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
+				weights=Sum('weight'))
+			if other_activities.get('weight') is not None:
+				if self.cleaned_data.get('weight') + other_activities['weights'] > act_g.weight:
+					raise ValidationError({
+						'weight': ['The combined weight of activities in this activity group should not exceed %s.', act_g.weight]})
+			else:
+				if self.cleaned_data.get('weight') > act_g.weight:
+					raise ValidationError({
+						'weight': ['The combined weight of activities in this activity group should not exceed the activity group weight.']})
+			return cleaned_data
+		except KeyError:
+			raise ValidationError('error occured')
 
 
 class ClusterForm(forms.ModelForm):
