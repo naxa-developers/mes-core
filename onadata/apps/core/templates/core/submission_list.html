@@ -1,6 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
-
+{% load filters %}
 {% block title %}Submission List{% endblock %}
 
 {% block content %}
@@ -34,6 +34,7 @@
                                 <th>Activity</th>
                                 <th>Beneficiary</th>
                                 <th>Action</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,8 +45,17 @@
                                     <td>{{ submission.beneficiary.name }}</td>
                                     <td class="table-action">
                                         {% with submission.instance.xform as xform %}
-                                        <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank"><i class="la la-eye"></i></a>
+                                        <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank" class="btn"><i class="la la-eye"></i></a>
                                         {% endwith %}
+                                        {% if submission|check_status_change_permission:request %}
+                                            {% if submission.status == 'pending' %}
+                                                <button id="accept" ca_id="{{ submission.cluster_activity.id }}" class="btn" value="{{ submission.id }}"><i class="la la-check"></i></button>
+                                                <button id="reject" ca_id="{{ submission.cluster_activity.id }}" class="btn remove" value="{{ submission.id }}"><i class="la la-remove"></i></button>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td class="table-action" id="id_status">
+                                        {{ submission.status|title }}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -58,5 +68,54 @@
     </div>
 </section>
 
+{% endblock %}
 
+{% block scripts %}
+<script>
+$("#accept").click(function (){
+    var submission_id = $(this).val();
+    var clustera_id = $(this).attr('ca_id');
+
+    $.ajax({
+        url:'/core/approve/',
+        data:{
+            'clustera_id': clustera_id,
+            'pk': submission_id
+        },
+        success: function(data){
+            $('#id_status').html('Approved');
+            $('#reject').remove();
+            $('#accept').remove();
+            alert('Submission approved');
+
+        },
+        error: function(data){
+            console.log(data);
+
+        }
+    });
+});
+
+$("#reject").click(function (){
+    var submission_id = $(this).val();
+    var clustera_id = $(this).attr('ca_id');
+
+    $.ajax({
+        url:'/core/reject/',
+        data:{
+            'clustera_id': clustera_id,
+            'pk': submission_id
+        },
+        success: function(data){
+            alert('Submission rejected');
+            $('#id_status').html('Rejected');
+            $('#reject').remove();
+            $('#accept').remove();
+        },
+        error: function(data){
+            console.log(data)
+        }
+    });
+});
+</script>
 {% endblock %}

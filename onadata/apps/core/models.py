@@ -133,12 +133,22 @@ class ClusterA(models.Model):
 	cag = models.ForeignKey('ClusterAG', related_name='ca')
 	start_date = models.DateTimeField(default=datetime.now)
 	end_date = models.DateTimeField(default=datetime.now)
+	target_number = models.IntegerField(null=True, blank=True, default=0)
+	target_unit = models.CharField(max_length=200, null=True, blank=True, default='')
+	target_update_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+	def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+		if not self.id:
+			self.target_number = self.activity.target_number
+			self.target_unit = self.activity.target_unit
+		return super(ClusterA, self).save()
 
 
 class Submission(models.Model):
 	cluster_activity = models.ForeignKey('ClusterA', related_name='submissions')
 	instance = models.OneToOneField(Instance, related_name="submission")
 	beneficiary = models.ForeignKey('Beneficiary',null=True, blank=True, on_delete=models.SET_NULL, related_name="submissions" )
+	status = models.CharField(max_length=10, default='pending')
 
 
 class Config(models.Model):

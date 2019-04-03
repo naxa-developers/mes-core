@@ -73,6 +73,15 @@ urlpatterns = [
 	url(r'submission/(?P<pk>[0-9]+)/$', views.SubmissionView.as_view(), name='submission'),
 	url(r'submission-list/(?P<pk>[0-9]+)/$', views.SubmissionListView.as_view(), name='submission_list'),
 
+	# change status of submission
+	url(r'approve', views.accept_submission, name='approve_submission'),
+	url(r'reject', views.reject_submission, name='reject_submission'),
+
+	# update target number of cluster activity
+	url(r'update-target/(?P<cluster_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.update_target, name='update_target'),
+
+
+
 	url(r'^api-token-auth/', restviews.obtain_auth_token),
     url(r'^login', views.userCred.as_view()),
 

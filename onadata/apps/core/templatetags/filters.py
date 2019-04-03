@@ -121,3 +121,18 @@ def check_manager_permission(obj, cluster):
         return True
     else:
         return False
+
+
+@register.filter
+def check_status_change_permission(obj, request):
+    current_user_role = UserRole.objects.filter(user=request.user)
+    user = obj.instance.user
+    submitted_user_role = UserRole.objects.filter(user=user)
+    if current_user_role[0].group.name == 'social-mobilizer' and submitted_user_role[0].group.name == 'community-social-mobilizer':
+        return True
+    elif current_user_role[0].group.name == 'project-coordinator' and submitted_user_role[0].group.name == 'social-mobilizer':
+        return True
+    elif current_user_role[0].group.name in ['project-manager', 'super-admin']:
+        return True
+    else:
+        return False

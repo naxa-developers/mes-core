@@ -267,6 +267,11 @@
                 </ul>
             </li>
             {% end ifrole %}
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>
+                <ul class="ml-menu">
+                    <li><a href="{% url 'user_cluster_list' request.user.pk %}">my clusters</a></li>
+                </ul>
+            </li>
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-asterisk"></i><span>Config</span></a>
                 <ul class="ml-menu">
                     <li><a href="{% url 'config_edit' 1 %}">config-edit</a></li>
