@@ -201,6 +201,16 @@ class ActivityForm(forms.ModelForm):
 		return instance
 
 
+	def save(self, commit=True):
+		instance = super(ActivityForm, self).save(commit=False)
+		if instance.beneficiary_level:
+			instance.target_number = None
+			instance.target_unit = None
+		if commit:
+			instance.save()
+		return instance
+
+
 class ClusterForm(forms.ModelForm):
 
 	class Meta:
