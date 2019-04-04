@@ -150,7 +150,16 @@ class ActivityForm(forms.ModelForm):
 						'weight': ['The combined weight of activities in this activity group should not exceed the activity group weight.']})
 			return cleaned_data
 		except KeyError:
-			raise ValidationError('error occured')
+			raise ValidationError('error occured')\
+
+	def save(self, commit=True):
+		instance = super(ActivityForm, self).save(commit=False)
+		if instance.beneficiary_level:
+			instance.target_number = None
+			instance.target_unit = None
+		if commit:
+			instance.save()
+		return instance
 
 
 class ClusterForm(forms.ModelForm):

@@ -139,8 +139,9 @@ class ClusterA(models.Model):
 
 	def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
 		if not self.id:
-			self.target_number = self.activity.target_number
-			self.target_unit = self.activity.target_unit
+			if not self.activity.beneficiary_level:
+				self.target_number = self.activity.target_number
+				self.target_unit = self.activity.target_unit
 		return super(ClusterA, self).save()
 
 
