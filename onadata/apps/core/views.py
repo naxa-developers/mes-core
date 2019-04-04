@@ -27,7 +27,7 @@ from datetime import datetime
 
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
-    ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer
+    ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission, Config
 
@@ -498,21 +498,19 @@ class ActivityViewSet(viewsets.ModelViewSet):
 
 
 class UserActivityViewSet(viewsets.ModelViewSet):
-    serializer_class = ActivitySerializer
+    serializer_class = CASerializer
 
     def get_queryset(self):
-        roles = UserRole.objects.filter(user=self.request.user, cluster_id=self.kwargs.get('cluster_id'))
-        for role in roles:
-            activitygroup = ActivityGroup.objects.get(pk=self.kwargs.get('pk'))
-            if role.group.name == 'social-mobilizer':
-                queryset = Activity.objects.filter(activity_group=activitygroup)
-            elif role.group.name == 'community-social-mobilizer':
-                queryset = Activity.objects.filter(beneficiary_level=True, activity_group=activitygroup)
-                print('csm')
-            elif role.group.name == 'super-admin':
-                queryset = Activity.objects.all()
-            else:
-                raise PermissionDenied()
+        role = self.request.role
+        activitygroup = ClusterAG.objects.get(pk=self.kwargs.get('pk'))
+        if role.group.name == 'social-mobilizer':
+            queryset = ClusterA.objects.filter(cag=activitygroup)
+        elif role.group.name == 'community-social-mobilizer':
+            queryset = ClusterA.objects.filter(beneficiary_level=True, cag=activitygroup)
+        elif role.group.name == 'super-admin':
+            queryset = ClusterA.objects.all()
+        else:
+            raise PermissionDenied()
         return queryset
 
 
@@ -541,8 +539,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 
 class ClusterViewSet(viewsets.ModelViewSet):
-    queryset = Cluster.objects.all()
     serializer_class = ClusterSerializer
+
+    def get_queryset(self):
+        print(self.request.role)
+        cluster = Cluster.objects.filter(userrole_cluster=self.request.role)
+        return cluster
 
 
 class ConfigViewSet(viewsets.ModelViewSet):

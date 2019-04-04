@@ -10,7 +10,7 @@ router.register(r'activity', views.ActivityViewSet),
 router.register(r'actgroup', views.ActivityGroupViewSet),
 router.register(r'output', views.OutputViewSet),
 router.register(r'project', views.ProjectViewSet),
-router.register(r'cluster', views.ClusterViewSet),
+router.register(r'cluster', views.ClusterViewSet, base_name='Cluster'),
 router.register(r'beneficiary', views.BeneficiaryViewSet),
 router.register(r'config', views.ConfigViewSet),
 
@@ -83,10 +83,10 @@ urlpatterns = [
 
 
 	url(r'^api-token-auth/', restviews.obtain_auth_token),
-    url(r'^login', views.userCred.as_view()),
+    # url(r'^login', views.userCred.as_view()),
 
-    url(r'^activitygroup/(?P<pk>[0-9]+)/$', views.ClusterActivityGroup.as_view({'get':'list', 'head': 'list'})),
-    url(r'^activity/(?P<cluster_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.UserActivityViewSet.as_view({'get': 'list', 'head': 'list'})),
+    # url(r'^activitygroup/(?P<pk>[0-9]+)/$', views.ClusterActivityGroup.as_view({'get':'list', 'head': 'list'})),
+    url(r'^activitygroup/(?P<pk>[0-9]+)/$', views.UserActivityViewSet.as_view({'get': 'list', 'head': 'list'})),
 ]
 
 urlpatterns += router.urls

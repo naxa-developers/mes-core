@@ -94,12 +94,28 @@ class ActivityGroupForm(forms.ModelForm):
 
 	def clean(self):
 		try:
-			other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
-				weights=Sum('weight'))
-			print(other_activity_groups)
-			if self.cleaned_data['weight'] + other_activity_groups['weights'] > 100:
-				raise ValidationError({
-					'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+			output = self.cleaned_data.get('output')
+			project = self.cleaned_data.get('project')
+			name = self.cleaned_data.get('name')
+			start_date = self.cleaned_data.get('start_date')
+			end_date = self.cleaned_data.get('end_date')
+			beneficiary_level = self.cleaned_data.get('beneficiary_level')
+			try:
+				ag = ActivityGroup.objects.get(output=output, project=project, name=name, start_date=start_date, end_date=end_date, beneficiary_level=beneficiary_level)
+				other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
+					weights=Sum('weight'))
+				weight = other_activity_groups['weights'] - ag.weight
+				if self.cleaned_data['weight'] + weight > 100:
+					raise ValidationError({
+						'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+
+			except ActivityGroup.DoesNotExist:
+				other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
+					weights=Sum('weight'))
+
+				if self.cleaned_data['weight'] + other_activity_groups['weights'] > 100:
+					raise ValidationError({
+						'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
 		except KeyError:
 			raise ValidationError('error occured')
 
@@ -137,20 +153,36 @@ class ActivityForm(forms.ModelForm):
 		cleaned_data = self.cleaned_data
 		try:
 			act_g = self.cleaned_data.get('activity_group')
-			# ag = ActivityGroup.objects.get(activity_group=self.cleaned_data.get('activity_group'))
-			other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
-				weights=Sum('weight'))
-			if other_activities.get('weight') is not None:
-				if self.cleaned_data.get('weight') + other_activities['weights'] > act_g.weight:
-					raise ValidationError({
-						'weight': ['The combined weight of activities in this activity group should not exceed %s.', act_g.weight]})
-			else:
-				if self.cleaned_data.get('weight') > act_g.weight:
-					raise ValidationError({
-						'weight': ['The combined weight of activities in this activity group should not exceed the activity group weight.']})
+			name = self.cleaned_data.get('name')
+			description = self.cleaned_data.get('description')
+			try:
+				a = Activity.objects.get(activity_group=act_g, name=name, description=description)
+				other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
+					weights=Sum('weight'))
+				if other_activities.get('weight') is not None:
+					weights = other_activities.get('weights') - a.weight
+					if self.cleaned_data.get('weight') + weights > act_g.weight:
+						raise ValidationError({
+							'weight': ['The combined weight of activities in this activity group should not exceed the activity group weight.']})
+				else:
+					if self.cleaned_data.get('weight') > act_g.weight:
+						raise ValidationError({
+							'weight': [
+								'The combined weight of activities in this activity group should not exceed the activity group weight.']})
+			except Activity.DoesNotExist:
+				other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
+					weights=Sum('weight'))
+				if other_activities.get('weight') is not None:
+					if self.cleaned_data.get('weight') + other_activities['weights'] > act_g.weight:
+						raise ValidationError({
+							'weight': ['The combined weight of activities in this activity group should not exceed the activity group weight.']})
+				else:
+					if self.cleaned_data.get('weight') > act_g.weight:
+						raise ValidationError({
+							'weight': ['The combined weight of activities in this activity group should not exceed the activity group weight.']})
 			return cleaned_data
 		except KeyError:
-			raise ValidationError('error occured')\
+			raise ValidationError('error occured')
 
 	def save(self, commit=True):
 		instance = super(ActivityForm, self).save(commit=False)
