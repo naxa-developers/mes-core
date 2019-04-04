@@ -85,7 +85,6 @@ urlpatterns = [
 	url(r'^api-token-auth/', restviews.obtain_auth_token),
     # url(r'^login', views.userCred.as_view()),
 
-    # url(r'^activitygroup/(?P<pk>[0-9]+)/$', views.ClusterActivityGroup.as_view({'get':'list', 'head': 'list'})),
     url(r'^activitygroup/(?P<pk>[0-9]+)/$', views.UserActivityViewSet.as_view({'get': 'list', 'head': 'list'})),
 ]
 

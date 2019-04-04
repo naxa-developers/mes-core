@@ -122,8 +122,14 @@
 {% block scripts %}
 <script type="text/javascript">
    $(document).ready(function(){
-       $('#target_number').hide();
-       $('#target_unit').hide();
+       if ($('#id_beneficiary_level').is(":checked")){
+            $('#target_number').hide();
+            $('#target_unit').hide();
+       }
+        else{
+            $('#target_number').show();
+            $('#target_unit').show();
+        }
        $('#id_beneficiary_level').change(function(){
           if ($(this).is(":checked")){
             $('#target_number').hide();
