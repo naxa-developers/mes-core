@@ -97,11 +97,8 @@ class ActivityGroupForm(forms.ModelForm):
 			output = self.cleaned_data.get('output')
 			project = self.cleaned_data.get('project')
 			name = self.cleaned_data.get('name')
-			start_date = self.cleaned_data.get('start_date')
-			end_date = self.cleaned_data.get('end_date')
-			beneficiary_level = self.cleaned_data.get('beneficiary_level')
 			try:
-				ag = ActivityGroup.objects.get(output=output, project=project, name=name, start_date=start_date, end_date=end_date, beneficiary_level=beneficiary_level)
+				ag = ActivityGroup.objects.get(output=output, project=project, name=name)
 				other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
 					weights=Sum('weight'))
 				weight = other_activity_groups['weights'] - ag.weight
@@ -183,6 +180,25 @@ class ActivityForm(forms.ModelForm):
 			return cleaned_data
 		except KeyError:
 			raise ValidationError('error occured')
+
+	def save(self, commit=True):
+		instance = super(ActivityForm, self).save(commit=False)
+		if instance.beneficiary_level:
+			instance.target_number = None
+			instance.target_unit = None
+		if commit:
+			instance.save()
+		return instance
+
+
+	def save(self, commit=True):
+		instance = super(ActivityForm, self).save(commit=False)
+		if instance.beneficiary_level:
+			instance.target_number = None
+			instance.target_unit = None
+		if commit:
+			instance.save()
+		return instance
 
 
 	def save(self, commit=True):

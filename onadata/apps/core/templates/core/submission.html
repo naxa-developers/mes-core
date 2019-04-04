@@ -64,8 +64,7 @@
                                             <br>
                                             <ul>
                                                 {% for c_act in item.ca.all %}
-                                                <form action="/core/update-target/{{ pk }}/{{ c_act.id }}/" method="post">
-                                                    {% csrf_token %}
+
                                                 <li>
                                                     <a href="{% url 'submission_list' c_act.id %}">{{ c_act.activity.name }}</a>
                                                     <span class="submission-count">
@@ -75,13 +74,20 @@
                                                         <input type="checkbox" id="activity-{{ c_act.id }}" name="activity-{{ c_act.id }}">
                                                         <label for="activity-{{ c_act.id }}"></label>
                                                     </span>
-                                                    <span>
+                                                    {% if not c_act.activity.beneficiary_level %}
+                                                    <span style="display: inline-block;">
+                                                        <form action="/core/update-target/{{ pk }}/{{ c_act.id }}/" method="post">
+                                                            {% csrf_token %}
+
                                                         <label for="target_number_{{ c_act.id }}"><small>Target Number</small></label>
                                                         <input type="text" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_number }}">
                                                         <button type="submit" class="btn"><i class="la la-check"></i></button>
-                                                    </span>
+                                                        </form>
+                                                        </span>
+
+                                                    {% endif %}
                                                 </li>
-                                                    </form>
+
                                                 {% endfor %}
 
                                             </ul>

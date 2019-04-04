@@ -274,7 +274,10 @@ class ClusterAssignView(ManagerMixin, View):
             if item[0].startswith('ag_'):
                 item = item[0].strip('ag_')
                 activity_group = ActivityGroup.objects.get(id=int(item))
-                ClusterAG.objects.get_or_create(activity_group=activity_group, cluster=cluster)
+                ClusterAG.objects.get_or_create(
+                    activity_group=activity_group,
+                    cluster=cluster
+                )
             # if item[1] == 'on':
             # 	item = item[0].strip('ag_')
             # 	activity_group = ActivityGroup.objects.get(id=int(item))
@@ -292,7 +295,14 @@ class ClusterAssignView(ManagerMixin, View):
                     # end_date = request.POST.get(str(item) + '_end_date')
                     cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster,
                                                                           activity_group=activity.activity_group)
-                    ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag)
+                    ca, created = ClusterA.objects.get_or_create(
+                        activity=activity,
+                        cag=cluster_ag
+                    )
+                    if not ca.activity.beneficiary_level:
+                        if not created:
+                            ca.target_number = ca.activity.target_number
+                            ca.target_unit = ca.activity.target_unit
             # ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag, start_date=start_date, end_date=end_date)
         # else:
         # 	item = item[0].strip('a_')
