@@ -87,22 +87,26 @@ class CASerializer(serializers.ModelSerializer):
 
 
 class CAGSerializer(serializers.ModelSerializer):
-    ca = CASerializer(many=True, read_only=True)
+    # ca = CASerializer(many=True, read_only=True)
     output = serializers.ReadOnlyField(source='activity_group.output.name')
     name = serializers.ReadOnlyField(source='activity_group.name')
     description = serializers.ReadOnlyField(source='activity_group.description')
 
     class Meta:
         model = ClusterAG
-        fields = ('id', 'output', 'name', 'description', 'ca')
+        fields = ('id', 'output', 'name', 'description')
 
 
 class ClusterSerializer(serializers.ModelSerializer):
     clusterag = CAGSerializer(many=True, read_only=True)
+    userrole = serializers.SerializerMethodField()
+
+    def get_userrole(self, obj):
+        return self.context['request'].role.group.name
 
     class Meta:
         model = Cluster
-        fields = ('id', 'name', 'district', 'municipality', 'ward', 'clusterag')
+        fields = ('id', 'name', 'district', 'municipality', 'ward', 'userrole', 'clusterag')
 
 
 class ConfigSerializer(serializers.ModelSerializer):
