@@ -197,6 +197,11 @@ class ActivityCreateView(ManagerMixin, CreateView):
     form_class = ActivityForm
     success_url = reverse_lazy('activity_list')
 
+    def get_form_kwargs(self):
+        kwargs = super(ActivityCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        return kwargs
+
 
 class ActivityDetailView(ManagerMixin, DetailView):
     model = Activity
