@@ -117,13 +117,13 @@ class ActivityGroupForm(forms.ModelForm):
 
 class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
         super(ActivityForm, self).__init__(*args, **kwargs)
         self.fields['form'].queryset = XForm.objects.all()
         self.fields['form'].label_from_instance = lambda obj: "%s" % (obj.title)
         try:
             self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=self.instance.activity_group.project)
         except:
-            project = kwargs.pop('project', None)
             self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=project)
 
     class Meta:
