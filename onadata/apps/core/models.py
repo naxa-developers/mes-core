@@ -12,6 +12,10 @@ from datetime import datetime
 
 from onadata.apps.logger.models import Instance
 from onadata.apps.logger.models.xform import XForm
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .utils import get_interval
+
 
 class Project(models.Model):
 	name = models.CharField(max_length=200)
@@ -24,6 +28,17 @@ class Project(models.Model):
 
 	def __str__(self):
 		return self.name
+
+
+class ProjectTimeInterval(models.Model):
+	project = models.ForeignKey(Project, related_name='interval')
+	label = models.CharField(max_length=20)
+	start_date = models.DateField()
+	end_date = models.DateField()
+
+	def __str__(self):
+		return self.label
+
 
 class Output(models.Model):
 	name = models.CharField(max_length=200)
@@ -62,7 +77,6 @@ class ActivityGroup(models.Model):
 	updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 	weight = models.FloatField(default=0)
 
-
 	def __str__(self):
 		return self.name
 
@@ -75,13 +89,15 @@ class Activity(models.Model):
 	target_number = models.IntegerField(null=True, blank=True)
 	target_unit = models.CharField(max_length=200, null=True, blank=True)
 
-	start_date = models.DateTimeField()
-	end_date = models.DateTimeField()
-
 	form = models.ForeignKey(XForm, related_name='actform', null=True, blank=True)
 
 	beneficiary_level = models.BooleanField(default=True)
 	weight = models.FloatField(default=0)
+
+	def limit_time_interval_choices(self):
+		return {'project': self.activity_group.project}
+
+	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='activity_interval', null=True, blank=True)
 
 	def __str__(self):
 		return self.name
@@ -99,10 +115,8 @@ class Beneficiary(models.Model):
 	Typesofhouse = models.CharField(max_length=100, blank=True)
 	Remarks = models.CharField(max_length=100, blank=True)
 
-
 	def __str__(self):
 		return self.name
-
 
 
 class UserRole(models.Model):
@@ -148,3 +162,59 @@ class Config(models.Model):
 	available_version = models.FloatField('Available Version')
 	updates = models.CharField(max_length=500)
 	activity_group_updated = models.DateTimeField(default=datetime.now(), blank=True)
+
+
+@receiver(post_save, sender=Project)
+def save_interval(sender, instance, **kwargs):
+	ProjectTimeInterval.objects.filter(project=instance).delete()
+	if instance.reporting_period == 1:
+		intervals = get_interval(instance.start_date, instance.end_date, 12)
+		i = 1
+		for item in range(len(intervals)):
+			try:
+				label = "Month" + str(i)
+				i = i + 1
+				start_date = intervals[0]
+				end_date = intervals[1]
+				ProjectTimeInterval.objects.get_or_create(
+					project=instance,
+					label=label,
+					start_date=start_date,
+					end_date=end_date)
+				intervals.pop(0)
+			except:
+				pass
+	elif instance.reporting_period == 2:
+		intervals = get_interval(instance.start_date, instance.end_date, 2)
+		i = 1
+		for item in range(len(intervals)):
+			try:
+				label = "Half" + str(i)
+				i = i + 1
+				start_date = intervals[0]
+				end_date = intervals[1]
+				ProjectTimeInterval.objects.get_or_create(
+					project=instance,
+					label=label,
+					start_date=start_date,
+					end_date=end_date)
+				intervals.pop(0)
+			except:
+				pass
+	else:
+		intervals = get_interval(instance.start_date, instance.end_date, 4)
+		i = 1
+		for item in range(len(intervals)):
+			try:
+				label = "Quarter" + str(i)
+				i = i + 1
+				start_date = intervals[0]
+				end_date = intervals[1]
+				ProjectTimeInterval.objects.get_or_create(
+					project=instance,
+					label=label,
+					start_date=start_date,
+					end_date=end_date)
+				intervals.pop(0)
+			except:
+				pass

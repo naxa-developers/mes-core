@@ -7,7 +7,7 @@ from django.forms import widgets
 from django.db.models import Sum
 
 from onadata.apps.logger.models import XForm
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, ProjectTimeInterval
 
 
 class SignUpForm(UserCreationForm):
@@ -120,12 +120,12 @@ class ActivityForm(forms.ModelForm):
         super(ActivityForm, self).__init__(*args, **Kwargs)
         self.fields['form'].queryset = XForm.objects.all()
         self.fields['form'].label_from_instance = lambda obj: "%s" % (obj.title)
+        self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=self.instance.activity_group.project)
 
     class Meta:
         model = Activity
         fields = (
-        'activity_group', 'name', 'description', 'beneficiary_level', 'target_number', 'target_unit', 'start_date',
-        'end_date', 'form', 'weight')
+        'activity_group', 'name', 'description', 'beneficiary_level', 'target_number', 'target_unit', 'time_interval', 'form', 'weight')
 
         widgets = {
             'activity_group': forms.Select(attrs={'class': "custom-select"}),
@@ -133,8 +133,7 @@ class ActivityForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'placeholder': 'Description', 'class': 'form-control'}),
             'target_number': forms.TextInput(attrs={'placeholder': 'Target Number', 'class': 'form-control'}),
             'target_unit': forms.TextInput(attrs={'placeholder': 'Target Unit', 'class': 'form-control'}),
-            'start_date': forms.TextInput(attrs={'placeholder': 'Start date', 'class': 'form-control', 'type': 'date'}),
-            'end_date': forms.TextInput(attrs={'placeholder': 'End date', 'class': 'form-control', 'type': 'date'}),
+            'time_interval': forms.Select(attrs={'class': "custom-select"}),
             'form': forms.Select(attrs={'class': "custom-select"}),
             'weight': forms.TextInput(attrs={'placeholder': 'Weight', 'class': 'form-control'})
         }
