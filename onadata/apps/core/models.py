@@ -111,14 +111,6 @@ class UserRole(models.Model):
 	group = models.ForeignKey(Group, related_name="userrole_group")
 	cluster = models.ForeignKey(Cluster, null=True, blank=True, related_name="userrole_cluster")
 
-	def save(self, *args, **kwargs):
-		if UserRole.objects.filter(group=self.group, cluster=self.cluster).exists():
-			raise ValidationError('A cluster can contain only a single ' + self.group.name)
-		if self.group.name == 'community-social-mobilizer':
-			if UserRole.objects.filter(user=self.user, group=self.group).exists():
-				raise ValidationError('CSM user can be assigned to only one cluster.')
-		return super(UserRole, self).save(*args, **kwargs)
-
 	def __str__(self):
 		return self.group.name
 
