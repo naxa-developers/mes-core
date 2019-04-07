@@ -94,9 +94,6 @@ class Activity(models.Model):
 	beneficiary_level = models.BooleanField(default=True)
 	weight = models.FloatField(default=0)
 
-	def limit_time_interval_choices(self):
-		return {'project': self.activity_group.project}
-
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='activity_interval', null=True, blank=True)
 
 	def __str__(self):
@@ -137,18 +134,23 @@ class ClusterAG(models.Model):
 class ClusterA(models.Model):
 	activity = models.ForeignKey('Activity', related_name='clustera')
 	cag = models.ForeignKey('ClusterAG', related_name='ca')
-	start_date = models.DateTimeField(default=datetime.now)
-	end_date = models.DateTimeField(default=datetime.now)
 	target_number = models.IntegerField(null=True, blank=True, default=0)
 	target_unit = models.CharField(max_length=200, null=True, blank=True, default='')
-	target_update_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-
+	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='cainterval', null=True, blank=True)
 	def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
 		if not self.id:
 			if not self.activity.beneficiary_level:
 				self.target_number = self.activity.target_number
 				self.target_unit = self.activity.target_unit
+			self.time_interval = self.activity.time_interval
 		return super(ClusterA, self).save()
+
+
+class ClusterAHistory(models.Model):
+	clustera = models.ForeignKey(ClusterA, related_name='history')
+	time_interval = models.ForeignKey(ProjectTimeInterval, related_name="cahistory", null=True, blank=True)
+	target_number = models.IntegerField(null=True, blank=True, default=0)
+	updated_date = models.DateTimeField(auto_now_add=True)
 
 
 class Submission(models.Model):

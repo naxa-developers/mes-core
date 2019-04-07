@@ -74,18 +74,31 @@
                                                         <input type="checkbox" id="activity-{{ c_act.id }}" name="activity-{{ c_act.id }}">
                                                         <label for="activity-{{ c_act.id }}"></label>
                                                     </span>
-                                                    {% if not c_act.activity.beneficiary_level %}
                                                     <span style="display: inline-block;">
-                                                        <form action="/core/update-target/{{ pk }}/{{ c_act.id }}/" method="post">
+                                                        <form action="/core/update-cluster-act/{{ pk }}/{{ c_act.id }}/" method="post">
                                                             {% csrf_token %}
-
-                                                        <label for="target_number_{{ c_act.id }}"><small>Target Number</small></label>
-                                                        <input type="text" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_number }}">
-                                                        <button type="submit" class="btn"><i class="la la-check"></i></button>
+                                                            <div class="row form-group">
+                                                                <div class="select-option">
+                                                                <select class="custom-select" id="time_interval" name="time_interval">
+                                                                    <option value="None" selected="selected">-------</option>
+                                                                    {% for interval in interval %}
+                                                                        {% if interval == c_act.time_interval %}
+                                                                            <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
+                                                                        {% else %}
+                                                                            <option value="{{ interval.id }}">{{ interval }}</option>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                                 {% if not c_act.activity.beneficiary_level %}
+                                                                    <label for="target_number_{{ c_act.id }}"><small>Target Number</small></label>
+                                                                    <input type="text" class="form-control" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_number }}">
+                                                                {% endif %}
+                                                            <button type="submit" class="btn"><i class="la la-check"></i></button>
+                                                            </div>
                                                         </form>
                                                         </span>
 
-                                                    {% endif %}
                                                 </li>
 
                                                 {% endfor %}
