@@ -137,10 +137,12 @@ class ClusterA(models.Model):
 	target_number = models.IntegerField(null=True, blank=True, default=0)
 	target_unit = models.CharField(max_length=200, null=True, blank=True, default='')
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='cainterval', null=True, blank=True)
+	target_completed = models.IntegerField(null=True, blank=True, default=0)
+	interval_updated = models.BooleanField(default=False)
+
 	def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
 		if not self.id:
 			if not self.activity.beneficiary_level:
-				self.target_number = self.activity.target_number
 				self.target_unit = self.activity.target_unit
 			self.time_interval = self.activity.time_interval
 		return super(ClusterA, self).save()
@@ -149,7 +151,7 @@ class ClusterA(models.Model):
 class ClusterAHistory(models.Model):
 	clustera = models.ForeignKey(ClusterA, related_name='history')
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name="cahistory", null=True, blank=True)
-	target_number = models.IntegerField(null=True, blank=True, default=0)
+	target_completed = models.IntegerField(null=True, blank=True, default=0)
 	updated_date = models.DateTimeField(auto_now_add=True)
 
 
