@@ -100,7 +100,7 @@ class ActivityGroupForm(forms.ModelForm):
                 other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
                     weights=Sum('weight'))
                 weight = other_activity_groups['weights'] - ag.weight
-                if self.cleaned_data['weight'] + weight > 100:
+                if self.cleaned_data.get('weight') + weight > 100:
                     raise ValidationError({
                         'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
 
@@ -108,9 +108,10 @@ class ActivityGroupForm(forms.ModelForm):
                 other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
                     weights=Sum('weight'))
 
-                if self.cleaned_data['weight'] + other_activity_groups['weights'] > 100:
+                if self.cleaned_data.get('weight') + other_activity_groups['weights'] > 100:
                     raise ValidationError({
                         'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+            return self.cleaned_data
         except KeyError:
             raise ValidationError('error occured')
 
