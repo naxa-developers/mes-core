@@ -56,6 +56,10 @@ class HomeView(LoginRequiredMixin, TemplateView):
             raise PermissionDenied()
 
 
+class ProjectDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/project-dashboard.html'
+
+
 class SignInView(TemplateView):
     template_name = 'core/sign-in.html'
 
