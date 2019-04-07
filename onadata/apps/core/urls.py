@@ -78,7 +78,7 @@ urlpatterns = [
 	url(r'reject', views.reject_submission, name='reject_submission'),
 
 	# update target number of cluster activity
-	url(r'update-target/(?P<cluster_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.update_target, name='update_target'),
+	url(r'update-cluster-act/(?P<cluster_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.update_cluster_activity, name='update_cluster_activity'),
 
 
 

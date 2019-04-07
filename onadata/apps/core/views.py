@@ -23,13 +23,14 @@ from rest_framework.authtoken import views as restviews
 import json
 from django.utils.decorators import method_decorator
 from datetime import datetime
-
+from django.db import transaction
 
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission, Config
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
+    Submission, Config, ProjectTimeInterval, ClusterAHistory
 
 from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
     UserRoleForm, ConfigForm
@@ -37,6 +38,7 @@ from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, Activ
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, \
     group_required, ManagerMixin, AdminMixin
+
 
 def logout_view(request):
     logout(request)
@@ -196,6 +198,11 @@ class ActivityCreateView(ManagerMixin, CreateView):
     template_name = 'core/activity-form.html'
     form_class = ActivityForm
     success_url = reverse_lazy('activity_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(ActivityCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        return kwargs
 
 
 class ActivityDetailView(ManagerMixin, DetailView):
@@ -425,7 +432,12 @@ class SubmissionView(LoginRequiredMixin, View):
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
         cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
-        return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
+        time_interval = ProjectTimeInterval.objects.filter(project=request.project)
+        return render(request, 'core/submission.html', {
+            'cluster_activity_groups': cluster_activity_group,
+            'pk': pk,
+            'interval': time_interval
+        })
 
 
 class SubmissionListView(LoginRequiredMixin, View):
@@ -434,20 +446,6 @@ class SubmissionListView(LoginRequiredMixin, View):
         cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
         submissions = Submission.objects.filter(cluster_activity=cluster_activity)
         return render(request, 'core/submission_list.html', {'submissions': submissions})
-
-
-class UserRoleDeleteView(DeleteView):
-    model = UserRole
-    template_name = 'core/userrole-delete.html'
-    success_url = reverse_lazy('userrole_list')
-
-
-class SubmissionView(View):
-
-    def get(self, request, **kwargs):
-        pk = kwargs.get('pk')
-        cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
-        return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
 
 
 class ConfigUpdateView(UpdateView):
@@ -481,12 +479,29 @@ def reject_submission(request):
     return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': request.GET.get('clustera_id')}))
 
 
-def update_target(request, **kwargs):
+@transaction.atomic
+def update_cluster_activity(request, **kwargs):
     pk = kwargs.get('pk')
     ca = ClusterA.objects.get(pk=pk)
     target_number = request.POST.get('target_number')
-    ca.target_number = target_number
-    ca.target_update_at = datetime.now()
+    time_interval = request.POST.get('time_interval')
+    cahistory = ClusterAHistory()
+    if not time_interval == 'None':
+        if not ca.time_interval_id == int(time_interval):
+            cahistory.clustera = ca
+            interval = ProjectTimeInterval.objects.get(id=int(time_interval))
+            cahistory.time_interval = ca.time_interval
+            cahistory.updated_date = datetime.now()
+            cahistory.save()
+            ca.time_interval = interval
+    if not target_number == None:
+        if not ca.target_number == float(target_number):
+            cahistory.clustera = ca
+            cahistory.target_number = ca.target_number
+            cahistory.updated_date = datetime.now()
+            cahistory.save()
+            ca.target_number = target_number
+
     ca.save()
 
     return HttpResponseRedirect(reverse('submission', kwargs={'pk': kwargs.get('cluster_id')}))
