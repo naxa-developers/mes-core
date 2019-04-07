@@ -8,7 +8,8 @@ def get_interval(start, end, interval):
     start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
     end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
     duration = end.year - start.year
-    interval = interval * duration
+    if not duration == 0:
+        interval = interval * duration
     # gives the interval in which the ranges are to be separated
     diff = (end - start) / interval
     ranges = []
