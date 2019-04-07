@@ -91,8 +91,12 @@
                                                                 </select>
                                                             </div>
                                                                  {% if not c_act.activity.beneficiary_level %}
-                                                                    <label for="target_number_{{ c_act.id }}"><small>Target Number</small></label>
-                                                                    <input type="text" class="form-control" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_number }}">
+                                                                    <span>
+                                                                        <small>Original target number:</small>{{ c_act.target_number }}&nbsp;
+                                                                        <small>Target unit:</small>{{ c_act.target_unit }}&nbsp;
+                                                                    </span>
+                                                                    <label for="target_number_{{ c_act.id }}"><small>Completed target number</small></label>
+                                                                    <input type="text" class="form-control" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_completed }}">
                                                                 {% endif %}
                                                             <button type="submit" class="btn"><i class="la la-check"></i></button>
                                                             </div>

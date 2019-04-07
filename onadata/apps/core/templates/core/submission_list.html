@@ -107,10 +107,11 @@ $("#reject").click(function (){
             'pk': submission_id
         },
         success: function(data){
-            alert('Submission rejected');
             $('#id_status').html('Rejected');
             $('#reject').remove();
             $('#accept').remove();
+            alert('Submission rejected');
+
         },
         error: function(data){
             console.log(data)
