@@ -160,35 +160,36 @@ class ActivityForm(forms.ModelForm):
             act_g = self.cleaned_data.get('activity_group')
             name = self.cleaned_data.get('name')
             description = self.cleaned_data.get('description')
-            try:
-                a = Activity.objects.get(activity_group=act_g, name=name, description=description)
-                other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
-                    weights=Sum('weight'))
-                if other_activities.get('weight') is not None:
-                    weights = other_activities.get('weights') - a.weight
-                    if self.cleaned_data.get('weight') + weights > act_g.weight:
-                        raise ValidationError({
-                            'weight': [
-                                'The combined weight of activities in this activity group should not exceed the activity group weight.']})
-                else:
-                    if self.cleaned_data.get('weight') > act_g.weight:
-                        raise ValidationError({
-                            'weight': [
-                                'The combined weight of activities in this activity group should not exceed the activity group weight.']})
-            except Activity.DoesNotExist:
-                other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
-                    weights=Sum('weight'))
-                if other_activities.get('weight') is not None:
-                    if self.cleaned_data.get('weight') + other_activities['weights'] > act_g.weight:
-                        raise ValidationError({
-                            'weight': [
-                                'The combined weight of activities in this activity group should not exceed the activity group weight.']})
-                else:
-                    if self.cleaned_data.get('weight') > act_g.weight:
-                        raise ValidationError({
-                            'weight': [
-                                'The combined weight of activities in this activity group should not exceed the activity group weight.']})
-            return cleaned_data
+            if not act_g == None:
+                try:
+                    a = Activity.objects.get(activity_group=act_g, name=name, description=description)
+                    other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
+                        weights=Sum('weight'))
+                    if other_activities.get('weight') is not None:
+                        weights = other_activities.get('weights') - a.weight
+                        if self.cleaned_data.get('weight') + weights > act_g.weight:
+                            raise ValidationError({
+                                'weight': [
+                                    'The combined weight of activities in this activity group should not exceed the activity group weight.']})
+                    else:
+                        if self.cleaned_data.get('weight') > act_g.weight:
+                            raise ValidationError({
+                                'weight': [
+                                    'The combined weight of activities in this activity group should not exceed the activity group weight.']})
+                except Activity.DoesNotExist:
+                    other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
+                        weights=Sum('weight'))
+                    if other_activities.get('weight') is not None:
+                        if self.cleaned_data.get('weight') + other_activities['weights'] > act_g.weight:
+                            raise ValidationError({
+                                'weight': [
+                                    'The combined weight of activities in this activity group should not exceed the activity group weight.']})
+                    else:
+                        if self.cleaned_data.get('weight') > act_g.weight:
+                            raise ValidationError({
+                                'weight': [
+                                    'The combined weight of activities in this activity group should not exceed the activity group weight.']})
+                return cleaned_data
         except KeyError:
             raise ValidationError('error occured')
 
