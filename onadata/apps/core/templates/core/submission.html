@@ -73,7 +73,7 @@
                                                     <span class="checkbox">
                                                         <input type="checkbox" id="activity-{{ c_act.id }}" name="activity-{{ c_act.id }}">
                                                         <label for="activity-{{ c_act.id }}"></label>
-                                                    </span>
+                                                    </span><br><br>
                                                     <span style="display: inline-block;">
                                                         <form action="/core/update-cluster-act/{{ pk }}/{{ c_act.id }}/" method="post">
                                                             {% csrf_token %}
@@ -89,14 +89,14 @@
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 </select>
-                                                            </div>
+                                                            </div>&nbsp;&nbsp;
                                                                  {% if not c_act.activity.beneficiary_level %}
                                                                     <span>
-                                                                        <small>Original target number:</small>{{ c_act.target_number }}&nbsp;
-                                                                        <small>Target unit:</small>{{ c_act.target_unit }}&nbsp;
-                                                                    </span>
-                                                                    <label for="target_number_{{ c_act.id }}"><small>Completed target number</small></label>
-                                                                    <input type="text" class="form-control" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_completed }}">
+                                                                        <button class="btn" style="cursor: unset;" disabled>Original target number: {{ c_act.target_number }}</button>
+                                                                        <button class="btn" style="cursor: unset;" disabled>Target unit: {{ c_act.target_unit }}</button>
+                                                                    </span>&nbsp;
+                                                                    <button class="btn" style="cursor: unset;" disabled><span>Completed target number: </span></button>&nbsp;
+                                                                    <input type="text" class="form-control" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_completed }}">&nbsp;
                                                                 {% endif %}
                                                             <button type="submit" class="btn"><i class="la la-check"></i></button>
                                                             </div>
