@@ -530,7 +530,7 @@ class UserActivityViewSet(viewsets.ModelViewSet):
         if role.group.name == 'social-mobilizer':
             queryset = ClusterA.objects.filter(cag=activitygroup)
         elif role.group.name == 'community-social-mobilizer':
-            queryset = ClusterA.objects.filter(beneficiary_level=True, cag=activitygroup)
+            queryset = ClusterA.objects.filter(activity__beneficiary_level=True, cag=activitygroup)
         elif role.group.name == 'super-admin':
             queryset = ClusterA.objects.all()
         else:
