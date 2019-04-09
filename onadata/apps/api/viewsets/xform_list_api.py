@@ -106,20 +106,21 @@ class XFormListApi(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data, headers=self.get_openrosa_headers())
 
     def retrieve(self, request, *args, **kwargs):
-        self.object_list = self.filter_queryset(self.get_queryset())
+        try:
+            self.object = XForm.objects.get(pk=kwargs.get('pk'))
+        except XForm.DoesNotExist:
+            self.object = self.get_object()
 
-        serializer = self.get_serializer(self.object_list, many=True)
-
-        return Response(serializer.data, headers=self.get_openrosa_headers())
-
-    # def retrieve(self, request, *args, **kwargs):
-    #     self.object = self.get_object()
-    #
-    #     return Response(self.object.xml, headers=self.get_openrosa_headers())
+        return Response(self.object.xml, headers=self.get_openrosa_headers())
 
     @detail_route(methods=['GET'])
     def manifest(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        try:
+            self.object = XForm.objects.get(pk=kwargs.get('pk'))
+
+        except XForm.DoesNotExist:
+            self.object = self.get_object()
+
         object_list = MetaData.objects.filter(data_type='media',
                                               xform=self.object)
         context = self.get_serializer_context()
