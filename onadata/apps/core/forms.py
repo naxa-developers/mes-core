@@ -262,8 +262,8 @@ class UserRoleForm(forms.ModelForm):
             raise ValidationError({
                 'cluster': [
                     'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
-        if cleaned_data.get('group').name not in ['social-mobilizer']:
-            if UserRole.objects.filter(user=cleaned_data.get('user')).exists():
+        if not self.instance.pk:
+            if UserRole.objects.filter(user=cleaned_data.get('user')).exists() and cleaned_data.get('group').name not in ['social-mobilizer']:
                 raise ValidationError({
                     'cluster': [
                         'This user has already been assigned to another cluster.']})
