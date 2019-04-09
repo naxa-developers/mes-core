@@ -201,13 +201,15 @@ Here is some example JSON, it would replace `[the JSON]` above:
         cluster_activity = ClusterA.objects.get(pk=cluster_activity)
         s = Submission(cluster_activity = cluster_activity,instance=instance)
         s.save()
-        beneficiary = params['beneficiary'][0]
-        try:
-            beneficiary = int(beneficiary)
-            s.beneficiary = Beneficiary.objects.get(pk=beneficiary)
-            s.save()
-        except:
-            pass
+
+        if not params['beneficiary'] == '':
+            beneficiary = params['beneficiary']
+            try:
+                beneficiary = int(beneficiary)
+                s.beneficiary = Beneficiary.objects.get(pk=beneficiary)
+                s.save()
+            except:
+                pass
 
         context = self.get_serializer_context()
         serializer = SubmissionSerializer(instance, context=context)
