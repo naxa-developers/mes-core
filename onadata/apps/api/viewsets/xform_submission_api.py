@@ -167,7 +167,7 @@ Here is some example JSON, it would replace `[the JSON]` above:
     def create(self, request, *args, **kwargs):
         params = self.request.query_params
         print(params)
-        cluster_activity = int(params['activity'][0])
+        cluster_activity = int(params['activity'])
         username = self.kwargs.get('username')
         if self.request.user.is_anonymous():
             if username is None:
