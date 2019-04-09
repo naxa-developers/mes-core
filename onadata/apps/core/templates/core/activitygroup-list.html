@@ -34,6 +34,7 @@
                                 <th>Description</th>                      
                                 <th>Output </th>
                                 <th>Project </th>
+                                <th>Weight</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -44,6 +45,7 @@
                                     <td>{{ actgroup.description }}</td>                                   
                                     <td>{{ actgroup.output }}</td>
                                     <td>{{ actgroup.project }}</td>
+                                    <td>{{ actgroup.weight }}</td>
                                     <td class="table-action">
                                         <a href="{% url 'activitygroup_delete' actgroup.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
                                         <a href="{% url 'activitygroup_edit' actgroup.pk %}" class="btn"> <i class="la la-edit"></i></a>
