@@ -189,7 +189,7 @@ class ActivityForm(forms.ModelForm):
                             raise ValidationError({
                                 'weight': [
                                     'The combined weight of activities in this activity group should not exceed the activity group weight.']})
-                return cleaned_data
+                    return cleaned_data
         except KeyError:
             raise ValidationError('error occured')
 
