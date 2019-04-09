@@ -95,8 +95,9 @@ class ActivityGroupForm(forms.ModelForm):
             output = self.cleaned_data.get('output')
             project = self.cleaned_data.get('project')
             name = self.cleaned_data.get('name')
+            description = self.cleaned_data.get('description')
             try:
-                ag = ActivityGroup.objects.get(output=output, project=project, name=name)
+                ag = ActivityGroup.objects.get(output=output, project=project, name=name, description=description)
                 other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
                     weights=Sum('weight'))
 
