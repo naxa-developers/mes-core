@@ -278,7 +278,6 @@ class ClusterAssignView(ManagerMixin, View):
         cluster = Cluster.objects.get(pk=kwargs.get('pk'))
         checked = [(name, value) for name, value in request.POST.iteritems()]
         for item in checked:
-            print(item)
             if item[0].startswith('ag_'):
                 item = item[0].strip('ag_')
                 activity_group = ActivityGroup.objects.get(id=int(item))
@@ -309,8 +308,6 @@ class ClusterAssignView(ManagerMixin, View):
                         for target in checked:
                             val = 'target_' + item
                             if target[0] == val:
-                                print('found', target[0])
-                                print('value', target[1])
                                 ca.target_number = target[1]
                                 ca.save()
                         if not created:
@@ -566,7 +563,6 @@ class ClusterViewSet(viewsets.ModelViewSet):
     serializer_class = ClusterSerializer
 
     def get_queryset(self):
-        print(self.request.role)
         cluster = Cluster.objects.filter(userrole_cluster=self.request.role)
         return cluster
 

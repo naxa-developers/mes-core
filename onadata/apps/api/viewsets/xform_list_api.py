@@ -106,9 +106,16 @@ class XFormListApi(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data, headers=self.get_openrosa_headers())
 
     def retrieve(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.object_list = self.filter_queryset(self.get_queryset())
 
-        return Response(self.object.xml, headers=self.get_openrosa_headers())
+        serializer = self.get_serializer(self.object_list, many=True)
+
+        return Response(serializer.data, headers=self.get_openrosa_headers())
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #
+    #     return Response(self.object.xml, headers=self.get_openrosa_headers())
 
     @detail_route(methods=['GET'])
     def manifest(self, request, *args, **kwargs):
