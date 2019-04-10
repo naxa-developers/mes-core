@@ -3303,9 +3303,6 @@ ul.pagination li.page-item.active a.page-link, ul.pagination li.page-item:hover 
   margin-bottom: 30px;
   position: relative;
 }
-.project-form form {
-  margin-top: -40px;
-}
 .project-form form .form-group label {
   text-transform: capitalize;
 }
