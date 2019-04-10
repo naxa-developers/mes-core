@@ -63,13 +63,12 @@
                                                     <label for="selected_a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
                                                 {% with item|get_cluster_activity:object as ca %}
-
                                                 <button type="button" class="btn btn-sm btn-toggle active" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="true" autocomplete="off">
                                                     <div class="handle"></div>
                                                 </button>
                                                 {% if not item.beneficiary_level %}
-                                                        <label for="selected_target_{{ item.id }}">Target number</label>
-                                                        <input class="form-control" type="text" id="selected_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
+                                                    <label for="selected_target_{{ item.id }}">Target number</label>
+                                                    <input type="text" id="selected_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
                                                 {% endif %}
                                                 <div class="select-option">
 

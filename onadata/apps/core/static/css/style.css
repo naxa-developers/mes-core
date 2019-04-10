@@ -791,7 +791,7 @@ button.btn.btn-create {
   border-radius: 3px;
   top: 0;
   background-color: transparent;
-  border: 1px solid #ffffff;
+  border: 1px solid #00A890;
   -webkit-transition: opacity 0.3s linear;
   -moz-transition: opacity 0.3s linear;
   -o-transition: opacity 0.3s linear;
@@ -842,7 +842,7 @@ button.btn.btn-create {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 1px solid #f8f8f8;
+  border: 1px solid #00A890;
   display: inline-block;
   position: absolute;
   left: 3px;
@@ -3500,13 +3500,15 @@ ul.pagination li.page-item.active a.page-link, ul.pagination li.page-item:hover 
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
   border-radius: 5px;
-  background-color: #f8f8f8;
+  background-color: #ffffff;
   padding: 10px;
   margin-bottom: 15px;
 }
+.project-form.accordion-form .cluster-accordion .card .card-body {
+  border: 1px solid #f8f8f8;
+}
 .project-form.accordion-form .cluster-accordion .card .card-header {
-  padding: 0;
-  background: transparent;
+  background: #f8f8f8;
   border: 0;
 }
 .project-form.accordion-form .cluster-accordion .card .card-header h5 {
@@ -3543,14 +3545,14 @@ ul.pagination li.page-item.active a.page-link, ul.pagination li.page-item:hover 
   margin: 0;
 }
 .project-form.accordion-form .cluster-accordion .card .form-group .checkbox label::before, .project-form.accordion-form .cluster-accordion .card .form-group .checkbox label::after {
-  border: 1px solid #222222;
+  border: 1px solid #00A890;
   width: 20px;
   height: 20px;
   line-height: 20px;
   top: 5px;
 }
 .project-form.accordion-form .cluster-accordion.submission-acc .card .card-header {
-  padding-bottom: 7px !important;
+  padding: 0.75rem 1.25rem;
   border-bottom: 1px solid #ffffff;
 }
 .project-form.accordion-form .cluster-accordion.submission-acc .card .card-header h5 {
@@ -3662,7 +3664,7 @@ ul.pagination li.page-item.active a.page-link, ul.pagination li.page-item:hover 
   height: 1.2rem;
   width: 3rem;
   border-radius: 1.5rem;
-  background-color: #ffffff;
+  background-color: #d3d3d3;
   margin-left: 30px;
 }
 .project-form.accordion-form button.btn-toggle::after, .project-form.accordion-form button.btn-toggle:before {
@@ -3714,6 +3716,34 @@ ul.pagination li.page-item.active a.page-link, ul.pagination li.page-item:hover 
 }
 .project-form.accordion-form button.btn-toggle.active:after {
   opacity: 1;
+}
+
+.taglist p {
+  font-size: 0.875rem;
+}
+.taglist p label {
+  display: inline-block;
+  font-weight: 600;
+  margin: 0;
+}
+.taglist p label::after {
+  content: ":";
+  display: inline-block;
+  margin: 0 2px;
+}
+.taglist .target {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+.taglist .target button {
+  margin-left: 15px;
 }
 
 /*# sourceMappingURL=style.css.map */

@@ -139,6 +139,7 @@ class ClusterA(models.Model):
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='cainterval', null=True, blank=True)
 	target_completed = models.IntegerField(null=True, blank=True, default=0)
 	interval_updated = models.BooleanField(default=False)
+	target_updated = models.BooleanField(default=False)
 
 	def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
 		if not self.id:
@@ -152,6 +153,7 @@ class ClusterAHistory(models.Model):
 	clustera = models.ForeignKey(ClusterA, related_name='history')
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name="cahistory", null=True, blank=True)
 	target_completed = models.IntegerField(null=True, blank=True, default=0)
+	target_number = models.IntegerField(null=True, blank=True, default=0)
 	updated_date = models.DateTimeField(auto_now_add=True)
 
 

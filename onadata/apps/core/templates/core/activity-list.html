@@ -38,6 +38,7 @@
                                 <th>End date</th>
                                 <th>Form Title</th>
                                 <th>Benificiaries</th>
+                                <th>Weight</th>
                                 <th>Action</th>
                         </thead>
                         <tbody>
@@ -52,6 +53,7 @@
                                 <td>{{ activity.time_interval.end_date }}</td>
                                 <td>{{ activity.form }}</td>
                                 <td>{{ activity.beneficiary_level }}</td>
+                                <td>{{ activity.weight }}</td>
                                 <td class="table-action">
                                     <a href="{% url 'activity_delete' activity.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
                                     <a href="{% url 'activity_edit' activity.pk %}" class="btn"> <i class="la la-edit"></i></a>
