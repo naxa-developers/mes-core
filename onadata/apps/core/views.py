@@ -284,7 +284,6 @@ class ClusterAssignView(ManagerMixin, View):
         cluster = Cluster.objects.get(pk=kwargs.get('pk'))
         checked = [(name, value) for name, value in request.POST.iteritems()]
         for item in checked:
-            print(item)
             if item[0].startswith('ag_'):
                 item = item[0].strip('ag_')
                 activity_group = ActivityGroup.objects.get(id=int(item))
@@ -319,9 +318,11 @@ class ClusterAssignView(ManagerMixin, View):
 
                                 val = 'target_' + item
                                 if check[0] == val:
-                                    if not ca.target_number == check[1]:
+                                    print(ca.target_number, check[1])
+                                    if not ca.target_number == int(check[1]):
                                         hist.clustera = ca
                                         hist.target_number = ca.target_number
+                                        hist.target_completed = ca.target_completed
                                         hist.updated_date = datetime.now()
                                         hist.save()
                                         ca.target_number = check[1]
@@ -354,7 +355,7 @@ class ClusterAssignView(ManagerMixin, View):
                                 val = 'interval_' + item
                                 if check[0] == val:
                                     if not ca.time_interval == ProjectTimeInterval.objects.get(id=int(check[1])):
-                                        ClusterAHistory.objects.get_or_create(custera=ca, time_interval=ca.time_interval, updated_date=datetime.now())
+                                        ClusterAHistory.objects.get_or_create(clustera=ca, time_interval=ca.time_interval, updated_date=datetime.now())
                                         ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
                                         ca.interval_updated = True
                                         ca.save()
@@ -543,13 +544,15 @@ def update_cluster_activity(request, **kwargs):
     cahistory = ClusterAHistory()
     if target_number is not None:
         if not ca.target_completed == float(target_number):
+            print(ca.target_completed, target_number)
             cahistory.clustera = ca
-            cahistory.completed_target_number = ca.target_completed
+            cahistory.target_number = ca.target_number
+            cahistory.time_interval = ca.time_interval
+            cahistory.target_completed = ca.target_completed
             cahistory.updated_date = datetime.now()
             cahistory.save()
             ca.target_completed = target_number
-
-    ca.save()
+            ca.save()
 
     return HttpResponseRedirect(reverse('submission', kwargs={'pk': kwargs.get('cluster_id')}))
 

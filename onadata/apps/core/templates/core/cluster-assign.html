@@ -62,27 +62,41 @@
                                                     <input id="selected_a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" checked value="true">
                                                     <label for="selected_a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
+                                                {% with item|get_cluster_activity:object as ca %}
                                                 <button type="button" class="btn btn-sm btn-toggle active" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="true" autocomplete="off">
                                                     <div class="handle"></div>
                                                 </button>
                                                 {% if not item.beneficiary_level %}
                                                     <label for="selected_target_{{ item.id }}">Target number</label>
-                                                    <input type="text" id="selected_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.clustera.first.target_number }}">
+                                                    <input type="text" id="selected_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
                                                 {% endif %}
                                                 <div class="select-option">
-                                                    {% with item|get_time_interval:object as time_interval %}
+
                                                     <select class="custom-select" name="interval_{{ item.id }}">
                                                         <option value="None" selected="selected">-------</option>
                                                         {% for interval in interval %}
-                                                            {% if interval == time_interval %}
+                                                            {% if interval == ca.time_interval %}
                                                                 <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
                                                             {% else %}
                                                                 <option value="{{ interval.id }}">{{ interval }}</option>
                                                             {% endif %}
                                                         {% endfor %}
                                                     </select>
-                                                    {% endwith %}
                                                 </div>
+                                                {% endwith %}
+                                                {% with item|get_ca_history:object as history %}
+                                                {% for item in history %}
+                                                {% if item.target_number %}
+                                                <label>Previous target: <span>{{ item.target_number }}</span></label>
+                                                {% endif %}
+                                                {% if item.time_interval %}
+                                                <label>Previous time interval:<span>{{ item.time_interval }}</span></label>
+                                                {% endif %}
+                                                {% if item.updated_date %}
+                                                <p>Date updated:<span>{{ item.updated_date }}</span></p>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endwith %}
                                             </div>
                                             {% else %}
                                             <div class="form-group">
@@ -93,24 +107,37 @@
                                                 <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="false" autocomplete="off">
                                                     <div class="handle"></div>
                                                 </button>
+                                                {% with item|get_cluster_activity:object as ca %}
                                                 {% if not item.beneficiary_level %}
                                                     <label for="s_target_{{ item.id }}">Target number</label>
-                                                    <input type="text" id="s_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.target_number }}" disabled>
+                                                    <input type="text" id="s_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}" disabled>
                                                 {% endif %}
                                                 <div class="select-option">
-                                                    {% with item|get_time_interval:object as time_interval %}
                                                     <select class="custom-select" name="interval_{{ item.id }}" disabled>
                                                         <option value="None" selected="selected">-------</option>
                                                         {% for interval in interval %}
-                                                            {% if interval == item.time_interval %}
+                                                            {% if interval == ca.time_interval %}
                                                                 <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
                                                             {% else %}
                                                                 <option value="{{ interval.id }}">{{ interval }}</option>
                                                             {% endif %}
                                                         {% endfor %}
                                                     </select>
-                                                    {% endwith %}
                                                 </div>
+                                                {% endwith %}
+                                                {% with item|get_ca_history:object as history %}
+                                                {% for item in history %}
+                                                {% if item.target_number %}
+                                                <label>Previous target: <span>{{ item.target_number }}</span></label>
+                                                {% endif %}
+                                                {% if item.time_interval %}
+                                                <label>Previous time interval:<span>{{ item.time_interval }}</span></label>
+                                                {% endif %}
+                                                {% if item.updated_date %}
+                                                <p>Date updated:<span>{{ item.updated_date }}</span></p>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endwith %}
                                             </div>
                                             {% endif %}
                                             {% endfor %}
