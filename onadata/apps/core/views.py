@@ -44,7 +44,7 @@ def logout_view(request):
     return render()
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):    
     template_name = 'core/index.html'
 
     def get(self, request, *args, **kwargs):
@@ -55,9 +55,39 @@ class HomeView(LoginRequiredMixin, TemplateView):
         else:
             raise PermissionDenied()
 
+        output = Output.objects.all()
+        output_count = Output.objects.all().count()
+        context = {
+            # 'output': output,
+            'output_count': output_count
+        }
+        import ipdb
+        ipdb.set_trace()
+        
+        print(output_count)
+        return render(request, self.template_name, context)
+
+
+    # def get_context_data(request, **kwargs):
+    #     import ipdb
+    #     ipdb.set_trace()
+    #     output = Output.objects.all()
+    #     output_count = Output.objects.all().count()
+    #     context['output'] = output
+    #     context['output_count'] = output_count
+    #     print(context)
+    #     return context
+
 
 class ProjectDashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'core/project-dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        output = Output.objects.all()
+        context['output'] = output
+        return context
 
 
 class SignInView(TemplateView):
@@ -133,6 +163,8 @@ class ProjectDeleteView(ManagerMixin, DeleteView):
 class OutputListView(ManagerMixin, ListView):
     model = Output
     template_name = 'core/output-list.html'
+
+
 
 
 class OutputDetailView(ManagerMixin, DetailView):
