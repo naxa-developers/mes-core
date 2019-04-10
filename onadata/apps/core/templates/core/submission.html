@@ -78,27 +78,17 @@
                                                         <form action="/core/update-cluster-act/{{ pk }}/{{ c_act.id }}/" method="post">
                                                             {% csrf_token %}
                                                             <div class="row form-group">
-                                                                <div class="select-option">
-                                                                <select class="custom-select" id="time_interval" name="time_interval">
-                                                                    <option value="None" selected="selected">-------</option>
-                                                                    {% for interval in interval %}
-                                                                        {% if interval == c_act.time_interval %}
-                                                                            <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
-                                                                        {% else %}
-                                                                            <option value="{{ interval.id }}">{{ interval }}</option>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>&nbsp;&nbsp;
+                                                                <button class="btn" style="cursor: unset;" disabled><span>Time Interval: {{ c_act.time_interval }} </span></button>&nbsp;
                                                                  {% if not c_act.activity.beneficiary_level %}
                                                                     <span>
                                                                         <button class="btn" style="cursor: unset;" disabled>Original target number: {{ c_act.target_number }}</button>
                                                                         <button class="btn" style="cursor: unset;" disabled>Target unit: {{ c_act.target_unit }}</button>
                                                                     </span>&nbsp;
-                                                                    <button class="btn" style="cursor: unset;" disabled><span>Completed target number: </span></button>&nbsp;
+                                                                    <button class="btn" style="cursor: unset;" disabled><span>Target Accomplished: </span></button>&nbsp;
                                                                     <input type="text" class="form-control" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_completed }}">&nbsp;
+                                                                    <button type="submit" class="btn"><i class="la la-check"></i></button>
                                                                 {% endif %}
-                                                            <button type="submit" class="btn"><i class="la la-check"></i></button>
+
                                                             </div>
                                                         </form>
                                                         </span>

@@ -271,13 +271,20 @@ class ClusterAssignView(ManagerMixin, View):
         clusterag = ClusterAG.objects.filter(cluster_id=pk)
         activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag))
         selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group')
+        time_interval = ProjectTimeInterval.objects.filter(project=request.project)
         return render(request, 'core/cluster-assign.html',
-                      {'activity_group': activity_group, 'pk': pk, 'selected_activity_group': selected_activity_group})
-
+                      {
+                          'activity_group': activity_group,
+                          'pk': pk,
+                          'selected_activity_group': selected_activity_group,
+                          'interval': time_interval
+                      })
+    @transaction.atomic
     def post(self, request, **kwargs):
         cluster = Cluster.objects.get(pk=kwargs.get('pk'))
         checked = [(name, value) for name, value in request.POST.iteritems()]
         for item in checked:
+            print(item)
             if item[0].startswith('ag_'):
                 item = item[0].strip('ag_')
                 activity_group = ActivityGroup.objects.get(id=int(item))
@@ -305,14 +312,58 @@ class ClusterAssignView(ManagerMixin, View):
                         cag=cluster_ag
                     )
                     if not ca.activity.beneficiary_level:
-                        for target in checked:
-                            val = 'target_' + item
-                            if target[0] == val:
-                                ca.target_number = target[1]
+                        for check in checked:
+                            if not created:
+                                hist = ClusterAHistory()
+                                ca.target_unit = ca.activity.target_unit
+
+                                val = 'target_' + item
+                                if check[0] == val:
+                                    if not ca.target_number == check[1]:
+                                        hist.clustera = ca
+                                        hist.target_number = ca.target_number
+                                        hist.updated_date = datetime.now()
+                                        hist.save()
+                                        ca.target_number = check[1]
+                                        ca.target_updated = True
+
+                                val = 'interval_' + item
+                                if check[0] == val:
+                                    if not ca.time_interval == ProjectTimeInterval.objects.get(id=int(check[1])):
+                                        hist.clustera = ca
+                                        hist.time_interval = ca.time_interval
+                                        hist.updated_date = datetime.now()
+                                        hist.save()
+                                        ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
+                                        ca.interval_updated = True
                                 ca.save()
-                        if not created:
-                            ca.target_unit = ca.activity.target_unit
-                            ca.save()
+                            else:
+                                val = 'target_' + item
+                                if check[0] == val:
+                                    ca.target_number = check[1]
+
+                                val = 'interval_' + item
+                                if check[0] == val:
+                                    ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
+
+                                ca.save()
+
+                    else:
+                        for check in checked:
+                            if not created:
+                                val = 'interval_' + item
+                                if check[0] == val:
+                                    if not ca.time_interval == ProjectTimeInterval.objects.get(id=int(check[1])):
+                                        ClusterAHistory.objects.get_or_create(custera=ca, time_interval=ca.time_interval, updated_date=datetime.now())
+                                        ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
+                                        ca.interval_updated = True
+                                        ca.save()
+                            else:
+                                val = 'interval_' + item
+                                if check[0] == val:
+                                    print('created')
+                                    ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
+                                    ca.save()
 
 
             # ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag, start_date=start_date, end_date=end_date)
@@ -489,18 +540,8 @@ def update_cluster_activity(request, **kwargs):
     pk = kwargs.get('pk')
     ca = ClusterA.objects.get(pk=pk)
     target_number = request.POST.get('target_number')
-    time_interval = request.POST.get('time_interval')
     cahistory = ClusterAHistory()
-    if not time_interval == 'None':
-        if not ca.time_interval_id == int(time_interval):
-            cahistory.clustera = ca
-            interval = ProjectTimeInterval.objects.get(id=int(time_interval))
-            cahistory.time_interval = ca.time_interval
-            cahistory.updated_date = datetime.now()
-            cahistory.save()
-            ca.time_interval = interval
-            ca.interval_updated = True
-    if not target_number == None:
+    if target_number is not None:
         if not ca.target_completed == float(target_number):
             cahistory.clustera = ca
             cahistory.completed_target_number = ca.target_completed
