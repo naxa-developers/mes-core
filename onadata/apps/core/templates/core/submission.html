@@ -77,18 +77,18 @@
                                                     <span style="display: inline-block;">
                                                         <form action="/core/update-cluster-act/{{ pk }}/{{ c_act.id }}/" method="post">
                                                             {% csrf_token %}
-                                                            <div class="row form-group">
-                                                                <button class="btn" style="cursor: unset;" disabled><span>Time Interval: {{ c_act.time_interval }} </span></button>&nbsp;
+                                                            <div class="taglist">
+                                                                <p><label>Time Interval </label>{{ c_act.time_interval }} </p>
                                                                  {% if not c_act.activity.beneficiary_level %}
-                                                                    <span>
-                                                                        <button class="btn" style="cursor: unset;" disabled>Original target number: {{ c_act.target_number }}</button>
-                                                                        <button class="btn" style="cursor: unset;" disabled>Target unit: {{ c_act.target_unit }}</button>
-                                                                    </span>&nbsp;
-                                                                    <button class="btn" style="cursor: unset;" disabled><span>Target Accomplished: </span></button>&nbsp;
-                                                                    <input type="text" class="form-control" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_completed }}">&nbsp;
-                                                                    <button type="submit" class="btn"><i class="la la-check"></i></button>
+                                                                    <p><label>Original target number</label> {{ c_act.target_number }}</p>
+                                                                    <p><label>Target unit</label> {{ c_act.target_unit }}</p>
+                                                                    <p><label>Target Accomplished </label>
+                                                                        <div class="target">
+                                                                            <input type="text" class="form-control" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_completed }}">&nbsp;
+                                                                            <button type="submit" class="btn"><i class="la la-check"></i></button>
+                                                                        </div>
+                                                                    </p>
                                                                 {% endif %}
-
                                                             </div>
                                                         </form>
                                                         </span>
