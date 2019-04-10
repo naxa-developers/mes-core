@@ -110,11 +110,11 @@ def check_cluster_activity(obj, cag):
         return False
 
 @register.filter
-def get_time_interval(obj, cag):
+def get_cluster_activity(obj, cag):
     if ClusterA.objects.filter(activity=obj, cag=cag).exists():
-        return ClusterA.objects.get(activity=obj, cag=cag).time_interval
+        return ClusterA.objects.get(activity=obj, cag=cag)
     else:
-        return obj.time_interval
+        return obj
 
 @register.filter
 def check_manager_permission(obj, cluster):
