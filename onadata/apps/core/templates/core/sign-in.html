@@ -21,29 +21,49 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 col-sm-12">
-                <form class="card auth_form">
+                <form method="post" action="/core/sign-in" class="card auth_form">
+                    {% csrf_token %}
                     <div class="header">
                         <img class="logo" src="{% static 'images/logo.png' %}" alt="">
                         <h5>Log in</h5>
                     </div>
                     <div class="body">
+
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Username">
+                            <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="username" required>
                             <div class="input-group-append">
                                 <span class="input-group-text"><i class="la la-user"></i></span>
                             </div>
+                            {% if email_error %}
+                                <div>
+                                    {{ email_error }}
+                                </div>
+                                {% elif not valid_email %}
+                                    <div>
+                                        User With The Email/Username Doesnot Exist.
+                                    </div>
+                            {% endif %}
                         </div>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Password">
+                            <input type="password" class="form-control" placeholder="Password" name="password" required>
                             <div class="input-group-append">                                
                                 <span class="input-group-text"><a href="forgot-password.html" class="forgot" title="Forgot Password"><i class="la la-lock"></i></a></span>
-                            </div>                            
+                            </div>
+                            {% if password_error %}
+                                <div id="passwordHelp">
+                                    Incorrect Password ! Please Check Your Password.
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="checkbox">
                             <input id="remember_me" type="checkbox">
                             <label for="remember_me">Remember Me</label>
                         </div>
-                        <a href="{% url 'home' %}" class="btn btn-primary btn-block waves-effect waves-light">SIGN IN</a>                        
+                        {% for error in form.errors %}
+                        {{ error }}
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary btn-block waves-effect waves-light">SIGN IN</button>
+                        <a style="color:blue;" href="/core/sign-up/">Don't have an account?</a>
 <!--                         <div class="signin_with mt-3">
                             <p class="mb-0">or Sign Up using</p>
                             <button class="btn btn-primary btn-icon btn-icon-mini btn-round facebook"><i class="la la-facebook"></i></button>
@@ -76,3 +96,10 @@
 
 
 </html>
+<script>
+    $(document).ready(function(){
+        if('{{login_username}}'){
+                        document.getElementById('inputUsername').value='{{login_username}}';
+        }
+    });
+</script>

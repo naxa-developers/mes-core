@@ -15,6 +15,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 import pandas as pd
 from django.db.models import Q
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -24,6 +25,12 @@ import json
 from django.utils.decorators import method_decorator
 from datetime import datetime
 from django.db import transaction
+from django.core.mail import EmailMessage
+from django.utils.encoding import force_bytes, force_text
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from .signup_tokens import account_activation_token
 
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
@@ -32,7 +39,7 @@ from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSeri
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
     Submission, Config, ProjectTimeInterval, ClusterAHistory
 
-from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
+from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
     UserRoleForm, ConfigForm
 
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
@@ -43,7 +50,7 @@ from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, Proje
 def logout_view(request):
     logout(request)
 
-    return render()
+    return redirect('/core/sign-in/')
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -57,9 +64,139 @@ class HomeView(LoginRequiredMixin, TemplateView):
         else:
             raise PermissionDenied()
 
+def web_authenticate(username=None, password=None):
+    try:
+        if "@" in username:
+            user = User.objects.get(email__iexact=username)
+        else:
+            user = User.objects.get(username__iexact=username)
+        if user.check_password(password):
+            return authenticate(username=user.username, password=password), False
+        else:
+            return None, True  # Email is correct
+    except User.DoesNotExist:
+        return None, False  # false Email incorrect
 
-class SignInView(TemplateView):
-    template_name = 'core/sign-in.html'
+
+def signin(request):
+    if request.user.is_authenticated():
+        return redirect('home')
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            pwd = form.cleaned_data['password']
+            user, valid_email = web_authenticate(username=username, password=pwd)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect(reverse('home'))
+                else:
+                    return render(request, 'core/sign-in.html',
+                                  {'form': form,
+                                   'email_error': "Your Account is Deactivated, Please Contact Administrator.",
+                                   'valid_email': valid_email,
+                                   'login_username': username
+                                   })
+            else:
+                if valid_email:
+                    email_error = False
+                    password_error = True
+                else:
+                    password_error = False
+                    email_error = "Invalid Username, please check your username."
+                return render(request, 'core/sign-in.html',
+                              {'form': form,
+                               'valid_email': valid_email,
+                               'email_error': email_error,
+                               'password_error': password_error,
+                               'login_username': username
+                               })
+        else:
+            if request.POST.get('login_username') != None:
+                login_username = request.POST.get('login_username')
+            else:
+                login_username = ''
+            return render(request, 'core/sign-in.html', {
+                'form': form,
+                'valid_email': False,
+                'email_error': "Your username and password did not match.",
+                'login_username': login_username
+            })
+    else:
+        form = LoginForm()
+
+    return render(request, 'core/sign-in.html', {'form': form,
+                                                'valid_email': True,
+                                                'email_error': False
+                                                })
+
+
+def signup(request):
+    if request.user.is_authenticated():
+        return redirect('/core')
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password1')
+            user = User.objects.create(username=username, email=email, password=password)
+            user.set_password(user.password)
+            user.is_active = False
+            user.save()
+
+            mail_subject = 'Activate your account.'
+            current_site = get_current_site(request)
+            message = render_to_string('core/acc_active_email.html', {
+                'user': user,
+                'domain': settings.SITE_URL,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = email
+            email = EmailMessage(
+                mail_subject, message, to=[to_email]
+            )
+            email.send()
+            return redirect('/core/sign-in/')
+
+        else:
+            username = request.POST.get('username')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            email = request.POST.get('email')
+            return render(request, 'core/sign-up.html', {
+                'form': form,
+                'username': username,
+                'email': email,
+                'valid_email': True,
+                'email_error': False
+            })
+    else:
+        form = SignUpForm()
+        return render(request, 'core/sign-up.html', {
+            'form': form,
+            'valid_email':True,
+            'email_error': False
+        })
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, user)
+
+        return redirect(reverse_lazy('sign_in'))
+    else:
+        return HttpResponse('Activation link is invalid!')
 
 
 class SignUpView(TemplateView):

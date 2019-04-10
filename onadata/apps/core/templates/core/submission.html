@@ -61,7 +61,6 @@
                                     </div>
                                     <div id="collapse-{{ item.id }}" class="collapse show" data-parent="#accordion" aria-labelledby="heading-{{ item.id }}">
                                         <div class="card-body">
-                                            <br>
                                             <ul>
                                                 {% for c_act in item.ca.all %}
 
@@ -73,8 +72,8 @@
                                                     <span class="checkbox">
                                                         <input type="checkbox" id="activity-{{ c_act.id }}" name="activity-{{ c_act.id }}">
                                                         <label for="activity-{{ c_act.id }}"></label>
-                                                    </span><br><br>
-                                                    <span style="display: inline-block;">
+                                                    </span>
+                                                </li>
                                                         <form action="/core/update-cluster-act/{{ pk }}/{{ c_act.id }}/" method="post">
                                                             {% csrf_token %}
                                                             <div class="row form-group">
@@ -101,9 +100,7 @@
                                                             <button type="submit" class="btn"><i class="la la-check"></i></button>
                                                             </div>
                                                         </form>
-                                                        </span>
 
-                                                </li>
 
                                                 {% endfor %}
 

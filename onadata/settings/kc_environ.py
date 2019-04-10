@@ -110,8 +110,8 @@ KOBOFORM_SERVER = os.environ.get("KOBOFORM_SERVER", "localhost")
 KOBOFORM_SERVER_PORT = os.environ.get("KOBOFORM_SERVER_PORT", "8000")
 KOBOFORM_SERVER_PROTOCOL = os.environ.get("KOBOFORM_SERVER_PROTOCOL", "http")
 KOBOFORM_LOGIN_AUTOREDIRECT = True
-KOBOFORM_URL = os.environ.get("KOBOFORM_URL", "http://kf.kobo.local")
-KOBOCAT_URL = os.environ.get("KOBOCAT_URL", "http://kc.kobo.local")
+KOBOFORM_URL = os.environ.get("KOBOFORM_URL", "http://localhost:8000")
+KOBOCAT_URL = os.environ.get("KOBOCAT_URL", "http://localhost:8001")
 
 
 TEMPLATE_CONTEXT_PROCESSORS = (
