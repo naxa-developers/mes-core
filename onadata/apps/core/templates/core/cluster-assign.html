@@ -69,6 +69,20 @@
                                                     <label for="selected_target_{{ item.id }}">Target number</label>
                                                     <input type="text" id="selected_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.clustera.first.target_number }}">
                                                 {% endif %}
+                                                <div class="select-option">
+                                                    {% with item|get_time_interval:object as time_interval %}
+                                                    <select class="custom-select" name="interval_{{ item.id }}">
+                                                        <option value="None" selected="selected">-------</option>
+                                                        {% for interval in interval %}
+                                                            {% if interval == time_interval %}
+                                                                <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
+                                                            {% else %}
+                                                                <option value="{{ interval.id }}">{{ interval }}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                    {% endwith %}
+                                                </div>
                                             </div>
                                             {% else %}
                                             <div class="form-group">
@@ -83,6 +97,20 @@
                                                     <label for="s_target_{{ item.id }}">Target number</label>
                                                     <input type="text" id="s_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.target_number }}" disabled>
                                                 {% endif %}
+                                                <div class="select-option">
+                                                    {% with item|get_time_interval:object as time_interval %}
+                                                    <select class="custom-select" name="interval_{{ item.id }}" disabled>
+                                                        <option value="None" selected="selected">-------</option>
+                                                        {% for interval in interval %}
+                                                            {% if interval == item.time_interval %}
+                                                                <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
+                                                            {% else %}
+                                                                <option value="{{ interval.id }}">{{ interval }}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                    {% endwith %}
+                                                </div>
                                             </div>
                                             {% endif %}
                                             {% endfor %}
@@ -118,6 +146,18 @@
                                                     <label for="target_{{ item.id }}">Target number</label>
                                                     <input type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.target_number }}" disabled>
                                                 {% endif %}
+                                                <div class="select-option">
+                                                    <select class="custom-select" name="interval_{{ item.id }}" disabled>
+                                                        <option value="None" selected="selected">-------</option>
+                                                        {% for interval in interval %}
+                                                            {% if interval == item.time_interval %}
+                                                                <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
+                                                            {% else %}
+                                                                <option value="{{ interval.id }}">{{ interval }}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
                                             </div>
                                             {% endfor %}
                                         </div>
@@ -148,13 +188,28 @@
         else if(parentDiv.children[0].value === "true"){
             parentDiv.children[0].value = "false";
         }
-        if (elem.parentNode.children[3].disabled === true){
-            elem.parentNode.children[3].disabled = false;
+        if (elem.parentNode.children[4]){
+            if (elem.parentNode.children[3].disabled === true){
+                elem.parentNode.children[3].disabled = false;
+            }
+            else if (elem.parentNode.children[3].disabled === false){
+                elem.parentNode.children[3].disabled = true;
+            }
+            if (elem.parentNode.children[4].children[0].disabled === true){
+                elem.parentNode.children[4].children[0].disabled = false;
+            }
+            else if (elem.parentNode.children[4].children[0].disabled === false){
+                elem.parentNode.children[4].children[0].disabled = true;
+            }
         }
-        else if (elem.parentNode.children[3].disabled === false){
-            elem.parentNode.children[3].disabled = true;
+        else{
+            if (elem.parentNode.children[2].children[0].disabled === true){
+                elem.parentNode.children[2].children[0].disabled = false;
+            }
+            else if (elem.parentNode.children[2].children[0].disabled === false){
+                elem.parentNode.children[2].children[0].disabled = true;
+            }
         }
-        
     }
 </script>
 {% endblock %}
