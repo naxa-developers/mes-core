@@ -84,6 +84,19 @@
                                                     </select>
                                                 </div>
                                                 {% endwith %}
+                                                {% with item|get_ca_history:object as history %}
+                                                {% for item in history %}
+                                                {% if item.target_number %}
+                                                <label>Previous target: <span>{{ item.target_number }}</span></label>
+                                                {% endif %}
+                                                {% if item.time_interval %}
+                                                <label>Previous time interval:<span>{{ item.time_interval }}</span></label>
+                                                {% endif %}
+                                                {% if item.updated_date %}
+                                                <p>Date updated:<span>{{ item.updated_date }}</span></p>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endwith %}
                                             </div>
                                             {% else %}
                                             <div class="form-group">
@@ -111,6 +124,19 @@
                                                         {% endfor %}
                                                     </select>
                                                 </div>
+                                                {% endwith %}
+                                                {% with item|get_ca_history:object as history %}
+                                                {% for item in history %}
+                                                {% if item.target_number %}
+                                                <label>Previous target: <span>{{ item.target_number }}</span></label>
+                                                {% endif %}
+                                                {% if item.time_interval %}
+                                                <label>Previous time interval:<span>{{ item.time_interval }}</span></label>
+                                                {% endif %}
+                                                {% if item.updated_date %}
+                                                <p>Date updated:<span>{{ item.updated_date }}</span></p>
+                                                {% endif %}
+                                                {% endfor %}
                                                 {% endwith %}
                                             </div>
                                             {% endif %}

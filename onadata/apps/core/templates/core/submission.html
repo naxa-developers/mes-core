@@ -92,7 +92,22 @@
                                                             </div>
                                                         </form>
                                                         </span>
-
+                                                    <div>
+                                                        {% with c_act|get_ca_history as obj %}
+                                                        {% for obj in obj %}
+                                                            {% if obj.target_number %}
+                                                                <label>Previous target: <span>{{ obj.target_number }}</span></label>
+                                                            {% endif %}
+                                                            {% if obj.time_interval %}
+                                                                <label>Previous time interval:<span>{{ obj.time_interval }}</span></label>
+                                                            {% endif %}
+                                                                <p>Target Completed:<span>{{ obj.target_completed }}</span></p>
+                                                            {% if obj.updated_date %}
+                                                                <p>Date updated:<span>{{ obj.updated_date }}</span></p>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {% endwith %}
+                                                    </div>
                                                 </li>
 
                                                 {% endfor %}
