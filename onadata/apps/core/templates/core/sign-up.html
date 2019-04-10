@@ -21,7 +21,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 col-sm-12">
-                <form class="card auth_form">
+                <form method="post" class="card auth_form" action="/core/sign-up/">
+                    {% csrf_token %}
                     <div class="header">
                         <img class="logo" src="{% static 'images/logo.png' %}" alt="">
                         <h5>Sign Up</h5>
@@ -29,28 +30,65 @@
                     </div>
                     <div class="body">
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Username">
+                            <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="username" required>
                             <div class="input-group-append">
                                 <span class="input-group-text"><i class="la la-user"></i></span>
                             </div>
                         </div>
+                        {% if form.username.errors %}
+                            {% for error in form.username.errors %}
+                            <div style="color:red; font-size0.875rem;">
+                                {{ error|escape }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Enter Email">
+                            <input type="text" id="inputEmail" class="form-control" placeholder="Enter Email" name="email" required>
                             <div class="input-group-append">
                                 <span class="input-group-text"><i class="la la-envelope"></i></span>
                             </div>
-                        </div>                        
+                        </div>
+                        {% if form.email.errors %}
+                            {% for error in form.email.errors %}
+                            <div style="color:red; font-size0.875rem;">
+                                {{ error|escape }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Password">
+                            <input type="password" class="form-control" placeholder="Password" name="password1" required>
                             <div class="input-group-append">                                
                                 <span class="input-group-text"><i class="la la-lock"></i></span>
-                            </div>                            
+                            </div>
                         </div>
+                            {% if form.password1.errors %}
+                                {% for error in form.password1.errors %}
+                                <div style="color:red; font-size0.875rem;">
+                                    {{ error|escape }}
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                         <div class="input-group mb-3">
+                            <input type="password" class="form-control" placeholder="Re-enter Password" name="password2" required>
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="la la-lock"></i></span>
+                            </div>
+                        </div>
+                             {% if form.password2.errors %}
+                                {% for error in form.password2.errors %}
+                                <div style="color:red; font-size0.875rem;">
+                                    {{ error|escape }}
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% for error in form.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
                         <div class="checkbox">
                             <input id="remember_me" type="checkbox">
                             <label for="remember_me">I read and agree to the <a href="javascript:void(0);">terms of usage</a></label>
                         </div>
-                        <a href="{% url 'home' %}" class="btn btn-primary btn-block">SIGN UP</a>
+                        <button type="submit" class="btn btn-primary btn-block">SIGN UP</button>
                         <div class="signin_with mt-3">
                             <a class="link" href="sign-in.html">You already have a membership?</a>
                         </div>
@@ -81,3 +119,15 @@
 
 
 </html>
+<script>
+	$(document).ready(function(){
+	    if('{{username}}'){
+			document.getElementById('inputUsername').value='{{username}}';
+		}
+
+        if('{{email}}'){
+            document.getElementById('inputEmail').value='{{email}}';
+        }
+
+    });
+</script>

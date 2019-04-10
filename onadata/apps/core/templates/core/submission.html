@@ -61,7 +61,6 @@
                                     </div>
                                     <div id="collapse-{{ item.id }}" class="collapse show" data-parent="#accordion" aria-labelledby="heading-{{ item.id }}">
                                         <div class="card-body">
-                                            <br>
                                             <ul>
                                                 {% for c_act in item.ca.all %}
 
@@ -73,8 +72,8 @@
                                                     <span class="checkbox">
                                                         <input type="checkbox" id="activity-{{ c_act.id }}" name="activity-{{ c_act.id }}">
                                                         <label for="activity-{{ c_act.id }}"></label>
-                                                    </span><br><br>
-                                                    <span style="display: inline-block;">
+                                                    </span>
+                                                </li>
                                                         <form action="/core/update-cluster-act/{{ pk }}/{{ c_act.id }}/" method="post">
                                                             {% csrf_token %}
                                                             <div class="taglist">
@@ -91,24 +90,22 @@
                                                                 {% endif %}
                                                             </div>
                                                         </form>
-                                                        </span>
-                                                    <div>
+                                                    <div class="taglist">
                                                         {% with c_act|get_ca_history as obj %}
                                                         {% for obj in obj %}
                                                             {% if obj.target_number %}
-                                                                <label>Previous target: <span>{{ obj.target_number }}</span></label>
+                                                            <p><label>Previous target</label>{{ obj.target_number }}</p>
                                                             {% endif %}
                                                             {% if obj.time_interval %}
-                                                                <label>Previous time interval:<span>{{ obj.time_interval }}</span></label>
-                                                            {% endif %}
-                                                                <p>Target Completed:<span>{{ obj.target_completed }}</span></p>
-                                                            {% if obj.updated_date %}
-                                                                <p>Date updated:<span>{{ obj.updated_date }}</span></p>
+                                                            <p><label>Previous time interval</label>{{ obj.time_interval }}</p>
+                                                                {% endif %}
+                                                            <p><label>Target Completed</label>{{ obj.target_completed }}</p>
+                                                                {% if obj.updated_date %}
+                                                            <p><label>Date updated</label>{{ obj.updated_date }}</p>
                                                             {% endif %}
                                                         {% endfor %}
                                                         {% endwith %}
                                                     </div>
-                                                </li>
 
                                                 {% endfor %}
 
