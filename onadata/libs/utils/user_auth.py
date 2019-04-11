@@ -98,12 +98,18 @@ def check_and_set_form_by_id(pk, request):
 def get_xform_and_perms(username, id_string, request):
     xform = get_object_or_404(
         XForm, user__username=username, id_string=id_string)
-    project = xform.actform.activity_group.project
     is_owner = xform.user == request.user
-    can_edit = is_owner or\
-        request.user.has_perm('logger.change_xform', xform)
-    can_view = can_edit or\
-        request.user.has_perm('logger.view_xform', xform) or (request.project == project and request.role.group.name in ['social-moilizer','project-manager','super-admin'])
+    can_edit = is_owner or \
+               request.user.has_perm('logger.change_xform', xform)
+    try:
+        project = xform.actform.get().activity_group.project
+        can_view = can_edit or \
+                   request.user.has_perm('logger.view_xform', xform) or (
+                               request.project == project and request.role.group.name in ['social-moilizer',
+                                                                                          'project-manager',
+                                                                                          'super-admin'])
+    except:
+        can_view = False
     return [xform, is_owner, can_edit, can_view]
 
 
