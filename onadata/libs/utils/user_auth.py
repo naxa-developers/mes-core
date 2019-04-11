@@ -101,15 +101,11 @@ def get_xform_and_perms(username, id_string, request):
     is_owner = xform.user == request.user
     can_edit = is_owner or \
                request.user.has_perm('logger.change_xform', xform)
-    try:
-        project = xform.actform.get().activity_group.project
-        can_view = can_edit or \
-                   request.user.has_perm('logger.view_xform', xform) or (
-                               request.project == project and request.role.group.name in ['social-moilizer',
-                                                                                          'project-manager',
-                                                                                          'super-admin'])
-    except:
-        can_view = False
+    can_view = can_edit or \
+               request.user.has_perm('logger.view_xform', xform) or request.role.group.name in [
+                   'social-moilizer',
+                   'project-manager',
+                   'super-admin']
     return [xform, is_owner, can_edit, can_view]
 
 
