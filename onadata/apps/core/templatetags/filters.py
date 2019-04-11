@@ -5,7 +5,7 @@ from django.template import Library
 from django import template
 from django.contrib.auth.models import Group
 from onadata.apps.core.mixin import USER_PERMS
-from onadata.apps.core.models import Submission, ClusterA, UserRole
+from onadata.apps.core.models import Submission, ClusterA, UserRole, ClusterAHistory
 from django.db.models import Q
 
 register = Library()
@@ -108,6 +108,25 @@ def check_cluster_activity(obj, cag):
         return True
     else:
         return False
+
+
+@register.filter
+def get_cluster_activity(obj, cag):
+    if ClusterA.objects.filter(activity=obj, cag=cag).exists():
+        return ClusterA.objects.get(activity=obj, cag=cag)
+    else:
+        return obj
+
+
+@register.filter
+def get_ca_history(obj, cag=None):
+    if cag is not None:
+        if ClusterA.objects.filter(activity=obj, cag=cag).exists():
+            ca = ClusterA.objects.filter(activity=obj, cag=cag)
+            return ClusterAHistory.objects.filter(clustera=ca)
+
+    else:
+        return ClusterAHistory.objects.filter(clustera=obj)
 
 
 @register.filter

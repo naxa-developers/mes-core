@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.contrib.auth import views as auth_views
 
 from rest_framework.authtoken import views as restviews
 from rest_framework.routers import DefaultRouter
@@ -16,8 +17,10 @@ router.register(r'config', views.ConfigViewSet),
 
 urlpatterns = [
 	url(r'^$', views.HomeView.as_view(), name='home'),
-	url(r'sign-in', views.SignInView.as_view(), name='sign_in'),
-	url(r'sign-up', views.SignUpView.as_view(), name='sign_up'),
+	url(r'sign-in', views.signin, name='sign_in'),
+	url(r'sign-up', views.signup, name='sign_up'),
+	url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.activate, name='activate'),
+	url(r'logout', views.logout, name='logout'),
 	url(r'forgot-password', views.ForgotView.as_view(), name='forgot_password'),
 	url(r'404 error', views.ErrorView.as_view(), name='404_error'),
 	url(r'dashboard-1', views.Dashboard1View.as_view(), name='dashboard-1'),
@@ -79,7 +82,7 @@ urlpatterns = [
 	url(r'reject', views.reject_submission, name='reject_submission'),
 
 	# update target number of cluster activity
-	url(r'update-target/(?P<cluster_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.update_target, name='update_target'),
+	url(r'update-cluster-act/(?P<cluster_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.update_cluster_activity, name='update_cluster_activity'),
 
 
 

@@ -61,7 +61,6 @@
                                     </div>
                                     <div id="collapse-{{ item.id }}" class="collapse show" data-parent="#accordion" aria-labelledby="heading-{{ item.id }}">
                                         <div class="card-body">
-                                            <br>
                                             <ul>
                                                 {% for c_act in item.ca.all %}
 
@@ -74,19 +73,39 @@
                                                         <input type="checkbox" id="activity-{{ c_act.id }}" name="activity-{{ c_act.id }}">
                                                         <label for="activity-{{ c_act.id }}"></label>
                                                     </span>
-                                                    {% if not c_act.activity.beneficiary_level %}
-                                                    <span style="display: inline-block;">
-                                                        <form action="/core/update-target/{{ pk }}/{{ c_act.id }}/" method="post">
-                                                            {% csrf_token %}
-
-                                                        <label for="target_number_{{ c_act.id }}"><small>Target Number</small></label>
-                                                        <input type="text" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_number }}">
-                                                        <button type="submit" class="btn"><i class="la la-check"></i></button>
-                                                        </form>
-                                                        </span>
-
-                                                    {% endif %}
                                                 </li>
+                                                        <form action="/core/update-cluster-act/{{ pk }}/{{ c_act.id }}/" method="post">
+                                                            {% csrf_token %}
+                                                            <div class="taglist">
+                                                                <p><label>Time Interval </label>{{ c_act.time_interval }} </p>
+                                                                 {% if not c_act.activity.beneficiary_level %}
+                                                                    <p><label>Original target number</label> {{ c_act.target_number }}</p>
+                                                                    <p><label>Target unit</label> {{ c_act.target_unit }}</p>
+                                                                    <p><label>Target Accomplished </label>
+                                                                        <div class="target">
+                                                                            <input type="text" class="form-control" id="target_number_{{ c_act.id }}" name="target_number" style="width: 50px;" value="{{ c_act.target_completed }}">&nbsp;
+                                                                            <button type="submit" class="btn"><i class="la la-check"></i></button>
+                                                                        </div>
+                                                                    </p>
+                                                                {% endif %}
+                                                            </div>
+                                                        </form>
+                                                    <div class="taglist">
+                                                        {% with c_act|get_ca_history as obj %}
+                                                        {% for obj in obj %}
+                                                            {% if obj.target_number %}
+                                                            <p><label>Previous target</label>{{ obj.target_number }}</p>
+                                                            {% endif %}
+                                                            {% if obj.time_interval %}
+                                                            <p><label>Previous time interval</label>{{ obj.time_interval }}</p>
+                                                                {% endif %}
+                                                            <p><label>Target Completed</label>{{ obj.target_completed }}</p>
+                                                                {% if obj.updated_date %}
+                                                            <p><label>Date updated</label>{{ obj.updated_date }}</p>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {% endwith %}
+                                                    </div>
 
                                                 {% endfor %}
 

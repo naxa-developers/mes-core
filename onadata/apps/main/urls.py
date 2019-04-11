@@ -25,8 +25,8 @@ urlpatterns = patterns(
     url(r'^api/v1', RedirectView.as_view(url='/api/v1/')),
 
     # django default stuff
-    url(r'^accounts/login', auth_views.login, {'template_name': 'core/sign-in.html'}, name='login'),
-    url(r'^accounts/logout', auth_views.logout, {'template_name': 'core/sign-in.html'}, name='logout'),
+    url(r'^accounts/login/', RedirectView.as_view(url='/core/sign-in/'), name='login'),
+    url(r'^accounts/logout/', 'django.contrib.auth.views.logout', name='auth_logout'),
     url(r'^accounts/', include('onadata.apps.main.registration_urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
