@@ -1,45 +1,104 @@
 $(function() {
     "use strict";
     setTimeout(function(){ 
+        // type bar
         $(document).ready(function(){
             var chart = c3.generate({
-                bindto: '#chart-employment', // id of chart wrapper   
+                bindto: '#type-bar', // id of chart wrapper   
                 data: {
                     columns: [
                         // each columns data
                         ['data1', 2, 8, 6, 7, 14, 11],
                         ['data2', 5, 15, 11, 15, 21, 25],
-                        ['data3', 17, 18, 21, 20, 30, 29]
                     ],
                     type: 'line', // default type of chart
                     colors: {
-                        'data1': "cyan",
-                        'data2': "blue",
-                        'data3': "green"
+                        'data1': "#00A890",
+                        'data2': "#0d89df"
                     },
                     names: {
                         // name of each serie
-                        'data1': 'Development',
-                        'data2': 'Marketing',
-                        'data3': 'Sales'
+                        'data1': 'marginalized',
+                        'data2': 'vulnerable',
                     }
                 },
                 axis: {
                     x: {
                         type: 'category',
                         // name of each category
-                        categories: ['2013', '2014', '2015', '2016', '2019', '2018']
+                        categories: ['Gorkha', 'verification and listing', 'Household awareness creation', 'verification and listing' , 'Household awareness creation', 'verification and listing' , 'Household awareness creation', 'verification and listing' ]
                     },
                 },
                 legend: {
                     show: true, //hide legend
+                    position: 'inset',
+                    inset: {
+                            anchor: 'top-right',
+                            x: 0,
+                            y: -30,
+                            step: 1
+                        }
                 },
                 padding: {
                     bottom: 0,
-                    top: 0
+                    top: 30
                 },
             });
         });
+        //extra
+        $(document).ready(function(){
+            var chart2 = c3.generate({
+                bindto: '#extra',
+                padding: {
+                    top: -20,
+                    left: 0,
+                    right: 0,
+                    bottom: 0
+                },
+                data: {
+                    columns: [
+                        ['data1', 0, 350, 20, 90, 20, 80, 20, 130, 20, 50, 5],
+                        ['data2', 0, 150, 10, 30, 10, 120, 10, 90, 10, 150, 10],
+                        ['data3', 90, 500, 40, 150, 300, 50, 100, 150, 300, 200, 70],
+                        ['data4', 50, 100, 150, 50, 80, 170, 120, 200, 20, 300, 40],
+                        ['data5', 100, 600, 200, 300, 50, 300, 100, 160, 70, 180, 40],
+                    ],
+                    types: {
+                        data1: 'area-spline',
+                        data2: 'area-spline',
+                        data3: 'area-spline',
+                        data4: 'area-spline',
+                        data5: 'area-spline',
+                    },
+                    names: {
+                        data1: 'Dalit',
+                        data2: 'Janajati',
+                        data3: 'Muslim',
+                        data4: 'BC',
+                        data5: 'Other',
+                    },
+                    colors: {
+                        'data1': "#00A890",
+                        'data2': "maroon",
+                        'data3': "#00A890",
+                        'data4': "#purple",
+                        'data5': "#ad5342",
+                    },
+                },
+                legend: {
+                    show: true,
+                },
+                axis: {
+                    x: {
+                        show: false,
+                    },
+                    y: {
+                        show: true,
+                    }
+                }
+            });
+        });
+        //cluster
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#cluseter_time', // id of chart wrapper
@@ -53,7 +112,7 @@ $(function() {
                     labels: true,
                     type: 'line', // default type of chart
                     colors: {
-                        'data1': "#e3e3e3",
+                        'data1': "#193f77",
                         'data2': "#00A890",
                         'data3': "#0d89df"
                     },
@@ -80,6 +139,8 @@ $(function() {
                 },
             });
         });
+        //chart area
+        
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-area', // id of chart wrapper
@@ -116,6 +177,7 @@ $(function() {
                 },
             });
         });
+        //chart area spline
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-area-spline', // id of chart wrapper
@@ -152,6 +214,7 @@ $(function() {
                 },
             });
         });
+        //spiline scracked
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-area-spline-sracked', // id of chart wrapper
@@ -191,6 +254,7 @@ $(function() {
                 },
             });
         });
+        //chart spline
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-spline', // id of chart wrapper
@@ -228,6 +292,7 @@ $(function() {
                 },
             });
         });
+        //spline roted
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-spline-rotated', // id of chart wrapper
@@ -265,6 +330,7 @@ $(function() {
                 },
             });
         });
+        //chart step
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-step', // id of chart wrapper
@@ -301,6 +367,7 @@ $(function() {
                 },
             });
         });
+        //area step
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-area-step', // id of chart wrapper
@@ -337,14 +404,15 @@ $(function() {
                 },
             });
         });
+        //double graph
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-bar', // id of chart wrapper
                 data: {
                     columns: [
                         // each columns data
-                        ['data1', 100, 200, 300, 250, 350, 150,500,1000,400, 800],
-                        ['data2', 200, 150, 600, 350, 250, 300,650, 750, 1200, 1500]
+                        ['data1', 100, 200, 300, 250, 350, 150,500,1000,400, 800,100, 200, 300, 250, 350, 150,500,1000,400, 800],
+                        ['data2', 200, 150, 600, 350, 250, 300,650, 750, 1200, 1500,200, 150, 600, 350, 250, 300,650, 750, 1200, 1500]
                     ],
                     type: 'bar', // default type of chart
                     
@@ -362,18 +430,18 @@ $(function() {
                     x: {
                         type: 'category',
                         // name of each category
-                        categories: ['Household awareness creation', 'verification and listing', 'Household awareness creation', 'verification and listing' , 'Household awareness creation', 'verification and listing' , 'Household awareness creation', 'verification and listing' , 'Household awareness creation', 'verification and listing' ],
+                        categories: ['Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur' , 'Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur','Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur','Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur','Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur' ],
                         
                     },
                 },
                 bar: {
-                    width: 16
+                    width: 10
                 },
                 legend: {
                     show: true, //hide legend
                     position: 'inset',
                     inset: {
-                            anchor: 'bottom-right',
+                            anchor: 'top-right',
                             x: 50,
                             y: -30,
                             step: 1
@@ -385,6 +453,7 @@ $(function() {
                 },
             });
         });
+        //roted chart
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-bar-rotated', // id of chart wrapper
@@ -428,6 +497,7 @@ $(function() {
                 },
             });
         });
+        //stacked-chart
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-bar-stacked', // id of chart wrapper
@@ -473,6 +543,7 @@ $(function() {
                 },
             });
         });
+        //pie-chart
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-pie', // id of chart wrapper
@@ -484,21 +555,6 @@ $(function() {
                         ['data3', 63],
                         ['data4', 37],
                         ['data5', 63],
-                        ['data6', 37],
-                        ['data7', 63],
-                        ['data8', 37],
-                        ['data9', 63],
-                        ['data10', 37],
-                        ['data11', 63],
-                        ['data12', 37],
-                        ['data13', 63],
-                        ['data14', 37],
-                        ['data15', 63],
-                        ['data16', 37],
-                        ['data17', 63],
-                        ['data18', 37],
-                        ['data19', 63],
-                        ['data20', 37],
                     ],
                     type: 'pie', // default type of chart
                     
@@ -508,44 +564,14 @@ $(function() {
                         'data3': "#0d89df",
                         'data4': "#193f77",
                         'data5': "#f5b2d0",
-                        'data6': "#e33d80",
-                        'data7': "#a06697",
-                        'data8': "#7e545c",
-                        'data9': "#418f96",
-                        'data10': "#88d7e7",
-                        'data11': "#e3e3e3",
-                        'data12': "#00A890",
-                        'data13': "#0d89df",
-                        'data14': "#193f77",
-                        'data15': "#f5b2d0",
-                        'data16': "#e33d80",
-                        'data17': "#a06697",
-                        'data18': "#7e545c",
-                        'data19': "#418f96",
-                        'data20': "#88d7e7",
                     },
                     names: {
                         // name of each serie
-                        'data1': 'Activity1',
-                        'data2': 'Activity2',
-                        'data3': 'Activity3',
-                        'data4': 'Activity4',
-                        'data5': 'Activity5',
-                        'data6': 'Activity6',
-                        'data7': 'Activity7',
-                        'data8': 'Activity8',
-                        'data9': 'Activity9',
-                        'data10': 'Activity10',
-                        'data11': 'Activity11',
-                        'data12': 'Activity12',
-                        'data13': 'Activity13',
-                        'data14': 'Activity14',
-                        'data15': 'Activity15',
-                        'data16': 'Activity16',
-                        'data17': 'Activity17',
-                        'data18': 'Activity18',
-                        'data19': 'Activity19',
-                        'data20': 'Activity20',
+                        'data1': 'Dalit',
+                        'data2': 'Janajati',
+                        'data3': 'BC',
+                        'data4': 'Muslim',
+                        'data5': 'Others',
                     }
                 },
                 axis: {
@@ -559,6 +585,79 @@ $(function() {
                 },
             });
         });
+        //gender donut
+        $(document).ready(function(){
+            var chart = c3.generate({
+                bindto: '#gender-donut', // id of chart wrapper
+                data: {
+                    columns: [
+                        // each columns data
+                        ['data1', 63],
+                        ['data2', 37],
+                    ],
+                    type: 'donut', // default type of chart
+                    
+                    colors: {
+                        'data1': "#0d89df",
+                        'data2': "#00A890",
+                    },
+                    names: {
+                        // name of each serie
+                        'data1': 'Male',
+                        'data2': 'Female',
+                    }
+                },
+                donut: {
+                    title: "Gender"
+                },
+                axis: {
+                },
+                legend: {
+                    show: true, //hide legend
+                },
+                padding: {
+                    bottom: 0,
+                    top: 0
+                },
+            });
+        });
+        //age-donut
+        $(document).ready(function(){
+            var chart = c3.generate({
+                bindto: '#age-donut', // id of chart wrapper
+                data: {
+                    columns: [
+                        // each columns data
+                        ['data1', 63],
+                        ['data2', 37],
+                    ],
+                    type: 'donut', // default type of chart
+                    
+                    colors: {
+                        'data1': "#0d89df",
+                        'data2': "#00A890",
+                    },
+                    names: {
+                        // name of each serie
+                        'data1': 'Male',
+                        'data2': 'Female',
+                    }
+                },
+                donut: {
+                    title: "Gender"
+                },
+                axis: {
+                },
+                legend: {
+                    show: true, //hide legend
+                },
+                padding: {
+                    bottom: 0,
+                    top: 0
+                },
+            });
+        });
+        //chart donut
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-donut', // id of chart wrapper
@@ -704,22 +803,73 @@ $(function() {
                     columns: [
                         // each columns data
                         ['data1', 100, 200, 300, 250, 350, 150,500,1000,400, 800],
+                        ['data2', 50, 100, 150, 125, 175, 300,250,500,800, 400],
                     ],
                     type: 'bar', // default type of chart
                     
                     colors: {
-                        'data1': "#00A890",
+                        'data1': "#0d89df",
+                        'data2': "#00A890",
                     },
                     names: {
                         // name of each serie
-                        'data1': 'marginlized',
+                        'data2': 'Achievement',
+                        'data1': 'Target number',
                     }
                 },
                 axis: {
                     x: {
                         type: 'category',
                         // name of each category
-                        categories: ['Household awareness creation', 'verification and listing', 'Household awareness creation', 'verification and listing' , 'Household awareness creation', 'verification and listing' , 'Household awareness creation', 'verification and listing' , 'Household awareness creation', 'verification and listing' ],
+                        categories: ['Q1', 'Q2', 'Q3', 'Q4' , 'Q5', 'Q6' , 'Q7', 'Q8' , 'Q9', 'Q10' ],
+                        
+                    },
+                },
+                bar: {
+                    width: 16
+                },
+                legend: {
+                    show: true, //hide legend
+                    position: 'inset',
+                    inset: {
+                            anchor: 'top-right',
+                            x: 50,
+                            y: -30,
+                            step: 1
+                        }
+                },
+                padding: {
+                    bottom: 0,
+                    top: 30
+                },
+            });
+        });
+        $(document).ready(function(){
+            var chart = c3.generate({
+                bindto: '#age-bar', // id of chart wrapper
+                data: {
+                    columns: [
+                        // each columns data
+                        ['data1', 100, 200, 300],
+                        ['data2', 200, 100, 400],
+                    ],
+                    type: 'bar', // default type of chart
+                    
+                    colors: {
+                        'data1': "#0d89df",
+                        'data2': "#00A890",
+                    },
+                    names: {
+                        // name of each serie
+                        'data1': 'Marginalize',
+                        'data2': 'Vulnerable',
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'category',
+                        // name of each category
+                        categories: ['Up to 18', '19-59', '60+'],
                         
                     },
                 },

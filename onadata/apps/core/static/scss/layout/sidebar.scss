@@ -195,7 +195,7 @@
     }
 }
 .navbar-right{
-    background-color: $color-light;
+    background-color: $color-white;
     .navbar-nav {
         @include anim05;
         position: fixed;
@@ -203,6 +203,8 @@
         width: 50px;
         margin: 0 10px;
         z-index: 999;
+        height: 100vh;
+        background-color: $color-white;
         li{
             a {
                 @include anim05;

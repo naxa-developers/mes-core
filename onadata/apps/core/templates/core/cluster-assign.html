@@ -10,7 +10,7 @@
     <div class="block-header">
         <div class="row">
             <div class="col-lg-7 col-md-6 col-sm-12">
-                <h2>Cluster</h2>
+                <h2>{{ pk|get_cluster_name }}</h2>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical</a></li>
                     <li class="breadcrumb-item active">cluster list</li>
@@ -59,29 +59,33 @@
                                             {% if item|check_cluster_activity:object %}
                                             <div class="form-group">
                                                 <div class="checkbox">
-                                                    <input id="selected_a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" checked value="true">
-                                                    <label for="selected_a_id_{{ item.id }}">{{ item.name }}</label>
+                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" checked value="true">
+                                                    <label for="a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
                                                 {% with item|get_cluster_activity:object as ca %}
-                                                <button type="button" class="btn btn-sm btn-toggle active" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="true" autocomplete="off">
-                                                    <div class="handle"></div>
-                                                </button>
-                                                {% if not item.beneficiary_level %}
-                                                    <label for="selected_target_{{ item.id }}">Target number</label>
-                                                    <input type="text" id="selected_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
-                                                {% endif %}
-                                                <div class="select-option">
+                                                <div class="multiple-flex">
+                                                    <button type="button" class="btn btn-sm btn-toggle change-btn active" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="true" autocomplete="off">
+                                                        <div class="handle"></div>
+                                                    </button>
+                                                    {% if not item.beneficiary_level %}
+                                                    <div class="assign-flex">
+                                                        <label for="target_{{ item.id }}">Target number</label>
+                                                        <input type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
+                                                    </div>
+                                                    {% endif %}
+                                                    <div class="select-option">
 
-                                                    <select class="custom-select" name="interval_{{ item.id }}">
-                                                        <option value="None" selected="selected">-------</option>
-                                                        {% for interval in interval %}
-                                                            {% if interval == ca.time_interval %}
-                                                                <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
-                                                            {% else %}
-                                                                <option value="{{ interval.id }}">{{ interval }}</option>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </select>
+                                                        <select class="custom-select" name="interval_{{ item.id }}" id="interval_{{ item.id }}">
+                                                            <option value="None" selected="selected">-------</option>
+                                                            {% for interval in interval %}
+                                                                {% if interval == ca.time_interval %}
+                                                                    <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
+                                                                {% else %}
+                                                                    <option value="{{ interval.id }}">{{ interval }}</option>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 {% endwith %}
                                                 {% with item|get_ca_history:object as history %}
@@ -101,28 +105,32 @@
                                             {% else %}
                                             <div class="form-group">
                                                 <div class="checkbox">
-                                                    <input id="selected_a_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
-                                                    <label for="selected_a_{{ item.id }}">{{ item.name }}</label>&nbsp
+                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
+                                                    <label for="a_id_{{ item.id }}">{{ item.name }}</label>&nbsp
                                                 </div>
-                                                <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="false" autocomplete="off">
-                                                    <div class="handle"></div>
-                                                </button>
-                                                {% with item|get_cluster_activity:object as ca %}
-                                                {% if not item.beneficiary_level %}
-                                                    <label for="s_target_{{ item.id }}">Target number</label>
-                                                    <input type="text" id="s_target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}" disabled>
-                                                {% endif %}
-                                                <div class="select-option">
-                                                    <select class="custom-select" name="interval_{{ item.id }}" disabled>
-                                                        <option value="None" selected="selected">-------</option>
-                                                        {% for interval in interval %}
-                                                            {% if interval == ca.time_interval %}
-                                                                <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
-                                                            {% else %}
-                                                                <option value="{{ interval.id }}">{{ interval }}</option>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </select>
+                                                <div class="multiple-flex">
+                                                    <button type="button" class="btn btn-sm btn-toggle change-btn" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="false" autocomplete="off">
+                                                        <div class="handle"></div>
+                                                    </button>
+                                                    {% with item|get_cluster_activity:object as ca %}
+                                                    {% if not item.beneficiary_level %}
+                                                    <div class="assign-flex">
+                                                        <label for="target_{{ item.id }}">Target number</label>
+                                                        <input type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}" disabled>
+                                                    </div>
+                                                    {% endif %}
+                                                    <div class="select-option">
+                                                        <select class="custom-select" name="interval_{{ item.id }}" id="interval_{{ item.id }}" disabled>
+                                                            <option value="None" selected="selected">-------</option>
+                                                            {% for interval in interval %}
+                                                                {% if interval == ca.time_interval %}
+                                                                    <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
+                                                                {% else %}
+                                                                    <option value="{{ interval.id }}">{{ interval }}</option>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 {% endwith %}
                                                 {% with item|get_ca_history:object as history %}
@@ -153,12 +161,12 @@
                                                 <input id="ag_id_{{ object.id }}" type="checkbox" class="select-all" name="ag_{{ object.id }}">
                                                 <label for="ag_id_{{ object.id }}">{{ object.name }}</label>
                                             </div>
-                                            <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-{{ object.id }}" aria-expanded="true"
+                                            <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-{{ object.id }}" aria-expanded="false"
                                                 aria-controls="collapse-{{ object.id }}">
                                             </a>
                                         </h5>
                                     </div>
-                                    <div id="collapse-{{ object.id }}" class="collapse show" data-parent="#accordion" aria-labelledby="heading-{{ object.id }}">
+                                    <div id="collapse-{{ object.id }}" class="collapse " data-parent="#accordion" aria-labelledby="heading-{{ object.id }}">
                                         <div class="card-body">
                                             {% for item in object.activity.all %}
                                             <div class="form-group">
@@ -166,24 +174,28 @@
                                                     <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
                                                     <label for="a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
-                                                <button type="button" class="btn btn-sm btn-toggle" data-toggle="button" name="statusChange" onclick="changeValue(this)" aria-pressed="false" autocomplete="off">
-                                                    <div class="handle"></div>
-                                                </button>
-                                                {% if not item.beneficiary_level %}
-                                                    <label for="target_{{ item.id }}">Target number</label>
-                                                    <input type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.target_number }}" disabled>
-                                                {% endif %}
-                                                <div class="select-option">
-                                                    <select class="custom-select" name="interval_{{ item.id }}" disabled>
-                                                        <option value="None" selected="selected">-------</option>
-                                                        {% for interval in interval %}
-                                                            {% if interval == item.time_interval %}
-                                                                <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
-                                                            {% else %}
-                                                                <option value="{{ interval.id }}">{{ interval }}</option>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </select>
+                                                <div class="multiple-flex">
+                                                    <button type="button" class="btn btn-sm btn-toggle change-btn" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="false" autocomplete="off">
+                                                        <div class="handle"></div>
+                                                    </button>
+                                                    {% if not item.beneficiary_level %}
+                                                        <div class="assign-flex">
+                                                            <label for="target_{{ item.id }}">Target number</label>
+                                                            <input class="target-change" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.target_number }}" disabled>
+                                                        </div>
+                                                        {% endif %}
+                                                    <div class="select-option">
+                                                        <select class="custom-select" name="interval_{{ item.id }}" id="interval_{{ item.id }}" disabled>
+                                                            <option value="None" selected="selected">-------</option>
+                                                            {% for interval in interval %}
+                                                                {% if interval == item.time_interval %}
+                                                                    <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
+                                                                {% else %}
+                                                                    <option value="{{ interval.id }}">{{ interval }}</option>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
                                             {% endfor %}
@@ -205,38 +217,33 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="text/javascript">
+<script>
+    $(document).ready(function(){
+        $('.change-btn').on('click', function(){
+           id = $(this).attr('data-id');
+           console.log(id);
+           v = $('#a_id_'+id).val();
+           if(v=="true"){
+               $('#a_id_'+id).val("false");
+           }
+           else{
+               $('#a_id_'+id).val("true");
+           }
 
-    function changeValue(elem){
-        var parentDiv = elem.parentNode.children[0];
-        if(parentDiv.children[0].value === "false"){
-            parentDiv.children[0].value = "true";
-        }
-        else if(parentDiv.children[0].value === "true"){
-            parentDiv.children[0].value = "false";
-        }
-        if (elem.parentNode.children[4]){
-            if (elem.parentNode.children[3].disabled === true){
-                elem.parentNode.children[3].disabled = false;
-            }
-            else if (elem.parentNode.children[3].disabled === false){
-                elem.parentNode.children[3].disabled = true;
-            }
-            if (elem.parentNode.children[4].children[0].disabled === true){
-                elem.parentNode.children[4].children[0].disabled = false;
-            }
-            else if (elem.parentNode.children[4].children[0].disabled === false){
-                elem.parentNode.children[4].children[0].disabled = true;
-            }
-        }
-        else{
-            if (elem.parentNode.children[2].children[0].disabled === true){
-                elem.parentNode.children[2].children[0].disabled = false;
-            }
-            else if (elem.parentNode.children[2].children[0].disabled === false){
-                elem.parentNode.children[2].children[0].disabled = true;
-            }
-        }
-    }
+           if($('#target_'+id).attr("disabled")){
+                $('#target_'+id).removeAttr('disabled');
+           }
+           else{
+                $('#target_'+id).attr("disabled", "disabled");
+           }
+
+           if($('#interval_'+id).attr("disabled")){
+                 $('#interval_'+id).removeAttr('disabled');
+           }
+           else{
+                $('#interval_'+id).attr("disabled", "disabled");
+           }
+        });
+    });
 </script>
 {% endblock %}

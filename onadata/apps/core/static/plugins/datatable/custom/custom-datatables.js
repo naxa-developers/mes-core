@@ -10,7 +10,7 @@ $(function(){
 
 $(function(){
 	$('#Beneficiary_table').DataTable({
-		"scrollX": "1000px",
+//		"scrollX": "1000px",
 		"scrollCollapse": true,
 		'iDisplayLength': 3,
 		
