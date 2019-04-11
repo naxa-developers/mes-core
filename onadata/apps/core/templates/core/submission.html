@@ -73,8 +73,7 @@
                                                         <input type="checkbox" id="activity-{{ c_act.id }}" name="activity-{{ c_act.id }}">
                                                         <label for="activity-{{ c_act.id }}"></label>
                                                     </span>
-                                                </li>
-                                                        <form action="/core/update-cluster-act/{{ pk }}/{{ c_act.id }}/" method="post">
+                                                    <form action="/core/update-cluster-act/{{ pk }}/{{ c_act.id }}/" method="post">
                                                             {% csrf_token %}
                                                             <div class="taglist">
                                                                 <p><label>Time Interval </label>{{ c_act.time_interval }} </p>
@@ -90,6 +89,8 @@
                                                                 {% endif %}
                                                             </div>
                                                         </form>
+                                                </li>
+
                                                     <div class="taglist">
                                                         {% with c_act|get_ca_history as obj %}
                                                         {% for obj in obj %}

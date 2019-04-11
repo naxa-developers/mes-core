@@ -127,7 +127,7 @@ button.btn.btn-create{
         border-radius: 3px;
         top: 0;
         background-color: transparent;
-        border: 1px solid $color-light;
+        border: 1px solid $color-secondary;
         -webkit-transition: opacity 0.3s linear;
         -moz-transition: opacity 0.3s linear;
         -o-transition: opacity 0.3s linear;
@@ -186,7 +186,7 @@ button.btn.btn-create{
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        border: 1px solid $color-bg;
+        border: 1px solid $color-secondary;
         display: inline-block;
         position: absolute;
         left: 3px;
