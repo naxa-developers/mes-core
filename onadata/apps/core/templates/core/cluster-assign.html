@@ -70,7 +70,7 @@
                                                     {% if not item.beneficiary_level %}
                                                     <div class="assign-flex">
                                                         <label for="target_{{ item.id }}">Target number</label>
-                                                        <input type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
+                                                        <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
                                                     </div>
                                                     {% endif %}
                                                     <div class="select-option">
@@ -116,7 +116,7 @@
                                                     {% if not item.beneficiary_level %}
                                                     <div class="assign-flex">
                                                         <label for="target_{{ item.id }}">Target number</label>
-                                                        <input type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}" disabled>
+                                                        <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}" disabled>
                                                     </div>
                                                     {% endif %}
                                                     <div class="select-option">
@@ -181,7 +181,7 @@
                                                     {% if not item.beneficiary_level %}
                                                         <div class="assign-flex">
                                                             <label for="target_{{ item.id }}">Target number</label>
-                                                            <input class="target-change" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.target_number }}" disabled>
+                                                            <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.target_number }}" disabled>
                                                         </div>
                                                         {% endif %}
                                                     <div class="select-option">
