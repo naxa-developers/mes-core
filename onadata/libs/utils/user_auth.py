@@ -102,7 +102,11 @@ def get_xform_and_perms(username, id_string, request):
     can_edit = is_owner or\
         request.user.has_perm('logger.change_xform', xform)
     can_view = can_edit or\
-        request.user.has_perm('logger.view_xform', xform)
+        request.user.has_perm('logger.view_xform', xform) or request.role.group.name in [
+                   'social-moilizer',
+                   'project-manager',
+                   'super-admin'
+               ]
     return [xform, is_owner, can_edit, can_view]
 
 
