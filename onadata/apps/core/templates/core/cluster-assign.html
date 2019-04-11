@@ -88,19 +88,21 @@
                                                     </div>
                                                 </div>
                                                 {% endwith %}
-                                                {% with item|get_ca_history:object as history %}
-                                                {% for item in history %}
-                                                {% if item.target_number %}
-                                                <label>Previous target: <span>{{ item.target_number }}</span></label>
-                                                {% endif %}
-                                                {% if item.time_interval %}
-                                                <label>Previous time interval:<span>{{ item.time_interval }}</span></label>
-                                                {% endif %}
-                                                {% if item.updated_date %}
-                                                <p>Date updated:<span>{{ item.updated_date }}</span></p>
-                                                {% endif %}
-                                                {% endfor %}
-                                                {% endwith %}
+                                                <div class="taglist">
+                                                    {% with item|get_ca_history:object as history %}
+                                                    {% for item in history %}
+                                                    {% if item.target_number %}
+                                                    <p><label>Previous target</label>{{ item.target_number }}</p>
+                                                    {% endif %}
+                                                    {% if item.time_interval %}
+                                                    <p><label>Previous time interval</label>{{ item.time_interval }}</p>
+                                                    {% endif %}
+                                                    {% if item.updated_date %}
+                                                    <p><label>Date updated</label>{{ item.updated_date }}</p>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    {% endwith %}
+                                                </div>
                                             </div>
                                             {% else %}
                                             <div class="form-group">
@@ -133,19 +135,21 @@
                                                     </div>
                                                 </div>
                                                 {% endwith %}
-                                                {% with item|get_ca_history:object as history %}
-                                                {% for item in history %}
-                                                {% if item.target_number %}
-                                                <label>Previous target: <span>{{ item.target_number }}</span></label>
-                                                {% endif %}
-                                                {% if item.time_interval %}
-                                                <label>Previous time interval:<span>{{ item.time_interval }}</span></label>
-                                                {% endif %}
-                                                {% if item.updated_date %}
-                                                <p>Date updated:<span>{{ item.updated_date }}</span></p>
-                                                {% endif %}
-                                                {% endfor %}
-                                                {% endwith %}
+                                                <div class="taglist">
+                                                    {% with item|get_ca_history:object as history %}
+                                                    {% for item in history %}
+                                                    {% if item.target_number %}
+                                                    <p><label>Previous target</label>{{ item.target_number }}</p>
+                                                    {% endif %}
+                                                    {% if item.time_interval %}
+                                                    <p><label>Previous time interval</label>{{ item.time_interval }}</p>
+                                                    {% endif %}
+                                                    {% if item.updated_date %}
+                                                    <p><label>Date updated</label>>{{ item.updated_date }}</p>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    {% endwith %}
+                                                </div>
                                             </div>
                                             {% endif %}
                                             {% endfor %}
