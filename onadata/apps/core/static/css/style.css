@@ -3717,6 +3717,7 @@ ul.pagination li.page-item.active a.page-link, ul.pagination li.page-item:hover 
 
 .taglist p {
   font-size: 0.875rem;
+  font-style: italic;
 }
 .taglist p label {
   display: inline-block;
@@ -3726,7 +3727,7 @@ ul.pagination li.page-item.active a.page-link, ul.pagination li.page-item:hover 
 .taglist p label::after {
   content: ":";
   display: inline-block;
-  margin: 0 2px;
+  margin: 0 5px;
 }
 .taglist .target {
   display: -webkit-box;
@@ -3741,6 +3742,54 @@ ul.pagination li.page-item.active a.page-link, ul.pagination li.page-item:hover 
 }
 .taglist .target button {
   margin-left: 15px;
+}
+
+.multiple-flex {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+.multiple-flex button {
+  margin-right: 1rem;
+}
+.multiple-flex .custom-select {
+  height: calc(1.75rem + 2px);
+  padding: 0.45rem 1.75rem 0.45rem 0.75rem;
+  line-height: 1.5;
+}
+
+.assign-flex {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 0.5rem;
+  flex-wrap: nowrap;
+}
+.assign-flex label {
+  font-size: 0.875rem;
+}
+.assign-flex .custom-select {
+  height: calc(1.75rem + 2px);
+  padding: 0.45rem 1.75rem 0.45rem 0.75rem;
+  line-height: 1.5;
+}
+.assign-flex input {
+  margin: 0 1rem;
+  height: 32px;
+  padding: 0.45rem 0.75rem;
 }
 
 /*# sourceMappingURL=style.css.map */
