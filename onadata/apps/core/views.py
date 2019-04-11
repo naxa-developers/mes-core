@@ -62,7 +62,32 @@ class HomeView(LoginRequiredMixin, TemplateView):
         elif self.request.group.name in ['project-manager', 'super-admin']:
             return render(request, self.template_name)
         else:
-            raise PermissionDenied()
+            return HttpResponseRedirect(reverse('404_error'))
+            # raise PermissionDenied()
+
+    # def get_context_data(request, **kwargs):
+    #     import ipdb
+    #     ipdb.set_trace()
+
+    #     context = super(HomeView, self).get_context_data(**kwargs)
+
+    #     output = Output.objects.all()
+    #     output_count = Output.objects.all().count()
+    #     context['output'] = output
+    #     context['output_count'] = output_count
+    #     print(context)
+    #     return context
+
+
+class ProjectDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/project-dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        output = Output.objects.all()
+        context['output'] = output
+        return context
 
 def web_authenticate(username=None, password=None):
     try:
@@ -268,6 +293,8 @@ class ProjectDeleteView(ManagerMixin, DeleteView):
 class OutputListView(ManagerMixin, ListView):
     model = Output
     template_name = 'core/output-list.html'
+
+
 
 
 class OutputDetailView(ManagerMixin, DetailView):
@@ -712,7 +739,8 @@ class UserActivityViewSet(viewsets.ModelViewSet):
         elif role.group.name == 'super-admin':
             queryset = ClusterA.objects.all()
         else:
-            raise PermissionDenied()
+            return HttpResponseRedirect(reverse('404_error'))
+            # raise PermissionDenied()
         return queryset
 
 
