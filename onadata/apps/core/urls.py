@@ -25,6 +25,7 @@ urlpatterns = [
 	url(r'404 error', views.ErrorView.as_view(), name='404_error'),
 	url(r'dashboard-1', views.Dashboard1View.as_view(), name='dashboard-1'),
 	url(r'dashboard-2', views.Dashboard2View.as_view(), name='dashboard-2'),
+	url(r'project-dashboard', views.ProjectDashboardView.as_view(), name='project-dashboard'),
 
 	url(r'project-list', views.ProjectListView.as_view(), name='project_list'),
 	url(r'project-add', views.ProjectCreateView.as_view(), name='project_add'),

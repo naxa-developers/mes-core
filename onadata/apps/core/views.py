@@ -53,14 +53,29 @@ def logout_view(request):
     return redirect('/core/sign-in/')
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):    
     template_name = 'core/index.html'
 
     def get(self, request, *args, **kwargs):
+
+        
         if self.request.group.name in ['project-coordinator', 'social-mobilizer']:
             return HttpResponseRedirect(reverse('user_cluster_list', kwargs={'pk': self.request.user.pk}))
         elif self.request.group.name in ['project-manager', 'super-admin']:
-            return render(request, self.template_name)
+            
+            output_count = Output.objects.all().count()
+            activity_count = Activity.objects.all().count()
+            ag_count = ActivityGroup.objects.all().count()     
+            cluster = Cluster.objects.all().count()    
+            beneficiary = Beneficiary.objects.all().count()   
+            context = {
+                'output_count': output_count,
+                'activity_count': activity_count,
+                'ag_count': ag_count,
+                'cluster': cluster,
+                'beneficiary': beneficiary
+            }
+            return render(request, self.template_name, context)
         else:
             return HttpResponseRedirect(reverse('404_error'))
             # raise PermissionDenied()
@@ -85,9 +100,16 @@ class ProjectDashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+class ProjectDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/project-dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         output = Output.objects.all()
         context['output'] = output
         return context
+
 
 def web_authenticate(username=None, password=None):
     try:
