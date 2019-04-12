@@ -130,7 +130,7 @@ KOBOCAT_PUBLIC_HOSTNAME = "{}.{}".format(
 REQUIRE_AUTHENTICATION_TO_SEE_FORMS_AND_SUBMIT_DATA_DEFAULT = False
 
 # Login URLs
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/core/sign-in/'
 LOGIN_REDIRECT_URL = '/login_redirect/'
 
 # URL prefix for admin static files -- CSS, JavaScript and images.
