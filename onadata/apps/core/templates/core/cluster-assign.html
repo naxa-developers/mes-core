@@ -62,6 +62,7 @@
                                                     <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" checked value="true">
                                                     <label for="a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
+                                                <div class="checkbox-wrap">
                                                 {% with item|get_cluster_activity:object as ca %}
                                                 <div class="multiple-flex">
                                                     <button type="button" class="btn btn-sm btn-toggle change-btn active" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="true" autocomplete="off">
@@ -86,6 +87,8 @@
                                                             {% endfor %}
                                                         </select>
                                                     </div>
+                                                </div>
+                                                </div>
                                                 </div>
                                                 {% endwith %}
                                                 <div class="taglist">
