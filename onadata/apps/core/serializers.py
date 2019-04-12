@@ -101,8 +101,7 @@ class ClusterSerializer(serializers.ModelSerializer):
     userrole = serializers.SerializerMethodField()
 
     def get_userrole(self, obj):
-        print(obj.userrole_cluster.get().group.name)
-        return self.context['request'].role.group.name
+        return obj.userrole_cluster.get().group.name
 
     class Meta:
         model = Cluster
