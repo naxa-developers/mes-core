@@ -736,7 +736,11 @@ class ClusterViewSet(viewsets.ModelViewSet):
     serializer_class = ClusterSerializer
 
     def get_queryset(self):
-        cluster = Cluster.objects.filter(userrole_cluster=self.request.role)
+        roles = self.request.user.user_roles.all()
+        if len(roles) > 1:
+            cluster = Cluster.objects.filter(userrole_cluster__in=roles)
+        else:
+            cluster = Cluster.objects.filter(userrole_cluster=self.request.role)
         return cluster
 
 
