@@ -274,16 +274,21 @@ class ErrorView(TemplateView):
 
 
 class Dashboard1View(TemplateView):
-	template_name = 'core/dashboard-1.html'
+    template_name = 'core/dashboard-1.html'
 
 
 class Dashboard2View(TemplateView):
-	template_name = 'core/dashboard-2.html'
+    template_name = 'core/dashboard-2.html'
+
+    def get(self, *ars, **kwargs):
+        ag = ActivityGroup.objects.all()
+        beneficiaries = Beneficiary.objects.all()
+        return render(self.request, self.template_name, {'activity_groups': ag, 'beneficiaries': beneficiaries})
 
 
 class ProjectListView(ListView):
-	model = Project
-	template_name = 'core/project-list.html'
+    model = Project
+    template_name = 'core/project-list.html'
 
 
 class ProjectDetailView(ManagerMixin, DetailView):
