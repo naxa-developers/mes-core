@@ -50,7 +50,7 @@ from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, Proje
 def logout_view(request):
     logout(request)
 
-    return redirect('/core/sign-in/')
+    return HttpResponseRedirect('/core/sign-in/')
 
 
 class HomeView(LoginRequiredMixin, TemplateView):    
