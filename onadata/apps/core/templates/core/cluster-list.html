@@ -33,7 +33,6 @@
                             <tr>
                                 <th>Name</th>                                        
                                 <th>project</th>
-                                <th>district</th>
                                 <th>municipality</th>
                                 <th>ward</th>
                                 <th>action</th>
@@ -44,8 +43,11 @@
                                 <tr>
                                     <td>{{ cluster.name }}</td>
                                     <td>{{ cluster.project }}</td>
-                                    <td>{{ cluster.district }}</td>
-                                    <td>{{ cluster.municipality }}</td>
+                                    <td>
+                                    {% for municipality in cluster.municipality.all %}
+                                        {{ municipality }},
+                                    {% endfor %}
+                                    </td>
                                     <td>{{ cluster.ward }}</td>
                                     <td class="table-action">
                                         {% if request.user|check_manager_permission:cluster %}

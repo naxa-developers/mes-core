@@ -9,7 +9,8 @@ from django.core.validators import validate_email
 import re
 
 from onadata.apps.logger.models import XForm
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, ProjectTimeInterval
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, \
+    ProjectTimeInterval, Municipality
 
 
 class LoginForm(forms.Form):
@@ -248,21 +249,18 @@ class ActivityForm(forms.ModelForm):
 
 
 class ClusterForm(forms.ModelForm):
+    municipality = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Municipality.objects.all())
+
     class Meta:
         model = Cluster
-        fields = ('name', 'district', 'municipality', 'ward', 'project')
+        fields = ('name', 'municipality', 'ward', 'project')
 
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
-            'district': forms.TextInput(attrs={'placeholder': 'District', 'class': 'form-control'}),
-            'municipality': forms.TextInput(attrs={'placeholder': 'Municipality', 'class': 'form-control'}),
-            'ward': forms.TextInput(attrs={'placeholder': 'Ward', 'class': 'form-control'}),
+            'ward': forms.TextInput(
+                attrs={'placeholder': 'Wards for all municipalities(e.g., ward1, ward2)', 'class': 'form-control'}),
             'project': forms.Select(attrs={'class': "custom-select"}),
         }
-
-    # def __init__(self, *args, **kwargs):
-    # 	super().__init__(*args, **kwargs)
-    # 	self.fields['project'].queryset = Project.objects.none()
 
 
 class BeneficiaryForm(forms.ModelForm):
