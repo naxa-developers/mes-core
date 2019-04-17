@@ -29,17 +29,17 @@ class SignUpForm(UserCreationForm):
         password = self.cleaned_data.get('password1')
         password1 = self.cleaned_data.get('password2')
         if password != password1:
-            raise ValidationError({'password': ['The passwords did not match']})
+            raise ValidationError({'password1': ['The passwords did not match']})
 
         else:
             if password:
                 if len(password) < 8:
-                    raise ValidationError({'password': ['Passwords must be of more than 8 characters']})
+                    raise ValidationError({'password1': ['Passwords must be of more than 8 characters']})
 
                 pattern = re.compile(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$")
                 if not bool(pattern.search(password)):
                     raise ValidationError(
-                        {'password': ['Password must contain alphabet characters, special characters and numbers']})
+                        {'password1': ['Password must contain alphabet characters, special characters and numbers']})
 
     def clean_email(self):
         email = self.cleaned_data['email']
