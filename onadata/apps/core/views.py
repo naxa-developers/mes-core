@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
@@ -31,13 +32,15 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from .signup_tokens import account_activation_token
+from django.views.generic.list import MultipleObjectMixin
+
 
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
-    Submission, Config, ProjectTimeInterval, ClusterAHistory
+    Submission, Config, ProjectTimeInterval, ClusterAHistory, District, Municipality
 
 from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, \
     BeneficiaryForm, UserRoleForm, ConfigForm
@@ -270,16 +273,65 @@ class Dashboard1View(TemplateView):
     template_name = 'core/dashboard-1.html'
 
 
-class Dashboard2View(TemplateView):
+class Dashboard2View(MultipleObjectMixin, TemplateView):
     template_name = 'core/dashboard-2.html'
 
     def get(self, request):
-        ag = ActivityGroup.objects.all()
-        beneficiaries = Beneficiary.objects.all()
-        return render(request, self.template_name, {'activity_groups': ag, 'beneficiaries': beneficiaries})
+        checked = [(name, value) for name, value in request.GET.iteritems()]
+        clusters = []
+        b_types = []
+        districts = []
+        munis = []
+        for item in checked:
+            if item[0].startswith('cl'):
+                clusters.append(int(item[0].split("_")[1]))
 
-    def post(self, request):
-        pass
+            if item[0].startswith('tp'):
+                b_types.append(item[0].split("_")[1])
+
+            if item[0].startswith('mun'):
+                munis.append(int(item[0].split("_")[1]))
+
+            if item[0].startswith('dist'):
+                districts.append(int(item[0].split("_")[1]))
+
+        if clusters and b_types:
+            beneficiaries = Beneficiary.objects.filter(cluster__in=clusters, Type__in=b_types).order_by('name')
+
+        elif clusters or b_types:
+            if b_types:
+                beneficiaries = Beneficiary.objects.filter(Type__in=b_types).order_by('name')
+
+            elif clusters:
+                beneficiaries = Beneficiary.objects.filter(cluster__in=clusters).order_by('name')
+
+        else:
+            beneficiaries = Beneficiary.objects.order_by('name')
+
+        ag = ActivityGroup.objects.all()
+
+        page = request.GET.get('page', 1)
+        paginator = Paginator(beneficiaries, 100)
+
+        try:
+            beneficiaries = paginator.page(page)
+        except PageNotAnInteger:
+            beneficiaries = paginator.page(1)
+        except EmptyPage:
+            beneficiaries = paginator.page(paginator.num_pages)
+
+        districts = District.objects.all()
+        municipalities = Municipality.objects.all()
+        cluster = Cluster.objects.all()
+        types = Beneficiary.objects.values('Type').distinct('Type')
+        return render(request, self.template_name, {
+            'activity_groups': ag, 
+            'beneficiaries': beneficiaries, 
+            'districts': districts, 
+            'municipalities': municipalities,
+            'clusters': cluster,
+            'types': types
+        })
 
 
 class ProjectListView(ListView):

@@ -63,32 +63,32 @@
                                                     <label for="a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
                                                 <div class="checkbox-wrap">
-                                                {% with item|get_cluster_activity:object as ca %}
-                                                <div class="multiple-flex">
-                                                    <button type="button" class="btn btn-sm btn-toggle change-btn active" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="true" autocomplete="off">
-                                                        <div class="handle"></div>
-                                                    </button>
-                                                    {% if not item.beneficiary_level %}
-                                                    <div class="assign-flex">
-                                                        <label for="target_{{ item.id }}">Target number</label>
-                                                        <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
-                                                    </div>
-                                                    {% endif %}
-                                                    <div class="select-option">
+                                                    {% with item|get_cluster_activity:object as ca %}
+                                                    <div class="multiple-flex">
+                                                        <button type="button" class="btn btn-sm btn-toggle change-btn active" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="true" autocomplete="off">
+                                                            <div class="handle"></div>
+                                                        </button>
+                                                        {% if not item.beneficiary_level %}
+                                                        <div class="assign-flex">
+                                                            <label for="target_{{ item.id }}">Target number</label>
+                                                            <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
+                                                        </div>
+                                                        {% endif %}
+                                                        <div class="select-option">
 
-                                                        <select class="custom-select" name="interval_{{ item.id }}" id="interval_{{ item.id }}">
-                                                            <option value="None" selected="selected">-------</option>
-                                                            {% for interval in interval %}
-                                                                {% if interval == ca.time_interval %}
-                                                                    <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
-                                                                {% else %}
-                                                                    <option value="{{ interval.id }}">{{ interval }}</option>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </select>
+                                                            <select class="custom-select" name="interval_{{ item.id }}" id="interval_{{ item.id }}">
+                                                                <option value="None" selected="selected">-------</option>
+                                                                {% for interval in interval %}
+                                                                    {% if interval == ca.time_interval %}
+                                                                        <option value="{{ interval.id }}" selected="selected">{{ interval }}</option>
+                                                                    {% else %}
+                                                                        <option value="{{ interval.id }}">{{ interval }}</option>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                </div>
+                                                    </div>
                                                 </div>
                                                 {% endwith %}
                                                 <div class="taglist">
@@ -106,7 +106,6 @@
                                                     {% endfor %}
                                                     {% endwith %}
                                                 </div>
-                                            </div>
                                             {% else %}
                                             <div class="form-group">
                                                 <div class="checkbox">

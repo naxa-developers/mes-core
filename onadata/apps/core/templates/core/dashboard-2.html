@@ -20,24 +20,21 @@
         <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
-                    <form>
+                    <form method="get">
+                        {% csrf_token %}
                         <div class="form-group">
                             <div class="select-option">
                                 <span>select District</span>
                                 <div class="select-list">
                                     <ul>
+                                        {% for district in districts %}
                                         <li>
                                             <div class="checkbox">
-                                                <input id="dist_1" type="checkbox" name="dist_1">
-                                                <label for="dist_1">Gorkha</label>
+                                                <input id="dist_{{ district.id }}" type="checkbox" name="dist_{{ district.id }}">
+                                                <label for="dist_{{ district.id }}">{{ district.name }}</label>
                                             </div>
                                         </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="dist_2" type="checkbox" name="dist_2">
-                                                <label for="dist_2">Makawanpur</label>
-                                            </div>
-                                        </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
@@ -47,18 +44,14 @@
                                 <span>select Municipality</span>
                                 <div class="select-list">
                                     <ul>
+                                        {% for municipality in municipalities %}
                                         <li>
                                             <div class="checkbox">
-                                                <input id="mun_1" type="checkbox" name="mun_1">
-                                                <label for="mun_1">Thaha</label>
+                                                <input id="mun_{{ municipality.id }}" type="checkbox" name="mun_{{ municipality.id }}">
+                                                <label for="mun_{{ municipality.id }}">{{ municipality.name }}</label>
                                             </div>
                                         </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="mun_2" type="checkbox" name="mun_2">
-                                                <label for="mun_2">Dhordi</label>
-                                            </div>
-                                        </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
@@ -68,51 +61,37 @@
                                 <span>select cluster</span>
                                 <div class="select-list">
                                     <ul>
+                                        {% for cluster in clusters %}
                                         <li>
                                             <div class="checkbox">
-                                                <input id="cl_1" type="checkbox" name="dist_1">
-                                                <label for="cl_1">1</label>
+                                                <input id="cl_{{ cluster.id }}" type="checkbox" name="cl_{{ cluster.id }}">
+                                                <label for="cl_{{ cluster.id }}">{{ cluster.name }}</label>
                                             </div>
                                         </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="cl_2" type="checkbox" name="cl_2">
-                                                <label for="cl_2">2</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="cl_3" type="checkbox" name="cl_3">
-                                                <label for="cl_3">3</label>
-                                            </div>
-                                        </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="select-option">
-                                <span>select type</span>
+                                <span>select Type</span>
                                 <div class="select-list">
                                     <ul>
+                                        {% for type in types %}
                                         <li>
                                             <div class="checkbox">
-                                                <input id="tp_1" type="checkbox" name="tp_1">
-                                                <label for="tp_1">Marginalized</label>
+                                                <input id="tp_{{ type.Type }}" type="checkbox" name="tp_{{ type.Type }}">
+                                                <label for="tp_{{ type.Type }}">{{ type.Type }}</label>
                                             </div>
                                         </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="tp_2" type="checkbox" name="tp_2">
-                                                <label for="tp_2">vulnerable</label>
-                                            </div>
-                                        </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <button type="button" class="btn">Filter</button>
+                            <button type="submit" class="btn">Filter</button>
                         </div>
                     </form>
                 </div>
@@ -174,6 +153,23 @@
                                     {% endfor %}
                                     </tbody>
                                 </table>
+                                <div class="pagination">
+                                <span class="step-links">
+                                    {% if beneficiaries.has_previous %}
+                                        <a href="?page=1">&laquo; first</a>
+                                        <a href="?page={{ beneficiaries.previous_page_number }}">previous</a>
+                                    {% endif %}
+
+                                    <span class="current">
+                                        Page {{ beneficiaries.number }} of {{ beneficiaries.paginator.num_pages }}.
+                                    </span>
+
+                                    {% if beneficiaries.has_next %}
+                                        <a href="?page={{ beneficiaries.next_page_number }}">next</a>
+                                        <a href="?page={{ beneficiaries.paginator.num_pages }}">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                            </div>
                             </div>
                         </div>
                     </div>
