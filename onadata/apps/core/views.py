@@ -298,18 +298,17 @@ class Dashboard2View(MultipleObjectMixin, TemplateView):
 
         beneficiaries = get_beneficiaries(districts, munis, clusters, b_types)
 
-
         ag = ActivityGroup.objects.all()
-
-        page = request.GET.get('page', 1)
-        paginator = Paginator(beneficiaries, 100)
-
-        try:
-            beneficiaries = paginator.page(page)
-        except PageNotAnInteger:
-            beneficiaries = paginator.page(1)
-        except EmptyPage:
-            beneficiaries = paginator.page(paginator.num_pages)
+        #
+        # page = request.GET.get('page', 1)
+        # paginator = Paginator(beneficiaries, 100)
+        #
+        # try:
+        #     beneficiaries = paginator.page(page)
+        # except PageNotAnInteger:
+        #     beneficiaries = paginator.page(1)
+        # except EmptyPage:
+        #     beneficiaries = paginator.page(paginator.num_pages)
 
         districts = District.objects.all()
         municipalities = Municipality.objects.all()
@@ -547,7 +546,6 @@ class ClusterAssignView(ManagerMixin, View):
 
                                 val = 'target_' + item
                                 if check[0] == val:
-                                    print(ca.target_number, check[1])
                                     if not ca.target_number == int(check[1]):
                                         hist.clustera = ca
                                         hist.target_number = ca.target_number
@@ -643,18 +641,24 @@ class BeneficiaryUploadView(ManagerMixin, View):
                     project = Project.objects.get(id=df['Project'][row])
                 else:
                     project = Project.objects.last()
+
+                district, created = District.objects.get_or_create(name=df['District'][row])
+                municipality, created = Municipality.objects.get_or_create(
+                    district=district, name=df['Municipality'][row])
                 try:
                     cluster, created = Cluster.objects.get_or_create(
                         id=df['ClusterNumber'][row],
-                        district=df['District'][row],
-                        municipality=df['Municipality'][row],
                         ward=df['Ward'][row],
                         project=project,
                         name=df['ClusterNumber'][row])
+                    cluster.municipality.add(municipality)
+                    cluster.save()
                 # capture integrity constraint exception if any field name is incorrect
                 # for a cluster with already existing cluster number
                 except:
                     cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
+                    cluster.municipality.add(municipality)
+                    cluster.save()
                 Beneficiary.objects.get_or_create(
                     name=df['Name'][row],
                     ward_no=df['Ward'][row],
@@ -667,7 +671,8 @@ class BeneficiaryUploadView(ManagerMixin, View):
                     Remarks=df['Remarks'][row]
                 )
             return HttpResponseRedirect('/core/beneficiary-list')
-        except:
+        except Exception as e:
+            print(e)
             messages.error(request, "Beneficiary upload failed. Unsupported format, or corrupt file.")
             return HttpResponseRedirect('/core/beneficiary-upload')
 
