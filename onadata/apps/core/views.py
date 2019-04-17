@@ -48,6 +48,7 @@ from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroup
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
+from .utils import get_beneficiaries
 
 def logout_view(request):
     logout(request)
@@ -295,18 +296,8 @@ class Dashboard2View(MultipleObjectMixin, TemplateView):
             if item[0].startswith('dist'):
                 districts.append(int(item[0].split("_")[1]))
 
-        if clusters and b_types:
-            beneficiaries = Beneficiary.objects.filter(cluster__in=clusters, Type__in=b_types).order_by('name')
+        beneficiaries = get_beneficiaries(districts, munis, clusters, b_types)
 
-        elif clusters or b_types:
-            if b_types:
-                beneficiaries = Beneficiary.objects.filter(Type__in=b_types).order_by('name')
-
-            elif clusters:
-                beneficiaries = Beneficiary.objects.filter(cluster__in=clusters).order_by('name')
-
-        else:
-            beneficiaries = Beneficiary.objects.order_by('name')
 
         ag = ActivityGroup.objects.all()
 
