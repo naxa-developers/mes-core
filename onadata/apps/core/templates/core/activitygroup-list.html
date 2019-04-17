@@ -47,8 +47,8 @@
                                     <td>{{ actgroup.project }}</td>
                                     <td>{{ actgroup.weight }}</td>
                                     <td class="table-action">
-                                        <a href="{% url 'activitygroup_delete' actgroup.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
-                                        <a href="{% url 'activitygroup_edit' actgroup.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                        <a href="{% url 'activitygroup_delete' actgroup.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
+                                        <a href="{% url 'activitygroup_edit' actgroup.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
                                     </td>
                                 </tr>
                                 {% endfor %}

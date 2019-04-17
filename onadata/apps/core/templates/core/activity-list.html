@@ -55,8 +55,8 @@
                                 <td>{{ activity.beneficiary_level }}</td>
                                 <td>{{ activity.weight }}</td>
                                 <td class="table-action">
-                                    <a href="{% url 'activity_delete' activity.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="{% url 'activity_edit' activity.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                    <a href="{% url 'activity_delete' activity.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
+                                    <a href="{% url 'activity_edit' activity.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
                                 </td>
                             </tr>
                             {% endfor %}

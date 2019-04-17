@@ -53,7 +53,7 @@
                                         {% if request.user|check_manager_permission:cluster %}
                                             <a href="{% url 'cluster_delete' cluster.pk %}" class="btn remove"> <i class="la la-trash-o"> </i> Delete</a>
                                             <a href="{% url 'cluster_edit' cluster.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
-                                            <a href="{% url 'cluster_assign' cluster.pk %}" class="btn"><i class="la la-sellsy"> </i>Assign</a>
+                                            <a href="{% url 'cluster_assign' cluster.pk %}" class="btn"><i class="la la-sellsy"> </i> Assign</a>
                                         {% endif %}
                                             <a href="{% url 'submission' cluster.pk %}" class="btn"><i class="la la-level-up"></i> Submission</a>
                                     </td>
