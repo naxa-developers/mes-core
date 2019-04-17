@@ -205,7 +205,7 @@ def signup(request):
                 mail_subject, message, to=[to_email]
             )
             email.send()
-            return redirect('/core/sign-in/')
+            return render(request, 'core/emailnotify.html', {'email': user.email})
 
         else:
             username = request.POST.get('username')
