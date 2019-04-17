@@ -33,7 +33,6 @@
                             <tr>
                                 <th>Name</th>                                        
                                 <th>project</th>
-                                <th>district</th>
                                 <th>municipality</th>
                                 <th>ward</th>
                                 <th>action</th>
@@ -44,16 +43,19 @@
                                 <tr>
                                     <td>{{ cluster.name }}</td>
                                     <td>{{ cluster.project }}</td>
-                                    <td>{{ cluster.district }}</td>
-                                    <td>{{ cluster.municipality }}</td>
+                                    <td>
+                                    {% for municipality in cluster.municipality.all %}
+                                        {{ municipality }},
+                                    {% endfor %}
+                                    </td>
                                     <td>{{ cluster.ward }}</td>
                                     <td class="table-action">
                                         {% if request.user|check_manager_permission:cluster %}
-                                            <a href="{% url 'cluster_delete' cluster.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
-                                            <a href="{% url 'cluster_edit' cluster.pk %}" class="btn"> <i class="la la-edit"></i></a>
-                                            <a href="{% url 'cluster_assign' cluster.pk %}" class="btn"><i class="la la-sellsy"></i></a>
+                                            <a href="{% url 'cluster_delete' cluster.pk %}" class="btn remove"> <i class="la la-trash-o"> </i> Delete</a>
+                                            <a href="{% url 'cluster_edit' cluster.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
+                                            <a href="{% url 'cluster_assign' cluster.pk %}" class="btn"><i class="la la-sellsy"> </i>Assign</a>
                                         {% endif %}
-                                            <a href="{% url 'submission' cluster.pk %}" class="btn"><i class="la la-level-up"></i></a>
+                                            <a href="{% url 'submission' cluster.pk %}" class="btn"><i class="la la-level-up"></i> Submission</a>
                                     </td>
                                 </tr>
                             {% endfor %}

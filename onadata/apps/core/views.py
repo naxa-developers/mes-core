@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
@@ -31,20 +32,21 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from .signup_tokens import account_activation_token
+from django.views.generic.list import MultipleObjectMixin
+
 
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
-    Submission, Config, ProjectTimeInterval, ClusterAHistory
+    Submission, Config, ProjectTimeInterval, ClusterAHistory, District, Municipality
 
-from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
-    UserRoleForm, ConfigForm
+from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, \
+    BeneficiaryForm, UserRoleForm, ConfigForm
 
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
-    ProjectMixin, \
-    group_required, ManagerMixin, AdminMixin
+    ProjectMixin, group_required, ManagerMixin, AdminMixin
 
 
 def logout_view(request):
@@ -56,9 +58,7 @@ def logout_view(request):
 class HomeView(LoginRequiredMixin, TemplateView):    
     template_name = 'core/index.html'
 
-    def get(self, request, *args, **kwargs):
-
-        
+    def get(self, request):
         if self.request.group.name in ['project-coordinator', 'social-mobilizer']:
             return HttpResponseRedirect(reverse('user_cluster_list', kwargs={'pk': self.request.user.pk}))
         elif self.request.group.name in ['project-manager', 'super-admin']:
@@ -99,6 +99,7 @@ class ProjectDashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
 
 class ProjectDashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'core/project-dashboard.html'
@@ -160,7 +161,7 @@ def signin(request):
                                'login_username': username
                                })
         else:
-            if request.POST.get('login_username') != None:
+            if request.POST.get('login_username') is not None:
                 login_username = request.POST.get('login_username')
             else:
                 login_username = ''
@@ -173,10 +174,7 @@ def signin(request):
     else:
         form = LoginForm()
 
-    return render(request, 'core/sign-in.html', {'form': form,
-                                                'valid_email': True,
-                                                'email_error': False
-                                                })
+    return render(request, 'core/sign-in.html', {'form': form, 'valid_email': True, 'email_error': False})
 
 
 def signup(request):
@@ -210,8 +208,6 @@ def signup(request):
 
         else:
             username = request.POST.get('username')
-            first_name = request.POST.get('first_name')
-            last_name = request.POST.get('last_name')
             email = request.POST.get('email')
             return render(request, 'core/sign-up.html', {
                 'form': form,
@@ -224,7 +220,7 @@ def signup(request):
         form = SignUpForm()
         return render(request, 'core/sign-up.html', {
             'form': form,
-            'valid_email':True,
+            'valid_email': True,
             'email_error': False
         })
 
@@ -274,16 +270,73 @@ class ErrorView(TemplateView):
 
 
 class Dashboard1View(TemplateView):
-	template_name = 'core/dashboard-1.html'
+    template_name = 'core/dashboard-1.html'
 
 
-class Dashboard2View(TemplateView):
-	template_name = 'core/dashboard-2.html'
+class Dashboard2View(MultipleObjectMixin, TemplateView):
+    template_name = 'core/dashboard-2.html'
+
+    def get(self, request):
+        checked = [(name, value) for name, value in request.GET.iteritems()]
+        clusters = []
+        b_types = []
+        districts = []
+        munis = []
+        for item in checked:
+            if item[0].startswith('cl'):
+                clusters.append(int(item[0].split("_")[1]))
+
+            if item[0].startswith('tp'):
+                b_types.append(item[0].split("_")[1])
+
+            if item[0].startswith('mun'):
+                munis.append(int(item[0].split("_")[1]))
+
+            if item[0].startswith('dist'):
+                districts.append(int(item[0].split("_")[1]))
+
+        if clusters and b_types:
+            beneficiaries = Beneficiary.objects.filter(cluster__in=clusters, Type__in=b_types).order_by('name')
+
+        elif clusters or b_types:
+            if b_types:
+                beneficiaries = Beneficiary.objects.filter(Type__in=b_types).order_by('name')
+
+            elif clusters:
+                beneficiaries = Beneficiary.objects.filter(cluster__in=clusters).order_by('name')
+
+        else:
+            beneficiaries = Beneficiary.objects.order_by('name')
+
+        ag = ActivityGroup.objects.all()
+
+        page = request.GET.get('page', 1)
+        paginator = Paginator(beneficiaries, 100)
+
+        try:
+            beneficiaries = paginator.page(page)
+        except PageNotAnInteger:
+            beneficiaries = paginator.page(1)
+        except EmptyPage:
+            beneficiaries = paginator.page(paginator.num_pages)
+
+        districts = District.objects.all()
+        municipalities = Municipality.objects.all()
+        cluster = Cluster.objects.all()
+        types = Beneficiary.objects.values('Type').distinct('Type')
+        return render(request, self.template_name, {
+            'activity_groups': ag, 
+            'beneficiaries': beneficiaries, 
+            'districts': districts, 
+            'municipalities': municipalities,
+            'clusters': cluster,
+            'types': types
+        })
 
 
 class ProjectListView(ListView):
-	model = Project
-	template_name = 'core/project-list.html'
+    model = Project
+    template_name = 'core/project-list.html'
 
 
 class ProjectDetailView(ManagerMixin, DetailView):
@@ -315,8 +368,6 @@ class ProjectDeleteView(ManagerMixin, DeleteView):
 class OutputListView(ManagerMixin, ListView):
     model = Output
     template_name = 'core/output-list.html'
-
-
 
 
 class OutputDetailView(ManagerMixin, DetailView):
@@ -465,6 +516,7 @@ class ClusterAssignView(ManagerMixin, View):
                           'selected_activity_group': selected_activity_group,
                           'interval': time_interval
                       })
+
     @transaction.atomic
     def post(self, request, **kwargs):
         cluster = Cluster.objects.get(pk=kwargs.get('pk'))
@@ -541,7 +593,8 @@ class ClusterAssignView(ManagerMixin, View):
                                 val = 'interval_' + item
                                 if check[0] == val:
                                     if not ca.time_interval == ProjectTimeInterval.objects.get(id=int(check[1])):
-                                        ClusterAHistory.objects.get_or_create(clustera=ca, time_interval=ca.time_interval, updated_date=datetime.now())
+                                        ClusterAHistory.objects.get_or_create(
+                                            clustera=ca, time_interval=ca.time_interval, updated_date=datetime.now())
                                         ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
                                         ca.interval_updated = True
                                         ca.save()
@@ -551,16 +604,6 @@ class ClusterAssignView(ManagerMixin, View):
                                     print('created')
                                     ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
                                     ca.save()
-
-
-            # ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag, start_date=start_date, end_date=end_date)
-        # else:
-        # 	item = item[0].strip('a_')
-        # 	activity = Activity.objects.get(id=int(item))
-        # 	cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster,
-        # 														  activity_group=activity.activity_group)
-        # 	if ClusterA.objects.filter(activity=activity, cag=cluster_ag).exists():
-        # 		ClusterA.objects.filter(activity=activity, cag=cluster_ag).delete()
         return redirect(reverse_lazy('cluster_list'))
 
 
@@ -617,10 +660,11 @@ class BeneficiaryUploadView(ManagerMixin, View):
                         ward=df['Ward'][row],
                         project=project,
                         name=df['ClusterNumber'][row])
-
+                # capture integrity constraint exception if any field name is incorrect
+                # for a cluster with already existing cluster number
                 except:
                     cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
-                obj, created = Beneficiary.objects.get_or_create(
+                Beneficiary.objects.get_or_create(
                     name=df['Name'][row],
                     ward_no=df['Ward'][row],
                     cluster=cluster,
@@ -692,12 +736,12 @@ class SubmissionListView(LoginRequiredMixin, View):
 
 
 class ConfigUpdateView(UpdateView):
-	model = Config
-	template_name = 'core/config-form.html'
-	form_class = ConfigForm
+    model = Config
+    template_name = 'core/config-form.html'
+    form_class = ConfigForm
 
-	def get_success_url(self):
-		return reverse('config_edit', kwargs={'pk': 1})
+    def get_success_url(self):
+        return reverse('config_edit', kwargs={'pk': 1})
 
 
 def accept_submission(request):

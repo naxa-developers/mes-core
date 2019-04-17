@@ -99,6 +99,7 @@ class CAGSerializer(serializers.ModelSerializer):
 class ClusterSerializer(serializers.ModelSerializer):
     clusterag = CAGSerializer(many=True, read_only=True)
     userrole = serializers.SerializerMethodField()
+    district = serializers.ReadOnlyField(source='municipality.district')
 
     def get_userrole(self, obj):
         return obj.userrole_cluster.get().group.name
