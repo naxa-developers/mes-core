@@ -49,11 +49,25 @@ class Output(models.Model):
 		return self.name
 
 
+class District(models.Model):
+	name = models.CharField(max_length=50)
+
+	def __str__(self):
+		return self.name
+
+
+class Municipality(models.Model):
+	name = models.CharField(max_length=100)
+	district = models.ForeignKey(District, related_name="municipality")
+
+	def __str__(self):
+		return self.name
+
+
 class Cluster(models.Model):
 	name = models.CharField(max_length=200)
 	project = models.ForeignKey('Project', related_name='cluster')	
-	district = models.CharField(max_length=200)
-	municipality = models.CharField(max_length=200)
+	municipality = models.ManyToManyField(Municipality, related_name="cluster")
 	ward = models.CharField(max_length=200)
 
 	def toDict(self):

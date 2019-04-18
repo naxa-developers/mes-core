@@ -9,7 +9,8 @@ from django.core.validators import validate_email
 import re
 
 from onadata.apps.logger.models import XForm
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, ProjectTimeInterval
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, \
+    ProjectTimeInterval, Municipality
 
 
 class LoginForm(forms.Form):
@@ -28,17 +29,17 @@ class SignUpForm(UserCreationForm):
         password = self.cleaned_data.get('password1')
         password1 = self.cleaned_data.get('password2')
         if password != password1:
-            raise ValidationError({'password': ['The passwords did not match']})
+            raise ValidationError({'password1': ['The passwords did not match']})
 
         else:
             if password:
                 if len(password) < 8:
-                    raise ValidationError({'password': ['Passwords must be of more than 8 characters']})
+                    raise ValidationError({'password1': ['Passwords must be of more than 8 characters']})
 
                 pattern = re.compile(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$")
                 if not bool(pattern.search(password)):
                     raise ValidationError(
-                        {'password': ['Password must contain alphabet characters, special characters and numbers']})
+                        {'password1': ['Password must contain alphabet characters, special characters and numbers']})
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -248,21 +249,18 @@ class ActivityForm(forms.ModelForm):
 
 
 class ClusterForm(forms.ModelForm):
+    municipality = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Municipality.objects.all())
+
     class Meta:
         model = Cluster
-        fields = ('name', 'district', 'municipality', 'ward', 'project')
+        fields = ('name', 'municipality', 'ward', 'project')
 
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
-            'district': forms.TextInput(attrs={'placeholder': 'District', 'class': 'form-control'}),
-            'municipality': forms.TextInput(attrs={'placeholder': 'Municipality', 'class': 'form-control'}),
-            'ward': forms.TextInput(attrs={'placeholder': 'Ward', 'class': 'form-control'}),
+            'ward': forms.TextInput(
+                attrs={'placeholder': 'Wards for all municipalities(e.g., ward1, ward2)', 'class': 'form-control'}),
             'project': forms.Select(attrs={'class': "custom-select"}),
         }
-
-    # def __init__(self, *args, **kwargs):
-    # 	super().__init__(*args, **kwargs)
-    # 	self.fields['project'].queryset = Project.objects.none()
 
 
 class BeneficiaryForm(forms.ModelForm):

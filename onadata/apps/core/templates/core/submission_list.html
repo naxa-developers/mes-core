@@ -45,12 +45,12 @@
                                     <td>{{ submission.beneficiary.name }}</td>
                                     <td class="table-action">
                                         {% with submission.instance.xform as xform %}
-                                        <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank" class="btn"><i class="la la-eye"></i></a>
+                                        <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank" class="btn"><i class="la la-eye"></i> View</a>
                                         {% endwith %}
                                         {% if submission|check_status_change_permission:request %}
                                             {% if submission.status == 'pending' %}
-                                                <button id="accept" ca_id="{{ submission.cluster_activity.id }}" class="btn" value="{{ submission.id }}"><i class="la la-check"></i></button>
-                                                <button id="reject" ca_id="{{ submission.cluster_activity.id }}" class="btn remove" value="{{ submission.id }}"><i class="la la-remove"></i></button>
+                                                <button id="accept" ca_id="{{ submission.cluster_activity.id }}" class="btn" value="{{ submission.id }}"><i class="la la-check"></i> Approve</button>
+                                                <button id="reject" ca_id="{{ submission.cluster_activity.id }}" class="btn remove" value="{{ submission.id }}"><i class="la la-trash-o"></i> Reject</button>
                                             {% endif %}
                                         {% endif %}
                                     </td>
