@@ -197,3 +197,9 @@ def get_beneficiary_progress(obj):
         if item.status == 'approved':
             progress += item.cluster_activity.activity.weight
     return progress
+
+
+@register.filter
+def get_project_manager(obj):
+    userrole = UserRole.objects.get(project=obj, group__name="project-manager")
+    return userrole.user.username

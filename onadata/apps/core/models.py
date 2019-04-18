@@ -114,7 +114,6 @@ class Activity(models.Model):
 		return self.name
 
 
-
 class Beneficiary(models.Model):
 	name = models.CharField(max_length=200)
 	address = models.CharField(max_length=400)
