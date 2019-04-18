@@ -273,6 +273,32 @@ class ErrorView(TemplateView):
 class Dashboard1View(TemplateView):
     template_name = 'core/dashboard-1.html'
 
+    def get(self, request):
+        ag = ActivityGroup.objects.all()
+        #
+        # page = request.GET.get('page', 1)
+        # paginator = Paginator(beneficiaries, 100)
+        #
+        # try:
+        #     beneficiaries = paginator.page(page)
+        # except PageNotAnInteger:
+        #     beneficiaries = paginator.page(1)
+        # except EmptyPage:
+        #     beneficiaries = paginator.page(paginator.num_pages)
+
+        districts = District.objects.all()
+        municipalities = Municipality.objects.all()
+        cluster = Cluster.objects.all()
+        types = Beneficiary.objects.values('Type').distinct('Type')
+        return render(request, self.template_name, {
+            'activity_groups': ag,
+            'districts': districts,
+            'municipalities': municipalities,
+            'clusters': cluster,
+            'types': types
+        })
+
+
 
 class Dashboard2View(MultipleObjectMixin, TemplateView):
     template_name = 'core/dashboard-2.html'
