@@ -202,7 +202,8 @@ Here is some example JSON, it would replace `[the JSON]` above:
         s = Submission(cluster_activity = cluster_activity,instance=instance)
         s.save()
 
-        if not params['beneficiary'] == '':
+        beneficiaries = params.get('beneficiary', '')
+        if not beneficiaries == '':
             beneficiary = params['beneficiary']
             try:
                 beneficiary = int(beneficiary)
