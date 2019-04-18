@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load filters %}
 
 {% block content %}
 <!-- Main Content -->
@@ -238,54 +239,6 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="select-option">
-                                <span>select Activity group</span>
-                                <div class="select-list">
-                                    <ul>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="acg_1" type="checkbox" name="acg_1">
-                                                <label for="acg_1">Pre-construction stage</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="acg_2" type="checkbox" name="acg_2">
-                                                <label for="acg_2">Physical construction stage</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="acg_3" type="checkbox" name="acg_3">
-                                                <label for="acg_3">Post construction stage</label>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="select-option">
-                                <span>select activity</span>
-                                <div class="select-list">
-                                    <ul>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="ac_1" type="checkbox" name="ac_1">
-                                                <label for="ac_1">Verification & Listing</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="ac_2" type="checkbox" name="ac_2">
-                                                <label for="ac_2">Household Awareness Creation</label>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <button type="button" class="btn">Filter</button>
                         </div>
                     </form>
@@ -341,230 +294,39 @@
                                 <h5>Cluster</h5>
                             </div>
                             <div class="card-body">
-                                <table id="basicExample" class="table table-striped table-bordered ">
+                                <table id="Beneficiary_table" class="table table-striped table-bordered ">
                                     <thead>
                                         <tr>
-                                            <th rowspan="2" class="text-center">cluster Name</th>
-                                            <th colspan="7" class="text-center">step to complete house construction</th>
-                                            <th colspan="8" class="text-center">physical construction stage</th>
+                                            <th rowspan="2" class="text-center">Cluster Name</th>
+                                            {% for obj in activity_groups %}
+                                            {% with obj|get_activity_count as count %}
+                                            <th colspan="{{ count }}" class="text-center">{{ obj.name }}</th>
+                                            {% endwith %}
+                                            {% endfor %}
                                         </tr>
                                         <tr>
-                                            <th>Verification & Listing (2%)</th>
-                                            <th>Household Awareness Creation (3%)</th>
-                                            <th>Identification of house type (5%)</th>
-                                            <th>Finaliztion of house design (7%)</th>
-                                            <th>Cost estimation (8%)</th>
-                                            <th>Linkages with service providers (7%)</th>
-                                            <th>Agreement with household (8%)</th>
-                                            <th>Procurement of Materials (6%)</th>
-                                            <th>Constriction upto DPC (12%)</th>
-                                            <th>Construction upto roof (20%)</th>
-                                            <th>Roofing & final completion (12%)</th>
-                                            <th>Receiving 3rd Tranche (12%)</th>
-                                            <th>Verify data (2%)</th>
-                                            <th>Fubak oatnebts for construction (5%)</th>
-                                            <th>Handover house (1%)</th>
+                                            {% for obj in activity_groups %}
+                                            {% for activity in obj.activity.all %}
+                                                <th>{{ activity.name }} ({{ activity.weight }}%)</th>
+                                            {% endfor %}
+                                            {% endfor %}
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    {% for cluster in clusters %}
                                         <tr>
-                                            <td>CLuster 1</td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td>{{ cluster.name }}</td>
+                                            {% for obj in activity_groups %}
+                                            {% for activity in obj.activity.all %}
+                                            {% if activity|check_activity_progress %}
+                                                <td><span class="completed"></span></td>
+                                            {% else %}
+                                                <td></td>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% endfor %}
                                         </tr>
-                                        <tr>
-                                            <td>CLuster 2</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 3</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 4</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 5</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 6</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 7</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 8</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 8</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 9</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 10</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
