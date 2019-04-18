@@ -19,6 +19,67 @@ def get_interval(start, end, interval):
     ranges.append(end)
     return ranges
 
+def get_clusters(districts=None, munis=None, clusters=None):
+    from .models import Cluster
+    if clusters and munis and districts:
+        muni_cluster = Cluster.objects.filter(municipality__in=munis)
+        for item in muni_cluster:
+            clusters.append(item.id)
+
+        district_cluster = Cluster.objects.filter(municipality__district__in=districts)
+        for item in district_cluster:
+            clusters.append(item.id)
+
+        clust = Cluster.objects.filter(id__in=clusters).order_by('name')
+
+    elif clusters or munis or districts:
+        if clusters:
+            clust = Cluster.objects.filter(id__in=clusters).order_by('name')
+
+        elif munis:
+            muni_cluster = Cluster.objects.filter(municipality__in=munis)
+            for item in muni_cluster:
+                clusters.append(item.id)
+
+            clust = Cluster.objects.filter(id__in=clusters).order_by('name')
+
+        elif districts:
+            district_cluster = Cluster.objects.filter(municipality__district__in=districts)
+            for item in district_cluster:
+                clusters.append(item.id)
+
+            clust = Cluster.objects.filter(id__in=clusters).order_by('name')
+
+        elif clusters and munis:
+            muni_cluster = Cluster.objects.filter(municipality__in=munis)
+            for item in muni_cluster:
+                clusters.append(item.id)
+
+            clust = Cluster.objects.filter(id__in=clusters).order_by('name')
+
+        elif clusters and districts:
+            district_cluster = Cluster.objects.filter(municipality__district__in=districts)
+            for item in district_cluster:
+                clusters.append(item.id)
+
+            clust = Cluster.objects.filter(id__in=clusters).order_by('name')
+
+        elif clusters and munis and districts:
+            muni_cluster = Cluster.objects.filter(municipality__in=munis)
+            for item in muni_cluster:
+                clusters.append(item.id)
+
+            district_cluster = Cluster.objects.filter(municipality__district__in=districts)
+            for item in district_cluster:
+                clusters.append(item.id)
+
+            clust = Cluster.objects.filter(id_in=clusters).order_by('name')
+
+    else:
+        clust = Cluster.objects.order_by('name')
+
+    return clust
+
 
 # get the beneficiary list on the basis of filters applied
 def get_beneficiaries(districts=None, munis=None, clusters=None, b_types=None):
