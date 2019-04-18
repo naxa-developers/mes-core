@@ -308,6 +308,8 @@ class Dashboard1View(TemplateView):
         districts = District.objects.all()
         municipalities = Municipality.objects.all()
         select_cluster = Cluster.objects.all()
+        beneficiary_count = Beneficiary.objects.all().count()
+        activity_count = Activity.objects.all().count()
         types = Beneficiary.objects.values('Type').distinct('Type')
         return render(request, self.template_name, {
             'activity_groups': ag,
@@ -315,7 +317,9 @@ class Dashboard1View(TemplateView):
             'municipalities': municipalities,
             'select_clusters': select_cluster,
             'clusters': clusters,
-            'types': types
+            'types': types,
+            'beneficiary_count': beneficiary_count,
+            'activity_count': activity_count
         })
 
 

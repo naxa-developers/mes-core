@@ -28,14 +28,11 @@
                             </div>
                             <div class="card-body">
                                 <ul>
-                                    <li><label>Name :</label><span>House Construction</span></li>
-                                    <li><label>Project Manager :</label><span>Mr.Ramesh khadgi</span></li>
-                                    <li><label>Province :</label><span>Province 2, Province 4</span></li>
-                                    <li><label>district :</label><span>Gorkha, Makawanpur</span></li>
-                                    <li><label>Municipality :</label><span>Thaha, Dhordi</span></li>
-                                    <li><label>Start date :</label><span>01/01/2019</span></li>
-                                    <li><label>End date :</label><span>01/05/2020</span></li>
-                                    <li><label>reporting period :</label><span>Quarterly</span></li>
+                                    <li><label>Name :</label><span>{{ request.project.name }}</span></li>
+                                    <li><label>Project Manager :</label><span>{{ request.project|get_project_manager }}</span></li>
+                                    <li><label>Start date :</label><span>{{ request.project.start_date }}</span></li>
+                                    <li><label>End date :</label><span>{{ request.project.end_date }}</span></li>
+                                    <li><label>reporting period :</label><span>{{ request.project.get_reporting_period_display }}</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -52,13 +49,13 @@
                                     <div class="col-lg-4">
                                         <div class="card card-widget ">
                                             <div class="body">
-                                                <a href="output-form.html">
+                                                <a href="{% url 'output_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-signal"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>1</h3>
+                                                            <h3>{{ request.project.output.count }}</h3>
                                                             <h5>Output</h5>
                                                         </div>
                                                     </div>
@@ -69,13 +66,13 @@
                                     <div class="col-lg-4 ">
                                         <div class="card card-widget ">
                                             <div class="body">
-                                                <a href="#">
+                                                <a href="{% url 'activitygroup_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-object-group"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>3</h3>
+                                                            <h3>{{ request.project.activity_group.count }}</h3>
                                                             <h5>Activity Group</h5>
                                                         </div>
                                                     </div>
@@ -86,13 +83,13 @@
                                     <div class="col-lg-4 ">
                                         <div class="card card-widget ">
                                             <div class="body">
-                                                <a href="#">
+                                                <a href="{% url 'activity_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-line-chart"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>15</h3>
+                                                            <h3>{{ activity_count }}</h3>
                                                             <h5>Activities</h5>
                                                         </div>
                                                     </div>
@@ -104,13 +101,13 @@
                                     <div class="col-lg-4 ">
                                         <div class="card card-widget mrt30">
                                             <div class="body">
-                                                <a href="#">
+                                                <a href="{% url 'cluster_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-transgender-alt"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>31</h3>
+                                                            <h3>{{ request.project.cluster.count }}</h3>
                                                             <h5>Cluster</h5>
                                                         </div>
                                                     </div>
@@ -121,13 +118,13 @@
                                     <div class="col-lg-4 ">
                                         <div class="card card-widget mrt30">
                                             <div class="body">
-                                                <a href="#">
+                                                <a href="{% url 'beneficiary_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-sellsy"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>1560</h3>
+                                                            <h3>{{ beneficiary_count }}</h3>
                                                             <h5>Benificiaries</h5>
                                                         </div>
                                                     </div>
