@@ -55,8 +55,8 @@
                                 <td>{{ beneficiary.Typesofhouse }}</td>
                                 <td>{{ beneficiary.Remarks }}</td>
                                 <td class="table-action">
-                                    <a href="{% url 'beneficiary_delete' beneficiary.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="{% url 'beneficiary_edit' beneficiary.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                    <a href="{% url 'beneficiary_delete' beneficiary.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
+                                    <a href="{% url 'beneficiary_edit' beneficiary.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
                                 </td>
                             </tr>
                             {% endfor %}

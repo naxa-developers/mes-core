@@ -21,15 +21,18 @@
 <div class="authentication">
     <div class="container">
         <div class="row">
-            <div class="col-lg-4 col-sm-12">
+            <div class="col-lg-4 col-lg-12">
                     <form class="card auth_form">
                         <div class="header">
                             <img class="logo" src="{% static 'assets/images/logo.svg' %}" alt="">
-                            <h5>Error 403</h5>
-                            <h6>You don't have any roles yet.</h6>
+                            <h5>Activate Your Account</h5>
+                            <span>An email has been sent to {{ email }}. Please activate your account by clicking the link on the email to be able to Login.</span>
                         </div>
                         <div class="body">
-                            <span>Please contact your project manager or administrator.</span>
+                            <a href="{% url 'home' %}" class="btn btn-primary btn-block">GO BACK</a>
+                            <div class="signin_with mt-3">
+                                <a href="javascript:void(0);" class="link">Need Help?</a>
+                            </div>
                         </div>
                     </form>
                 <div class="copyright text-center">
@@ -38,11 +41,10 @@
                     <span>Developed by <a href="https://naxa.com.np/" target="_blank">Naxa</a></span>
                 </div>
             </div>
-            <!--<div class="col-lg-8 col-sm-12">-->
-                <!--<div class="card">-->
-                    <!--<img src="{% static 'images/404.svg' %}" alt="Sign Up" />-->
-                <!--</div>-->
-            <!--</div>-->
+            <div class="col-lg-8 col-sm-12">
+                <div class="card">
+                </div>
+            </div>
         </div>
     </div>
 </div>

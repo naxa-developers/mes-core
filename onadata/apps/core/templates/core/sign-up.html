@@ -81,16 +81,13 @@
                                 </div>
                                 {% endfor %}
                             {% endif %}
-                        {% for error in form.errors %}
-                        <p>{{ error }}</p>
-                        {% endfor %}
                         <div class="checkbox">
                             <input id="remember_me" type="checkbox">
                             <label for="remember_me">I read and agree to the <a href="javascript:void(0);">terms of usage</a></label>
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">SIGN UP</button>
                         <div class="signin_with mt-3">
-                            <a class="link" href="sign-in.html">You already have a membership?</a>
+                            <a class="link" href="/core/sign-in/">You already have a membership?</a>
                         </div>
                     </div>
                 </form>

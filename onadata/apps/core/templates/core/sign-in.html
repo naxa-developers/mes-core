@@ -35,11 +35,11 @@
                                 <span class="input-group-text"><i class="la la-user"></i></span>
                             </div>
                             {% if email_error %}
-                                <div>
+                                <div style="color:red; font-size0.875rem;">
                                     {{ email_error }}
                                 </div>
                                 {% elif not valid_email %}
-                                    <div>
+                                    <div style="color:red; font-size0.875rem;">
                                         User With The Email/Username Doesnot Exist.
                                     </div>
                             {% endif %}
@@ -50,7 +50,7 @@
                                 <span class="input-group-text"><a href="forgot-password.html" class="forgot" title="Forgot Password"><i class="la la-lock"></i></a></span>
                             </div>
                             {% if password_error %}
-                                <div id="passwordHelp">
+                                <div id="passwordHelp" style="color:red; font-size0.875rem;">
                                     Incorrect Password ! Please Check Your Password.
                                 </div>
                             {% endif %}
@@ -59,11 +59,10 @@
                             <input id="remember_me" type="checkbox">
                             <label for="remember_me">Remember Me</label>
                         </div>
-                        {% for error in form.errors %}
-                        {{ error }}
-                        {% endfor %}
                         <button type="submit" class="btn btn-primary btn-block waves-effect waves-light">SIGN IN</button>
-                        <a style="color:blue;" href="/core/sign-up/">Don't have an account?</a>
+                        <div class="signin_with mt-3">
+                            <a class="link" href="/core/sign-up/">Don't have an account?</a>
+                        </div>
 <!--                         <div class="signin_with mt-3">
                             <p class="mb-0">or Sign Up using</p>
                             <button class="btn btn-primary btn-icon btn-icon-mini btn-round facebook"><i class="la la-facebook"></i></button>

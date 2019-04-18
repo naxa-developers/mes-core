@@ -5,7 +5,7 @@ from django.template import Library
 from django import template
 from django.contrib.auth.models import Group
 from onadata.apps.core.mixin import USER_PERMS
-from onadata.apps.core.models import Submission, ClusterA, UserRole, ClusterAHistory, Cluster
+from onadata.apps.core.models import Submission, ClusterA, UserRole, ClusterAHistory, Cluster, Activity, ClusterAG
 from django.db.models import Q
 
 register = Library()
@@ -160,3 +160,32 @@ def check_status_change_permission(obj, request):
         return True
     else:
         return False
+
+
+@register.filter
+def get_activity_count(obj):
+    return Activity.objects.filter(activity_group=obj).count()
+
+
+@register.filter
+def check_activity_progress(obj, beneficiary):
+    try:
+        cag = ClusterAG.objects.get(cluster=beneficiary.cluster, activity_group=obj.activity_group)
+        ca = ClusterA.objects.get(activity=obj, cag=cag)
+
+        submission = Submission.objects.get(cluster_activity=ca, beneficiary=beneficiary)
+        if submission:
+            if submission.status == 'approved':
+                return True
+    except:
+        return False
+
+
+@register.filter
+def get_beneficiary_progress(obj):
+    submission = Submission.objects.filter(beneficiary=obj)
+    progress = 0
+    for item in submission:
+        if item.status == 'approved':
+            progress += item.cluster_activity.activity.weight
+    return progress

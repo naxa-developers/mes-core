@@ -198,7 +198,7 @@
                     </li>
                 </ul>
         </li>
-        <li><a href="{% url 'auth_logout' %}" class="mega-menu" title="Sign Out"><i class="la la-power-off"></i></a></li>
+        <li><a href="{% url 'auth_logout' %}?next={% url 'sign_in' %}" class="mega-menu" title="Sign Out"><i class="la la-power-off"></i></a></li>
     </ul>
 </div>
 <!-- Left Sidebar -->
