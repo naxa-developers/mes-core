@@ -21,8 +21,8 @@ class Project(models.Model):
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
 	sector = models.CharField(max_length=200)
-	start_date = models.DateTimeField()
-	end_date = models.DateTimeField()
+	start_date = models.DateField()
+	end_date = models.DateField()
 	reporting_period = models.IntegerField(choices=((1,"Monthly"),(2, "Bi-annually"), (3, "Quaterly")))
 	beneficiaries = models.BooleanField(default=True)
 
@@ -134,7 +134,7 @@ class UserRole(models.Model):
 	user = models.ForeignKey(User, related_name="user_roles")
 	project = models.ForeignKey('Project', null=True, blank=True)
 	group = models.ForeignKey(Group, related_name="userrole_group")
-	cluster = models.ForeignKey(Cluster, null=True, blank=True, related_name="userrole_cluster")
+	cluster = models.ForeignKey("Cluster", null=True, blank=True, related_name="userrole_cluster")
 
 	def __str__(self):
 		return self.group.name
