@@ -1,0 +1,8 @@
+{% autoescape off %}
+Hi {{ userrole.user.username }},
+You have been assigned as {{ userrole.group.name }} {% if userrole.cluster %}for the cluster {{ userrole.cluster.name }}{% endif %} in the project {{ userrole.project.name }}.
+Please Login by clicking this link: http://{{domain}}{% url 'sign_in' %}
+
+From,
+Practical Action Team.
+{% endautoescape %}

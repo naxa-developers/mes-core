@@ -15,6 +15,8 @@ from onadata.apps.logger.models.xform import XForm
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .utils import get_interval
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 
 
 class Project(models.Model):
@@ -237,3 +239,16 @@ def save_interval(sender, instance, **kwargs):
 				intervals.pop(0)
 			except:
 				pass
+
+@receiver(post_save, sender=UserRole)
+def send_email(sender, instance, **kwargs):
+	to_email = instance.user.email
+	mail_subject = 'User role assigned.'
+	message = render_to_string('core/user_role_email.html', {
+		'userrole': instance,
+		'domain': settings.SITE_URL,
+	})
+	email = EmailMessage(
+		mail_subject, message, to=[to_email]
+	)
+	email.send()
