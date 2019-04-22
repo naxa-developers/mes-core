@@ -37,7 +37,7 @@ from .signup_tokens import account_activation_token
 from django.views.generic.list import MultipleObjectMixin
 
 
-
+from onadata.apps.logger.models import Instance
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
@@ -789,6 +789,13 @@ class SubmissionListView(LoginRequiredMixin, View):
         cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
         submissions = Submission.objects.filter(cluster_activity=cluster_activity)
         return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
+
+
+class SubNotificationListView(LoginRequiredMixin, View):
+
+    def get(self, request, **kwargs):
+        submissions = Submission.objects.all().order_by('instance__date_created')
+        return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
 
 class ConfigUpdateView(UpdateView):

@@ -23,8 +23,8 @@ class Project(models.Model):
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
 	sector = models.CharField(max_length=200)
-	start_date = models.DateField()
-	end_date = models.DateField()
+	start_date = models.DateTimeField()
+	end_date = models.DateTimeField()
 	reporting_period = models.IntegerField(choices=((1,"Monthly"),(2, "Bi-annually"), (3, "Quaterly")))
 	beneficiaries = models.BooleanField(default=True)
 

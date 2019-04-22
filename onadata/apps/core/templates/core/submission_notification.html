@@ -1,0 +1,124 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load filters %}
+{% block title %}Submission List{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>{{ activity.activity.name }}</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item">Project</li>
+                        <li class="breadcrumb-item active">Submission list</li>
+                    </ul>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">
+                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="card project_list">
+                <div class="table-responsive">
+                    <table id="Beneficiary_table" class="table table-hover c_table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Activity-Group</th>
+                                <th>Activity</th>
+                                <th>Beneficiary</th>
+                                <th>Action</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for submission in submissions %}
+                                <tr>
+                                    <td>{{ submission.instance.date_created }}</td>
+                                    <td>{{ submission.cluster_activity.cag.activity_group.name }}</td>
+                                    <td>{{ submission.cluster_activity.activity.name }}</td>
+                                    <td>{{ submission.beneficiary.name }}</td>
+                                    <td class="table-action">
+                                        {% with submission.instance.xform as xform %}
+                                        <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank" class="btn"><i class="la la-eye"></i> View</a>
+                                        {% endwith %}
+                                        {% if submission|check_status_change_permission:request %}
+                                            {% if submission.status == 'pending' %}
+                                                <button id="accept" ca_id="{{ submission.cluster_activity.id }}" class="btn" value="{{ submission.id }}"><i class="la la-check"></i> Approve</button>
+                                                <button id="reject" ca_id="{{ submission.cluster_activity.id }}" class="btn remove" value="{{ submission.id }}"><i class="la la-trash-o"></i> Reject</button>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td class="table-action" id="id_status">
+                                        {{ submission.status|title }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$("#accept").click(function (){
+    var submission_id = $(this).val();
+    var clustera_id = $(this).attr('ca_id');
+
+    $.ajax({
+        url:'/core/approve/',
+        data:{
+            'clustera_id': clustera_id,
+            'pk': submission_id
+        },
+        success: function(data){
+            $('#id_status').html('Approved');
+            $('#reject').remove();
+            $('#accept').remove();
+            alert('Submission approved');
+
+        },
+        error: function(data){
+            console.log(data);
+
+        }
+    });
+});
+
+$("#reject").click(function (){
+    var submission_id = $(this).val();
+    var clustera_id = $(this).attr('ca_id');
+
+    $.ajax({
+        url:'/core/reject/',
+        data:{
+            'clustera_id': clustera_id,
+            'pk': submission_id
+        },
+        success: function(data){
+            $('#id_status').html('Rejected');
+            $('#reject').remove();
+            $('#accept').remove();
+            alert('Submission rejected');
+
+        },
+        error: function(data){
+            console.log(data)
+        }
+    });
+});
+</script>
+{% endblock %}

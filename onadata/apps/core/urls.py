@@ -78,6 +78,7 @@ urlpatterns = [
 
     url(r'submission/(?P<pk>[0-9]+)/$', views.SubmissionView.as_view(), name='submission'),
     url(r'submission-list/(?P<pk>[0-9]+)/$', views.SubmissionListView.as_view(), name='submission_list'),
+    url(r'submission-notification/', views.SubNotificationListView.as_view(), name='submission_notify'),
 
     # change status of submission
     url(r'approve', views.accept_submission, name='approve_submission'),
