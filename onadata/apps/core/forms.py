@@ -264,12 +264,24 @@ class UserRoleForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        if UserRole.objects.filter(group=cleaned_data.get('group'), cluster=cleaned_data.get('cluster')).exists():
+
+        if cleaned_data.get('group').name == 'project-manager':
+            if UserRole.objects.filter(group=cleaned_data.get('group'), project=cleaned_data.get('project')).exists():
+                raise ValidationError({
+                    'project': [
+                        'A project can contain only a single project manager.'
+                    ]
+                })
+
+        elif UserRole.objects.filter(group=cleaned_data.get('group'), cluster=cleaned_data.get('cluster')).exists():
             raise ValidationError({
                 'cluster': [
                     'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
-        if cleaned_data.get('group').name not in ['social-mobilizer']:
-            if UserRole.objects.filter(user=cleaned_data.get('user')).exists():
+
+        if not self.instance.pk:
+            if UserRole.objects.filter(
+                    user=cleaned_data.get('user')).exists() and \
+                    cleaned_data.get('group').name not in ['social-mobilizer', 'project-coordinator']:
                 raise ValidationError({
                     'cluster': [
                         'This user has already been assigned to another cluster.']})
