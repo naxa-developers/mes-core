@@ -121,7 +121,6 @@
     margin-bottom: 30px;
     position: relative;
     form{
-        margin-top:-40px;
         .form-group{
             label{
                 text-transform: capitalize;
@@ -289,12 +288,14 @@
         .cluster-accordion{
             .card{
               @include radius5;
-              background-color: $color-bg;
+              background-color: $color-white;
               padding:10px;
               margin-bottom: 15px;
+              .card-body{
+                border:1px solid $color-bg;
+              }
               .card-header{
-                padding:0;
-                background:transparent;
+                background:$color-bg;
                 border:0;
                 h5{
                   font-size:1.1rem;
@@ -338,7 +339,7 @@
                       }
                   }
                 .checkbox label::before, .checkbox label::after {
-                    border: 1px solid $color-primary;
+                    border: 1px solid $color-secondary;
                     width: 20px;
                     height: 20px;
                     line-height: 20px;
@@ -349,7 +350,7 @@
             &.submission-acc{
                 .card{
                     .card-header{
-                        padding-bottom: 7px !important;
+                        padding: .75rem 1.25rem;
                         border-bottom: 1px solid $color-light;
                         
                         h5{
@@ -455,7 +456,7 @@
             height: 1.2rem;
             width: 3rem;
             border-radius: 1.5rem;
-            background-color:$color-light;
+            background-color:#d3d3d3;
             margin-left: 30px;
             &::after,
             &:before{
@@ -510,6 +511,29 @@
             }
               
           }
+    }
+}
+.taglist{
+    p{
+        font-size:0.875rem;
+        label{
+            display: inline-block;
+            font-weight: 600;
+            margin:0;
+            &::after{
+                content:":";
+                display: inline-block;
+                margin:0 2px;
+            }
+        }
+    }
+    .target{
+        @include flexjust;
+        justify-content: flex-start;
+        align-items: center;
+        button{
+            margin-left: 15px;
+        }
     }
 }
 

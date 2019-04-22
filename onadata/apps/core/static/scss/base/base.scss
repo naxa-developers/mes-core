@@ -41,6 +41,7 @@ ul{
     padding-left: 0px
 }
 
+
 .block-header {
     padding: 10px 15px;
     border-bottom:1px solid rgba($color-primary, 0.2);
@@ -154,6 +155,9 @@ ul{
     width: 100%;
     box-shadow: none;
     background: transparent;
+    .card-header{
+        background-color: $color-white;
+    }
     .body{
         font-weight: 400;
         border-radius: .35rem;
@@ -173,8 +177,6 @@ section.content {
     -ms-border-radius: 10px;
     border-radius: 10px;
     background: $color-bg;
-    border: 5px solid $color-light;
-    padding: 10px;
     position: relative;
     margin: 20px 70px 20px 260px;
     box-shadow: 0 0 16px rgba(41, 42, 51, 0.06), 0 6px 20px rgba(41, 42, 51, 0.02)

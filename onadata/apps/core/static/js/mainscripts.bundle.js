@@ -18,14 +18,14 @@ function CustomScrollbar() {
         borderRadius: "3px",
         railBorderRadius: "0"
     }), 
-    $(".project_list .table-responsive").slimscroll({
-        height: "500px",
-        color: "#8c909a",
-        size: "2px",
-        alwaysVisible: !1,
-        borderRadius: "3px",
-        railBorderRadius: "2px"
-    }),
+    // $(".project_list .table-responsive").slimscroll({
+    //     height: "500px",
+    //     color: "#8c909a",
+    //     size: "2px",
+    //     alwaysVisible: !1,
+    //     borderRadius: "3px",
+    //     railBorderRadius: "2px"
+    // }),
     $(".help-content").slimscroll({
         height: "300px",
         color: "#8c909a",

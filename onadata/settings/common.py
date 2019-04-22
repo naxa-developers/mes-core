@@ -130,7 +130,7 @@ KOBOCAT_PUBLIC_HOSTNAME = "{}.{}".format(
 REQUIRE_AUTHENTICATION_TO_SEE_FORMS_AND_SUBMIT_DATA_DEFAULT = False
 
 # Login URLs
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/core/sign-in/'
 LOGIN_REDIRECT_URL = '/login_redirect/'
 
 # URL prefix for admin static files -- CSS, JavaScript and images.
@@ -271,6 +271,7 @@ REST_FRAMEWORK = {
         'onadata.libs.authentication.DigestAuthentication',
         'oauth2_provider.ext.rest_framework.OAuth2Authentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
         'onadata.libs.authentication.HttpsOnlyBasicAuthentication',
     ),

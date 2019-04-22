@@ -108,21 +108,18 @@
     }
 }
 .map-view{
-    .card{
-        
-    }
     .card.card-widget{
         @include anim05;
         transform: translateZ(0);
         background-color:$color-bg;
         .body{
             background-color:$color-bg;
-            padding: 15px;
+            padding: 1rem;
             .card-content{
                 @include flexjust;
                 justify-content: flex-start;
                 align-content: center;
-                padding:0.4rem 0;
+                padding:0.6rem 0;
                 .card-icon{
                     width:40px;
                     height: 40px;
@@ -184,6 +181,9 @@
     }
 }
 .graph{
+    .graph-warpper{
+        background-color:$color-white;
+    }
     form{
         @include flexjust;
         justify-content: flex-start;
@@ -193,6 +193,7 @@
             width:100%;
             min-width: 10rem;
             margin-right: 1rem;
+            margin-bottom: 0;
             .project-id{
                 @include flexjust;
                 justify-content: flex-start;
@@ -319,13 +320,17 @@
             
         }
     }
+    &.activity-graph{
+        margin-top:3rem;
+    }
 }
 .graph-column{
+    padding:15px;
     .card{
-        background-color: $color-light;
+        background-color: $color-bg;
         margin-bottom: 3rem;
         .card-header{
-            border-bottom: 1px solid rgba($color-primary, 0.2);
+            border:none;
             h5{
                 margin-bottom: 0;
                 text-transform: uppercase;
@@ -356,6 +361,9 @@
                   }
             }
         }
+        &.ben-card{
+            background-color: $color-white;
+        }
         
     }
 }
@@ -365,4 +373,33 @@
 .c3-legend-item text {
     fill: $color-primary;
     font-size: 12px;
+}
+.leaflet-popup-content{
+    width:200px !important;
+    margin:10px;
+    max-height: 200px;
+    overflow: auto;
+    ul{
+        li{
+            @include flexjust;
+            justify-content: flex-start;
+            align-items: center;
+            padding:0.3rem 0;
+            border-bottom: 1px solid $color-bg;
+            label{
+                font-weight: 600;
+                margin:0 0.7rem 0 0;
+            }
+            &:last-child{
+                padding-bottom: 0;
+                border:none;
+            }
+            &:first-child{
+                padding-top: 0;
+            }
+        }
+    }
+}
+.leaflet-container a.leaflet-popup-close-button{
+    color:$color-secondary;
 }

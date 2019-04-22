@@ -27,13 +27,13 @@
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card card-widget mrb30">
                         <div class="body">
-                            <a href="output-list.html">
+                            <a href="{% url 'output_list' %}">
                                 <div class="card-content">
                                     <div class="card-icon">
                                         <i class="la la-signal"></i>
                                     </div>
                                     <div class="card-text">
-                                        <h3>3500</h3>
+                                        <h3>{{ output_count }}</h3>
                                         <h5>Output</h5>
                                     </div>
                                 </div>
@@ -44,13 +44,13 @@
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card card-widget mrb30">
                         <div class="body">
-                            <a href="activity-list.html">
+                            <a href="{% url 'activity_list' %}">
                                 <div class="card-content">
                                     <div class="card-icon">
                                         <i class="la la-line-chart"></i>
                                     </div>
                                     <div class="card-text">
-                                        <h3>2426</h3>
+                                        <h3>{{ activity_count }}</h3>
                                         <h5>Activities</h5>
                                     </div>
                                 </div>
@@ -61,13 +61,13 @@
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card card-widget mrb30">
                         <div class="body">
-                            <a href="activitygroup-list.html">
+                            <a href="{% url 'activitygroup_list' %}">
                                 <div class="card-content">
                                     <div class="card-icon">
                                         <i class="la la-object-group"></i>
                                     </div>
                                     <div class="card-text">
-                                        <h3>1456</h3>
+                                        <h3>{{ ag_count }}</h3>
                                         <h5>Activities Group</h5>
                                     </div>
                                 </div>
@@ -78,13 +78,13 @@
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card card-widget mrb30">
                         <div class="body">
-                            <a href="cluster-list.html">
+                            <a href="{% url 'cluster_list' %}">
                                 <div class="card-content">
                                     <div class="card-icon">
                                         <i class="la la-transgender-alt"></i>
                                     </div>
                                     <div class="card-text">
-                                        <h3>1600</h3>
+                                        <h3>{{ cluster }}</h3>
                                         <h5>Cluster</h5>
                                     </div>
                                 </div>
@@ -95,13 +95,13 @@
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card card-widget mrb30">
                         <div class="body">
-                            <a href="beneficiary-list.html">
+                            <a href="{% url 'beneficiary_list' %}">
                                 <div class="card-content">
                                     <div class="card-icon">
                                         <i class="la la-sellsy"></i>
                                     </div>
                                     <div class="card-text">
-                                        <h3>1256</h3>
+                                        <h3>{{ beneficiary }}</h3>
                                         <h5>Beneficiaries</h5>
                                     </div>
                                 </div>

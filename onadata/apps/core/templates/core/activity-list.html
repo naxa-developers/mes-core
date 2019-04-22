@@ -26,7 +26,7 @@
         <div class="container-fluid">
             <div class="card project_list">
                 <div class="table-responsive">
-                    <table class="table table-hover c_table">
+                    <table id="Beneficiary_table" class="table table-hover c_table">
                         <thead>
                             <tr>                                       
                                 <th>Activity group</th>
@@ -38,6 +38,7 @@
                                 <th>End date</th>
                                 <th>Form Title</th>
                                 <th>Benificiaries</th>
+                                <th>Weight</th>
                                 <th>Action</th>
                         </thead>
                         <tbody>
@@ -48,13 +49,14 @@
                                 <td>{{ activity.description }}</td>
                                 <td>{{ activity.target_number }}</td>
                                 <td>{{ activity.target_unit }}</td>
-                                <td>{{ activity.start_date }}</td>
-                                <td>{{ activity.end_date }}</td>
+                                <td>{{ activity.time_interval.start_date }}</td>
+                                <td>{{ activity.time_interval.end_date }}</td>
                                 <td>{{ activity.form }}</td>
                                 <td>{{ activity.beneficiary_level }}</td>
+                                <td>{{ activity.weight }}</td>
                                 <td class="table-action">
-                                    <a href="{% url 'activity_delete' activity.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="{% url 'activity_edit' activity.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                    <a href="{% url 'activity_delete' activity.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
+                                    <a href="{% url 'activity_edit' activity.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
                                 </td>
                             </tr>
                             {% endfor %}

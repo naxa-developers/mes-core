@@ -26,7 +26,7 @@
         <div class="container-fluid">
             <div class="card project_list">
                 <div class="table-responsive">
-                    <table class="table table-hover c_table">
+                    <table id="Beneficiary_table" class="table table-hover c_table">
                         <thead>
                             <tr>
                                 <th>Project Name</th>
@@ -51,8 +51,8 @@
                                     <td>{{ project.reporting_period }}</td>
                                     <td>{{ project.beneficiaries }}</td>
                                     <td class="table-action">
-                                    <a href="{% url 'project_delete' project.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="{% url 'project_edit' project.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                    <a href="{% url 'project_delete' project.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
+                                    <a href="{% url 'project_edit' project.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
                                     </td>
                                 </tr>
                                 {% endfor %}

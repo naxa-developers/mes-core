@@ -76,19 +76,13 @@
                     {% endif %}
 
                     <div class="form-group">
-                        <label>{{ form.start_date.label }}</label>
-                            {{ form.start_date }}
+                        <label>{{ form.time_interval.label }}</label>
+                        <div class="select-option">
+                            {{ form.time_interval }}
+                        </div>
                     </div>
                     {% if form.start_date.errors %}
-                    <font color="crimson">{{ form.start_date.errors }}</font>
-                    {% endif %}
-
-                    <div class="form-group">
-                        <label>{{ form.end_date.label }}</label>
-                            {{ form.end_date }}
-                    </div>
-                    {% if form.end_date.errors %}
-                    <font color="crimson">{{ form.end_date.errors }}</font>
+                    <font color="crimson">{{ form.time_interval.errors }}</font>
                     {% endif %}
 
                     <div class="form-group">

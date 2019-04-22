@@ -5,17 +5,58 @@ from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 from django.forms import widgets
 from django.db.models import Sum
+from django.core.validators import validate_email
+import re
 
 from onadata.apps.logger.models import XForm
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, \
+    ProjectTimeInterval, Municipality
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(label='Your Email/Username', max_length=100)
+    password = forms.CharField(label='Your Password', max_length=100)
 
 
 class SignUpForm(UserCreationForm):
-    email = forms.EmailField(max_length=300, help_text='Required. Inform a valid email address.')
+    username = forms.CharField(label='Username', max_length=100)
+    email = forms.EmailField(label='Email address', required=True)
+    password1 = forms.CharField(widget=forms.PasswordInput, label='Your Password', max_length=100)
+    password2 = forms.CharField(widget=forms.PasswordInput, label='One more time?', max_length=100)
 
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password',)
+    def clean(self):
+        cleaned_data = super(SignUpForm, self).clean()
+        password = self.cleaned_data.get('password1')
+        password1 = self.cleaned_data.get('password2')
+        if password != password1:
+            raise ValidationError({'password1': ['The passwords did not match']})
+
+        else:
+            if password:
+                if len(password) < 8:
+                    raise ValidationError({'password1': ['Passwords must be of more than 8 characters']})
+
+                pattern = re.compile(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$")
+                if not bool(pattern.search(password)):
+                    raise ValidationError(
+                        {'password1': ['Password must contain alphabet characters, special characters and numbers']})
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if validate_email(email) == False:
+            raise ValidationError('Enter a valid Email address')
+
+        if User.objects.filter(email=email):
+            raise ValidationError('User with this email already exists')
+        else:
+            return email
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username):
+            raise ValidationError('User with this username already exists')
+        else:
+            return username
 
 
 # class DivWrapperWidget(widgets.TextInput):
@@ -95,37 +136,47 @@ class ActivityGroupForm(forms.ModelForm):
             output = self.cleaned_data.get('output')
             project = self.cleaned_data.get('project')
             name = self.cleaned_data.get('name')
+            description = self.cleaned_data.get('description')
             try:
-                ag = ActivityGroup.objects.get(output=output, project=project, name=name)
+                ag = ActivityGroup.objects.get(output=output, project=project, name=name, description=description)
                 other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
                     weights=Sum('weight'))
-                weight = other_activity_groups['weights'] - ag.weight
-                if self.cleaned_data['weight'] + weight > 100:
-                    raise ValidationError({
-                        'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+
+                if other_activity_groups['weights']:
+                    weight = other_activity_groups['weights'] - ag.weight
+
+                    if self.cleaned_data.get('weight') + weight > 100:
+                        raise ValidationError({
+                            'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
 
             except ActivityGroup.DoesNotExist:
                 other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
                     weights=Sum('weight'))
 
-                if self.cleaned_data['weight'] + other_activity_groups['weights'] > 100:
-                    raise ValidationError({
-                        'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+                if other_activity_groups['weights']:
+                    if self.cleaned_data.get('weight') + other_activity_groups['weights'] > 100:
+                        raise ValidationError({
+                            'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+            return self.cleaned_data
         except KeyError:
             raise ValidationError('error occured')
 
 
 class ActivityForm(forms.ModelForm):
-    def __init__(self, *args, **Kwargs):
-        super(ActivityForm, self).__init__(*args, **Kwargs)
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        super(ActivityForm, self).__init__(*args, **kwargs)
         self.fields['form'].queryset = XForm.objects.all()
         self.fields['form'].label_from_instance = lambda obj: "%s" % (obj.title)
+        try:
+            self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=self.instance.activity_group.project)
+        except:
+            self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=project)
 
     class Meta:
         model = Activity
         fields = (
-        'activity_group', 'name', 'description', 'beneficiary_level', 'target_number', 'target_unit', 'start_date',
-        'end_date', 'form', 'weight')
+        'activity_group', 'name', 'description', 'beneficiary_level', 'target_number', 'target_unit', 'time_interval', 'form', 'weight')
 
         widgets = {
             'activity_group': forms.Select(attrs={'class': "custom-select"}),
@@ -133,8 +184,7 @@ class ActivityForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'placeholder': 'Description', 'class': 'form-control'}),
             'target_number': forms.TextInput(attrs={'placeholder': 'Target Number', 'class': 'form-control'}),
             'target_unit': forms.TextInput(attrs={'placeholder': 'Target Unit', 'class': 'form-control'}),
-            'start_date': forms.TextInput(attrs={'placeholder': 'Start date', 'class': 'form-control', 'type': 'date'}),
-            'end_date': forms.TextInput(attrs={'placeholder': 'End date', 'class': 'form-control', 'type': 'date'}),
+            'time_interval': forms.Select(attrs={'class': "custom-select"}),
             'form': forms.Select(attrs={'class': "custom-select"}),
             'weight': forms.TextInput(attrs={'placeholder': 'Weight', 'class': 'form-control'})
         }
@@ -152,35 +202,36 @@ class ActivityForm(forms.ModelForm):
             act_g = self.cleaned_data.get('activity_group')
             name = self.cleaned_data.get('name')
             description = self.cleaned_data.get('description')
-            try:
-                a = Activity.objects.get(activity_group=act_g, name=name, description=description)
-                other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
-                    weights=Sum('weight'))
-                if other_activities.get('weight') is not None:
-                    weights = other_activities.get('weights') - a.weight
-                    if self.cleaned_data.get('weight') + weights > act_g.weight:
-                        raise ValidationError({
-                            'weight': [
-                                'The combined weight of activities in this activity group should not exceed the activity group weight.']})
-                else:
-                    if self.cleaned_data.get('weight') > act_g.weight:
-                        raise ValidationError({
-                            'weight': [
-                                'The combined weight of activities in this activity group should not exceed the activity group weight.']})
-            except Activity.DoesNotExist:
-                other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
-                    weights=Sum('weight'))
-                if other_activities.get('weight') is not None:
-                    if self.cleaned_data.get('weight') + other_activities['weights'] > act_g.weight:
-                        raise ValidationError({
-                            'weight': [
-                                'The combined weight of activities in this activity group should not exceed the activity group weight.']})
-                else:
-                    if self.cleaned_data.get('weight') > act_g.weight:
-                        raise ValidationError({
-                            'weight': [
-                                'The combined weight of activities in this activity group should not exceed the activity group weight.']})
-            return cleaned_data
+            if not act_g == None:
+                try:
+                    a = Activity.objects.get(activity_group=act_g, name=name, description=description)
+                    other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
+                        weights=Sum('weight'))
+                    if other_activities.get('weight') is not None:
+                        weights = other_activities.get('weights') - a.weight
+                        if self.cleaned_data.get('weight') + weights > act_g.weight:
+                            raise ValidationError({
+                                'weight': [
+                                    'The combined weight of activities in this activity group should not exceed the activity group weight.']})
+                    else:
+                        if self.cleaned_data.get('weight') > act_g.weight:
+                            raise ValidationError({
+                                'weight': [
+                                    'The combined weight of activities in this activity group should not exceed the activity group weight.']})
+                except Activity.DoesNotExist:
+                    other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
+                        weights=Sum('weight'))
+                    if other_activities.get('weight') is not None:
+                        if self.cleaned_data.get('weight') + other_activities['weights'] > act_g.weight:
+                            raise ValidationError({
+                                'weight': [
+                                    'The combined weight of activities in this activity group should not exceed the activity group weight.']})
+                    else:
+                        if self.cleaned_data.get('weight') > act_g.weight:
+                            raise ValidationError({
+                                'weight': [
+                                    'The combined weight of activities in this activity group should not exceed the activity group weight.']})
+                    return cleaned_data
         except KeyError:
             raise ValidationError('error occured')
 
@@ -189,45 +240,27 @@ class ActivityForm(forms.ModelForm):
         if instance.beneficiary_level:
             instance.target_number = None
             instance.target_unit = None
-        if commit:
-            instance.save()
-        return instance
-
-    def save(self, commit=True):
-        instance = super(ActivityForm, self).save(commit=False)
-        if instance.beneficiary_level:
-            instance.target_number = None
-            instance.target_unit = None
-        if commit:
-            instance.save()
-        return instance
-
-    def save(self, commit=True):
-        instance = super(ActivityForm, self).save(commit=False)
-        if instance.beneficiary_level:
-            instance.target_number = None
-            instance.target_unit = None
+        else:
+            instance.target_number = self.cleaned_data.get('target_number')
+            instance.target_unit = self.cleaned_data.get('target_unit')
         if commit:
             instance.save()
         return instance
 
 
 class ClusterForm(forms.ModelForm):
+    municipality = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Municipality.objects.all())
+
     class Meta:
         model = Cluster
-        fields = ('name', 'district', 'municipality', 'ward', 'project')
+        fields = ('name', 'municipality', 'ward', 'project')
 
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
-            'district': forms.TextInput(attrs={'placeholder': 'District', 'class': 'form-control'}),
-            'municipality': forms.TextInput(attrs={'placeholder': 'Municipality', 'class': 'form-control'}),
-            'ward': forms.TextInput(attrs={'placeholder': 'Ward', 'class': 'form-control'}),
+            'ward': forms.TextInput(
+                attrs={'placeholder': 'Wards for all municipalities(e.g., ward1, ward2)', 'class': 'form-control'}),
             'project': forms.Select(attrs={'class': "custom-select"}),
         }
-
-    # def __init__(self, *args, **kwargs):
-    # 	super().__init__(*args, **kwargs)
-    # 	self.fields['project'].queryset = Project.objects.none()
 
 
 class BeneficiaryForm(forms.ModelForm):

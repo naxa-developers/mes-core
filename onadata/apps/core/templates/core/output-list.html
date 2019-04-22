@@ -27,7 +27,7 @@
         <div class="container-fluid">
             <div class="card project_list">
                 <div class="table-responsive">
-                    <table class="table table-hover c_table">
+                    <table id="Beneficiary_table" class="table table-hover c_table">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -43,8 +43,8 @@
                                 <td>{{ output.description }}</td>
                                 <td>{{ output.project }}</td>
                                 <td class="table-action">
-                                    <a href="{% url 'output_delete' output.pk %}" class="btn remove"> <i class="la la-remove"></i></a>
-                                    <a href="{% url 'output_edit' output.pk %}" class="btn"> <i class="la la-edit"></i></a>
+                                    <a href="{% url 'output_delete' output.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
+                                    <a href="{% url 'output_edit' output.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
                                 </td>
                             </tr>
                             {% endfor %}

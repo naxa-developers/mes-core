@@ -198,7 +198,7 @@
                     </li>
                 </ul>
         </li>
-        <li><a href="{% url 'sign_in' %}" class="mega-menu" title="Sign Out"><i class="la la-power-off"></i></a></li>
+        <li><a href="{% url 'auth_logout' %}?next={% url 'sign_in' %}" class="mega-menu" title="Sign Out"><i class="la la-power-off"></i></a></li>
     </ul>
 </div>
 <!-- Left Sidebar -->
@@ -285,9 +285,7 @@
             </li>
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="la la-lock"></i><span>Authentication</span></a>
                 <ul class="ml-menu">
-                    <li><a href="{% url 'sign_in' %}">Sign In</a></li>
-                    <li><a href="{% url 'sign_up' %}">Sign Up</a></li>
-                    <li><a href="{% url 'forgot_password' %}">Forgot Password</a></li>
+                    <!-- <li><a href="{% url 'forgot_password' %}">Forgot Password</a></li> -->
                     <li><a href="{% url '404_error' %}">Page 404</a></li>
                 </ul>
             </li>

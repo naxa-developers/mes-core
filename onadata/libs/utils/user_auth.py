@@ -60,12 +60,13 @@ def set_profile_data(data, content_user):
 
 def has_permission(xform, owner, request, shared=False):
     user = request.user
+    roles = ['social-mobilizer', 'project-coordinator', 'project-manager', 'super-admin']
     return shared or xform.shared_data or\
         (hasattr(request, 'session') and
          request.session.get('public_link') == xform.uuid) or\
         owner == user or\
         user.has_perm('logger.view_xform', xform) or\
-        user.has_perm('logger.change_xform', xform)
+        user.has_perm('logger.change_xform', xform) or request.role.group.name in roles
 
 
 def has_edit_permission(xform, owner, request, shared=False):
@@ -98,11 +99,12 @@ def check_and_set_form_by_id(pk, request):
 def get_xform_and_perms(username, id_string, request):
     xform = get_object_or_404(
         XForm, user__username=username, id_string=id_string)
+    roles = ['social-mobilizer', 'project-coordinator', 'project-manager', 'super-admin']
     is_owner = xform.user == request.user
-    can_edit = is_owner or\
-        request.user.has_perm('logger.change_xform', xform)
-    can_view = can_edit or\
-        request.user.has_perm('logger.view_xform', xform)
+    can_edit = is_owner or \
+               request.user.has_perm('logger.change_xform', xform)
+    can_view = can_edit or \
+               request.user.has_perm('logger.view_xform', xform) or request.role.group.name in roles
     return [xform, is_owner, can_edit, can_view]
 
 

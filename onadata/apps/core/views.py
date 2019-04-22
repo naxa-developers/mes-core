@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
@@ -15,6 +16,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
 import pandas as pd
 from django.db.models import Q
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -23,41 +25,222 @@ from rest_framework.authtoken import views as restviews
 import json
 from django.utils.decorators import method_decorator
 from datetime import datetime
+from django.db import transaction
+from django.core.mail import EmailMessage
+from django.utils.encoding import force_bytes, force_text
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from .signup_tokens import account_activation_token
+from django.views.generic.list import MultipleObjectMixin
 
 
 
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
-from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, Submission, Config
+from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
+    Submission, Config, ProjectTimeInterval, ClusterAHistory, District, Municipality
 
-from .forms import SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, BeneficiaryForm, \
-    UserRoleForm, ConfigForm
+from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, \
+    BeneficiaryForm, UserRoleForm, ConfigForm
 
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
-    ProjectMixin, \
-    group_required, ManagerMixin, AdminMixin
+    ProjectMixin, group_required, ManagerMixin, AdminMixin
+
+from .utils import get_beneficiaries, get_clusters
 
 def logout_view(request):
     logout(request)
 
-    return render()
+    return HttpResponseRedirect('/core/sign-in/')
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):    
     template_name = 'core/index.html'
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         if self.request.group.name in ['project-coordinator', 'social-mobilizer']:
             return HttpResponseRedirect(reverse('user_cluster_list', kwargs={'pk': self.request.user.pk}))
         elif self.request.group.name in ['project-manager', 'super-admin']:
-            return render(request, self.template_name)
+            
+            output_count = Output.objects.all().count()
+            activity_count = Activity.objects.all().count()
+            ag_count = ActivityGroup.objects.all().count()     
+            cluster = Cluster.objects.all().count()    
+            beneficiary = Beneficiary.objects.all().count()   
+            context = {
+                'output_count': output_count,
+                'activity_count': activity_count,
+                'ag_count': ag_count,
+                'cluster': cluster,
+                'beneficiary': beneficiary
+            }
+            return render(request, self.template_name, context)
         else:
-            raise PermissionDenied()
+            return HttpResponseRedirect(reverse('404_error'))
+            # raise PermissionDenied()
+
+    # def get_context_data(request, **kwargs):
+    #     import ipdb
+    #     ipdb.set_trace()
+
+    #     context = super(HomeView, self).get_context_data(**kwargs)
+
+    #     output = Output.objects.all()
+    #     output_count = Output.objects.all().count()
+    #     context['output'] = output
+    #     context['output_count'] = output_count
+    #     print(context)
+    #     return context
 
 
-class SignInView(TemplateView):
-    template_name = 'core/sign-in.html'
+class ProjectDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/project-dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+
+class ProjectDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/project-dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        output = Output.objects.all()
+        context['output'] = output
+        return context
+
+
+def web_authenticate(username=None, password=None):
+    try:
+        if "@" in username:
+            user = User.objects.get(email__iexact=username)
+        else:
+            user = User.objects.get(username__iexact=username)
+        if user.check_password(password):
+            return authenticate(username=user.username, password=password), False
+        else:
+            return None, True  # Email is correct
+    except User.DoesNotExist:
+        return None, False  # false Email incorrect
+
+
+def signin(request):
+    if request.user.is_authenticated():
+        return redirect('home')
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            pwd = form.cleaned_data['password']
+            user, valid_email = web_authenticate(username=username, password=pwd)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect(reverse('home'))
+                else:
+                    return render(request, 'core/sign-in.html',
+                                  {'form': form,
+                                   'email_error': "Your Account is Deactivated, Please Contact Administrator.",
+                                   'valid_email': valid_email,
+                                   'login_username': username
+                                   })
+            else:
+                if valid_email:
+                    email_error = False
+                    password_error = True
+                else:
+                    password_error = False
+                    email_error = "Invalid Username, please check your username."
+                return render(request, 'core/sign-in.html',
+                              {'form': form,
+                               'valid_email': valid_email,
+                               'email_error': email_error,
+                               'password_error': password_error,
+                               'login_username': username
+                               })
+        else:
+            if request.POST.get('login_username') is not None:
+                login_username = request.POST.get('login_username')
+            else:
+                login_username = ''
+            return render(request, 'core/sign-in.html', {
+                'form': form,
+                'valid_email': False,
+                'email_error': "Your username and password did not match.",
+                'login_username': login_username
+            })
+    else:
+        form = LoginForm()
+
+    return render(request, 'core/sign-in.html', {'form': form, 'valid_email': True, 'email_error': False})
+
+
+def signup(request):
+    if request.user.is_authenticated():
+        return redirect('/core')
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password1')
+            user = User.objects.create(username=username, email=email, password=password)
+            user.set_password(user.password)
+            user.is_active = False
+            user.save()
+
+            mail_subject = 'Activate your account.'
+            current_site = get_current_site(request)
+            message = render_to_string('core/acc_active_email.html', {
+                'user': user,
+                'domain': settings.SITE_URL,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = email
+            email = EmailMessage(
+                mail_subject, message, to=[to_email]
+            )
+            email.send()
+            return render(request, 'core/emailnotify.html', {'email': user.email})
+
+        else:
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            return render(request, 'core/sign-up.html', {
+                'form': form,
+                'username': username,
+                'email': email,
+                'valid_email': True,
+                'email_error': False
+            })
+    else:
+        form = SignUpForm()
+        return render(request, 'core/sign-up.html', {
+            'form': form,
+            'valid_email': True,
+            'email_error': False
+        })
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, user)
+
+        return redirect(reverse_lazy('sign_in'))
+    else:
+        return HttpResponse('Activation link is invalid!')
 
 
 class SignUpView(TemplateView):
@@ -88,16 +271,112 @@ class ErrorView(TemplateView):
 
 
 class Dashboard1View(TemplateView):
-	template_name = 'core/dashboard-1.html'
+    template_name = 'core/dashboard-1.html'
+
+    def get(self, request):
+        checked = [(name, value) for name, value in request.GET.iteritems()]
+        clusters = []
+        b_types = []
+        districts = []
+        munis = []
+        for item in checked:
+            if item[0].startswith('cl'):
+                clusters.append(int(item[0].split("_")[1]))
+
+            if item[0].startswith('tp'):
+                b_types.append(item[0].split("_")[1])
+
+            if item[0].startswith('mun'):
+                munis.append(int(item[0].split("_")[1]))
+
+            if item[0].startswith('dist'):
+                districts.append(int(item[0].split("_")[1]))
+
+        clusters = get_clusters(districts, munis, clusters)
+        ag = ActivityGroup.objects.all()
+        #
+        # page = request.GET.get('page', 1)
+        # paginator = Paginator(beneficiaries, 100)
+        #
+        # try:
+        #     beneficiaries = paginator.page(page)
+        # except PageNotAnInteger:
+        #     beneficiaries = paginator.page(1)
+        # except EmptyPage:
+        #     beneficiaries = paginator.page(paginator.num_pages)
+
+        districts = District.objects.all()
+        municipalities = Municipality.objects.all()
+        select_cluster = Cluster.objects.all()
+        beneficiary_count = Beneficiary.objects.all().count()
+        activity_count = Activity.objects.all().count()
+        types = Beneficiary.objects.values('Type').distinct('Type')
+        return render(request, self.template_name, {
+            'activity_groups': ag,
+            'districts': districts,
+            'municipalities': municipalities,
+            'select_clusters': select_cluster,
+            'clusters': clusters,
+            'types': types,
+            'beneficiary_count': beneficiary_count,
+            'activity_count': activity_count
+        })
 
 
-class Dashboard2View(TemplateView):
-	template_name = 'core/dashboard-2.html'
+
+class Dashboard2View(MultipleObjectMixin, TemplateView):
+    template_name = 'core/dashboard-2.html'
+
+    def get(self, request):
+        checked = [(name, value) for name, value in request.GET.iteritems()]
+        clusters = []
+        b_types = []
+        districts = []
+        munis = []
+        for item in checked:
+            if item[0].startswith('cl'):
+                clusters.append(int(item[0].split("_")[1]))
+
+            if item[0].startswith('tp'):
+                b_types.append(item[0].split("_")[1])
+
+            if item[0].startswith('mun'):
+                munis.append(int(item[0].split("_")[1]))
+
+            if item[0].startswith('dist'):
+                districts.append(int(item[0].split("_")[1]))
+
+        beneficiaries = get_beneficiaries(districts, munis, clusters, b_types)
+
+        ag = ActivityGroup.objects.all()
+        #
+        # page = request.GET.get('page', 1)
+        # paginator = Paginator(beneficiaries, 100)
+        #
+        # try:
+        #     beneficiaries = paginator.page(page)
+        # except PageNotAnInteger:
+        #     beneficiaries = paginator.page(1)
+        # except EmptyPage:
+        #     beneficiaries = paginator.page(paginator.num_pages)
+
+        districts = District.objects.all()
+        municipalities = Municipality.objects.all()
+        cluster = Cluster.objects.all()
+        types = Beneficiary.objects.values('Type').distinct('Type')
+        return render(request, self.template_name, {
+            'activity_groups': ag, 
+            'beneficiaries': beneficiaries, 
+            'districts': districts, 
+            'municipalities': municipalities,
+            'clusters': cluster,
+            'types': types
+        })
 
 
 class ProjectListView(ListView):
-	model = Project
-	template_name = 'core/project-list.html'
+    model = Project
+    template_name = 'core/project-list.html'
 
 
 class ProjectDetailView(ManagerMixin, DetailView):
@@ -197,6 +476,11 @@ class ActivityCreateView(ManagerMixin, CreateView):
     form_class = ActivityForm
     success_url = reverse_lazy('activity_list')
 
+    def get_form_kwargs(self):
+        kwargs = super(ActivityCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        return kwargs
+
 
 class ActivityDetailView(ManagerMixin, DetailView):
     model = Activity
@@ -264,9 +548,16 @@ class ClusterAssignView(ManagerMixin, View):
         clusterag = ClusterAG.objects.filter(cluster_id=pk)
         activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag))
         selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group')
+        time_interval = ProjectTimeInterval.objects.filter(project=request.project)
         return render(request, 'core/cluster-assign.html',
-                      {'activity_group': activity_group, 'pk': pk, 'selected_activity_group': selected_activity_group})
+                      {
+                          'activity_group': activity_group,
+                          'pk': pk,
+                          'selected_activity_group': selected_activity_group,
+                          'interval': time_interval
+                      })
 
+    @transaction.atomic
     def post(self, request, **kwargs):
         cluster = Cluster.objects.get(pk=kwargs.get('pk'))
         checked = [(name, value) for name, value in request.POST.iteritems()]
@@ -291,8 +582,6 @@ class ClusterAssignView(ManagerMixin, View):
                 if item[1] == 'true':
                     item = item[0].strip('a_')
                     activity = Activity.objects.get(id=int(item))
-                    # start_date = request.POST.get(str(item) + '_start_date')
-                    # end_date = request.POST.get(str(item) + '_end_date')
                     cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster,
                                                                           activity_group=activity.activity_group)
                     ca, created = ClusterA.objects.get_or_create(
@@ -300,17 +589,60 @@ class ClusterAssignView(ManagerMixin, View):
                         cag=cluster_ag
                     )
                     if not ca.activity.beneficiary_level:
-                        if not created:
-                            ca.target_number = ca.activity.target_number
-                            ca.target_unit = ca.activity.target_unit
-            # ClusterA.objects.get_or_create(activity=activity, cag=cluster_ag, start_date=start_date, end_date=end_date)
-        # else:
-        # 	item = item[0].strip('a_')
-        # 	activity = Activity.objects.get(id=int(item))
-        # 	cluster_ag, created = ClusterAG.objects.get_or_create(cluster=cluster,
-        # 														  activity_group=activity.activity_group)
-        # 	if ClusterA.objects.filter(activity=activity, cag=cluster_ag).exists():
-        # 		ClusterA.objects.filter(activity=activity, cag=cluster_ag).delete()
+                        for check in checked:
+                            if not created:
+                                hist = ClusterAHistory()
+                                ca.target_unit = ca.activity.target_unit
+
+                                val = 'target_' + item
+                                if check[0] == val:
+                                    if not ca.target_number == int(check[1]):
+                                        hist.clustera = ca
+                                        hist.target_number = ca.target_number
+                                        hist.target_completed = ca.target_completed
+                                        hist.updated_date = datetime.now()
+                                        hist.save()
+                                        ca.target_number = check[1]
+                                        ca.target_updated = True
+
+                                val = 'interval_' + item
+                                if check[0] == val:
+                                    if not ca.time_interval == ProjectTimeInterval.objects.get(id=int(check[1])):
+                                        hist.clustera = ca
+                                        hist.time_interval = ca.time_interval
+                                        hist.updated_date = datetime.now()
+                                        hist.save()
+                                        ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
+                                        ca.interval_updated = True
+                                ca.save()
+                            else:
+                                val = 'target_' + item
+                                if check[0] == val:
+                                    ca.target_number = check[1]
+
+                                val = 'interval_' + item
+                                if check[0] == val:
+                                    ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
+
+                                ca.save()
+
+                    else:
+                        for check in checked:
+                            if not created:
+                                val = 'interval_' + item
+                                if check[0] == val:
+                                    if not ca.time_interval == ProjectTimeInterval.objects.get(id=int(check[1])):
+                                        ClusterAHistory.objects.get_or_create(
+                                            clustera=ca, time_interval=ca.time_interval, updated_date=datetime.now())
+                                        ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
+                                        ca.interval_updated = True
+                                        ca.save()
+                            else:
+                                val = 'interval_' + item
+                                if check[0] == val:
+                                    print('created')
+                                    ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
+                                    ca.save()
         return redirect(reverse_lazy('cluster_list'))
 
 
@@ -359,18 +691,25 @@ class BeneficiaryUploadView(ManagerMixin, View):
                     project = Project.objects.get(id=df['Project'][row])
                 else:
                     project = Project.objects.last()
+
+                district, created = District.objects.get_or_create(name=df['District'][row])
+                municipality, created = Municipality.objects.get_or_create(
+                    district=district, name=df['Municipality'][row])
                 try:
                     cluster, created = Cluster.objects.get_or_create(
                         id=df['ClusterNumber'][row],
-                        district=df['District'][row],
-                        municipality=df['Municipality'][row],
                         ward=df['Ward'][row],
                         project=project,
                         name=df['ClusterNumber'][row])
-
+                    cluster.municipality.add(municipality)
+                    cluster.save()
+                # capture integrity constraint exception if any field name is incorrect
+                # for a cluster with already existing cluster number
                 except:
                     cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
-                obj, created = Beneficiary.objects.get_or_create(
+                    cluster.municipality.add(municipality)
+                    cluster.save()
+                Beneficiary.objects.get_or_create(
                     name=df['Name'][row],
                     ward_no=df['Ward'][row],
                     cluster=cluster,
@@ -382,7 +721,8 @@ class BeneficiaryUploadView(ManagerMixin, View):
                     Remarks=df['Remarks'][row]
                 )
             return HttpResponseRedirect('/core/beneficiary-list')
-        except:
+        except Exception as e:
+            print(e)
             messages.error(request, "Beneficiary upload failed. Unsupported format, or corrupt file.")
             return HttpResponseRedirect('/core/beneficiary-upload')
 
@@ -425,7 +765,12 @@ class SubmissionView(LoginRequiredMixin, View):
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
         cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
-        return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
+        time_interval = ProjectTimeInterval.objects.filter(project=request.project)
+        return render(request, 'core/submission.html', {
+            'cluster_activity_groups': cluster_activity_group,
+            'pk': pk,
+            'interval': time_interval
+        })
 
 
 class SubmissionListView(LoginRequiredMixin, View):
@@ -433,38 +778,16 @@ class SubmissionListView(LoginRequiredMixin, View):
     def get(self, request, **kwargs):
         cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
         submissions = Submission.objects.filter(cluster_activity=cluster_activity)
-        return render(request, 'core/submission_list.html', {'submissions': submissions})
-
-
-class UserRoleDeleteView(DeleteView):
-    model = UserRole
-    template_name = 'core/userrole-delete.html'
-    success_url = reverse_lazy('userrole_list')
-
-
-class SubmissionView(View):
-
-    def get(self, request, **kwargs):
-        pk = kwargs.get('pk')
-        cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
-        return render(request, 'core/submission.html', {'cluster_activity_groups': cluster_activity_group, 'pk': pk})
+        return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
 
 
 class ConfigUpdateView(UpdateView):
-	model = Config
-	template_name = 'core/config-form.html'
-	form_class = ConfigForm
+    model = Config
+    template_name = 'core/config-form.html'
+    form_class = ConfigForm
 
-	def get_success_url(self):
-		return reverse('config_edit', kwargs={'pk': 1})
-
-
-class SubmissionListView(View):
-
-    def get(self, request, **kwargs):
-        cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
-        submissions = Submission.objects.filter(cluster_activity=cluster_activity)
-        return render(request, 'core/submission_list.html', {'submissions': submissions})
+    def get_success_url(self):
+        return reverse('config_edit', kwargs={'pk': 1})
 
 
 def accept_submission(request):
@@ -481,13 +804,23 @@ def reject_submission(request):
     return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': request.GET.get('clustera_id')}))
 
 
-def update_target(request, **kwargs):
+@transaction.atomic
+def update_cluster_activity(request, **kwargs):
     pk = kwargs.get('pk')
     ca = ClusterA.objects.get(pk=pk)
     target_number = request.POST.get('target_number')
-    ca.target_number = target_number
-    ca.target_update_at = datetime.now()
-    ca.save()
+    cahistory = ClusterAHistory()
+    if target_number is not None:
+        if not ca.target_completed == float(target_number):
+            print(ca.target_completed, target_number)
+            cahistory.clustera = ca
+            cahistory.target_number = ca.target_number
+            cahistory.time_interval = ca.time_interval
+            cahistory.target_completed = ca.target_completed
+            cahistory.updated_date = datetime.now()
+            cahistory.save()
+            ca.target_completed = target_number
+            ca.save()
 
     return HttpResponseRedirect(reverse('submission', kwargs={'pk': kwargs.get('cluster_id')}))
 
@@ -506,11 +839,12 @@ class UserActivityViewSet(viewsets.ModelViewSet):
         if role.group.name == 'social-mobilizer':
             queryset = ClusterA.objects.filter(cag=activitygroup)
         elif role.group.name == 'community-social-mobilizer':
-            queryset = ClusterA.objects.filter(beneficiary_level=True, cag=activitygroup)
+            queryset = ClusterA.objects.filter(activity__beneficiary_level=True, cag=activitygroup)
         elif role.group.name == 'super-admin':
             queryset = ClusterA.objects.all()
         else:
-            raise PermissionDenied()
+            return HttpResponseRedirect(reverse('404_error'))
+            # raise PermissionDenied()
         return queryset
 
 
@@ -542,8 +876,11 @@ class ClusterViewSet(viewsets.ModelViewSet):
     serializer_class = ClusterSerializer
 
     def get_queryset(self):
-        print(self.request.role)
-        cluster = Cluster.objects.filter(userrole_cluster=self.request.role)
+        roles = self.request.user.user_roles.all()
+        if len(roles) > 1:
+            cluster = Cluster.objects.filter(userrole_cluster__in=roles)
+        else:
+            cluster = Cluster.objects.filter(userrole_cluster=self.request.role)
         return cluster
 
 

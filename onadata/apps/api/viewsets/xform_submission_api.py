@@ -167,7 +167,7 @@ Here is some example JSON, it would replace `[the JSON]` above:
     def create(self, request, *args, **kwargs):
         params = self.request.query_params
         print(params)
-        cluster_activity = int(params['activity'][0])
+        cluster_activity = int(params['activity'])
         username = self.kwargs.get('username')
         if self.request.user.is_anonymous():
             if username is None:
@@ -201,13 +201,16 @@ Here is some example JSON, it would replace `[the JSON]` above:
         cluster_activity = ClusterA.objects.get(pk=cluster_activity)
         s = Submission(cluster_activity = cluster_activity,instance=instance)
         s.save()
-        beneficiary = params['beneficiary'][0]
-        try:
-            beneficiary = int(beneficiary)
-            s.beneficiary = Beneficiary.objects.get(pk=beneficiary)
-            s.save()
-        except:
-            pass
+
+        beneficiaries = params.get('beneficiary', '')
+        if not beneficiaries == '':
+            beneficiary = params['beneficiary']
+            try:
+                beneficiary = int(beneficiary)
+                s.beneficiary = Beneficiary.objects.get(pk=beneficiary)
+                s.save()
+            except:
+                pass
 
         context = self.get_serializer_context()
         serializer = SubmissionSerializer(instance, context=context)

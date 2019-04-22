@@ -71,10 +71,9 @@ class CASerializer(serializers.ModelSerializer):
 
     name = serializers.ReadOnlyField(source='activity.name')
     description = serializers.ReadOnlyField(source='activity.description')
-    target_number = serializers.ReadOnlyField(source='activity.target_number')
-    target_unit = serializers.ReadOnlyField(source='activity.target_unit')
-    start_date = serializers.ReadOnlyField(source='activity.start_date')
-    end_date = serializers.ReadOnlyField(source='activity.end_date')
+    time_interval = serializers.ReadOnlyField(source='time_interval.label')
+    start_date = serializers.ReadOnlyField(source='time_interval.start_date')
+    end_date = serializers.ReadOnlyField(source='time_interval.end_date')
     form = serializers.ReadOnlyField(source='activity.form.id')
     beneficiary_level = serializers.ReadOnlyField(source='activity.beneficiary_level')
 
@@ -82,7 +81,7 @@ class CASerializer(serializers.ModelSerializer):
         model = ClusterA
         # fields = ('id', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'id_string', 'beneficiary_level')
         fields = (
-        'id', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'id_string',
+        'id', 'name', 'description', 'target_number', 'target_unit', 'time_interval', 'start_date', 'end_date', 'form', 'id_string',
         'beneficiary_level')
 
 
@@ -100,9 +99,10 @@ class CAGSerializer(serializers.ModelSerializer):
 class ClusterSerializer(serializers.ModelSerializer):
     clusterag = CAGSerializer(many=True, read_only=True)
     userrole = serializers.SerializerMethodField()
+    district = serializers.ReadOnlyField(source='municipality.district')
 
     def get_userrole(self, obj):
-        return self.context['request'].role.group.name
+        return obj.userrole_cluster.get().group.name
 
     class Meta:
         model = Cluster

@@ -11,7 +11,7 @@
         <div class="block-header">
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2>CLuster list</h2>
+                    <h2>{{ activity.activity.name }}</h2>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
                         <li class="breadcrumb-item">Project</li>
@@ -27,7 +27,7 @@
         <div class="container-fluid">
             <div class="card project_list">
                 <div class="table-responsive">
-                    <table class="table table-hover c_table">
+                    <table id="Beneficiary_table" class="table table-hover c_table">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -45,12 +45,12 @@
                                     <td>{{ submission.beneficiary.name }}</td>
                                     <td class="table-action">
                                         {% with submission.instance.xform as xform %}
-                                        <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank" class="btn"><i class="la la-eye"></i></a>
+                                        <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank" class="btn"><i class="la la-eye"></i> View</a>
                                         {% endwith %}
                                         {% if submission|check_status_change_permission:request %}
                                             {% if submission.status == 'pending' %}
-                                                <button id="accept" ca_id="{{ submission.cluster_activity.id }}" class="btn" value="{{ submission.id }}"><i class="la la-check"></i></button>
-                                                <button id="reject" ca_id="{{ submission.cluster_activity.id }}" class="btn remove" value="{{ submission.id }}"><i class="la la-remove"></i></button>
+                                                <button id="accept" ca_id="{{ submission.cluster_activity.id }}" class="btn" value="{{ submission.id }}"><i class="la la-check"></i> Approve</button>
+                                                <button id="reject" ca_id="{{ submission.cluster_activity.id }}" class="btn remove" value="{{ submission.id }}"><i class="la la-trash-o"></i> Reject</button>
                                             {% endif %}
                                         {% endif %}
                                     </td>
@@ -107,10 +107,11 @@ $("#reject").click(function (){
             'pk': submission_id
         },
         success: function(data){
-            alert('Submission rejected');
             $('#id_status').html('Rejected');
             $('#reject').remove();
             $('#accept').remove();
+            alert('Submission rejected');
+
         },
         error: function(data){
             console.log(data)

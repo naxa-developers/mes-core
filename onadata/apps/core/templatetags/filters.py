@@ -5,7 +5,7 @@ from django.template import Library
 from django import template
 from django.contrib.auth.models import Group
 from onadata.apps.core.mixin import USER_PERMS
-from onadata.apps.core.models import Submission, ClusterA, UserRole
+from onadata.apps.core.models import Submission, ClusterA, UserRole, ClusterAHistory, Cluster, Activity, ClusterAG
 from django.db.models import Q
 
 register = Library()
@@ -111,6 +111,30 @@ def check_cluster_activity(obj, cag):
 
 
 @register.filter
+def get_cluster_activity(obj, cag):
+    if ClusterA.objects.filter(activity=obj, cag=cag).exists():
+        return ClusterA.objects.get(activity=obj, cag=cag)
+    else:
+        return obj
+
+
+@register.filter
+def get_cluster_name(pk):
+    return Cluster.objects.get(pk=pk).name
+
+
+@register.filter
+def get_ca_history(obj, cag=None):
+    if cag is not None:
+        if ClusterA.objects.filter(activity=obj, cag=cag).exists():
+            ca = ClusterA.objects.filter(activity=obj, cag=cag)
+            return ClusterAHistory.objects.filter(clustera=ca)
+
+    else:
+        return ClusterAHistory.objects.filter(clustera=obj)
+
+
+@register.filter
 def check_manager_permission(obj, cluster):
     try:
         user_role = UserRole.objects.get(Q(user=obj), Q(cluster=cluster))
@@ -136,3 +160,46 @@ def check_status_change_permission(obj, request):
         return True
     else:
         return False
+
+
+@register.filter
+def get_activity_count(obj):
+    return Activity.objects.filter(activity_group=obj).count()
+
+
+@register.filter
+def check_activity_progress(obj, beneficiary=None):
+    try:
+        cag = ClusterAG.objects.get(cluster=beneficiary.cluster, activity_group=obj.activity_group)
+        ca = ClusterA.objects.get(activity=obj, cag=cag)
+        if beneficiary is not None:
+            submission = Submission.objects.get(cluster_activity=ca, beneficiary=beneficiary)
+            if submission:
+                if submission.status == 'approved':
+                    return True
+
+        else:
+            submissions = Submission.objects.filter(cluster_activity=ca)
+            if submissions:
+                for submission in submissions:
+                    if not submission.status == 'approved':
+                       return False
+                return True
+    except:
+        return False
+
+
+@register.filter
+def get_beneficiary_progress(obj):
+    submission = Submission.objects.filter(beneficiary=obj)
+    progress = 0
+    for item in submission:
+        if item.status == 'approved':
+            progress += item.cluster_activity.activity.weight
+    return progress
+
+
+@register.filter
+def get_project_manager(obj):
+    userrole = UserRole.objects.get(project=obj, group__name="project-manager")
+    return userrole.user.username
