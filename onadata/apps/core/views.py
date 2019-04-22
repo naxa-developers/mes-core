@@ -8,14 +8,16 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from rest_framework.response import Response
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from rest_framework import viewsets
+from rest_framework import viewsets, views
 import pandas as pd
 from django.db.models import Q
+from django.db.models import Avg, Count, Sum
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
@@ -311,6 +313,10 @@ class Dashboard1View(TemplateView):
         beneficiary_count = Beneficiary.objects.all().count()
         activity_count = Activity.objects.all().count()
         types = Beneficiary.objects.values('Type').distinct('Type')
+        intervals = ProjectTimeInterval.objects.values('label').order_by('label')
+        interval = []
+        for item in intervals:
+            interval.append(str(item['label']))
         return render(request, self.template_name, {
             'activity_groups': ag,
             'districts': districts,
@@ -319,7 +325,8 @@ class Dashboard1View(TemplateView):
             'clusters': clusters,
             'types': types,
             'beneficiary_count': beneficiary_count,
-            'activity_count': activity_count
+            'activity_count': activity_count,
+            'intervals': interval
         })
 
 
@@ -600,6 +607,7 @@ class ClusterAssignView(ManagerMixin, View):
                                         hist.clustera = ca
                                         hist.target_number = ca.target_number
                                         hist.target_completed = ca.target_completed
+                                        hist.time_interval = ca.time_interval
                                         hist.updated_date = datetime.now()
                                         hist.save()
                                         ca.target_number = check[1]
@@ -610,6 +618,8 @@ class ClusterAssignView(ManagerMixin, View):
                                     if not ca.time_interval == ProjectTimeInterval.objects.get(id=int(check[1])):
                                         hist.clustera = ca
                                         hist.time_interval = ca.time_interval
+                                        hist.target_number = ca.target_number
+                                        hist.target_completed = ca.target_completed
                                         hist.updated_date = datetime.now()
                                         hist.save()
                                         ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
@@ -896,6 +906,49 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         cluster = self.request.query_params['cluster']
         return self.queryset.filter(cluster=cluster)
+
+
+class DashboardClusterActivityBarViewSet(views.APIView):
+
+    def get(self, request):
+        bar_data = {}
+        interval_target_number = []
+        interval_achievement = []
+        time_intervals = ProjectTimeInterval.objects.filter(project=request.project).order_by('label')
+        for item in time_intervals:
+            tg_num = 0
+            completed_tg_num = 0
+            if ClusterA.objects.filter(time_interval=item).exists():
+                cluster_activity = ClusterA.objects.filter(time_interval=item)
+                for obj in cluster_activity:
+                    if obj.target_number or obj.target_completed:
+                        tg_num += obj.target_number
+                        completed_tg_num += obj.target_completed
+            elif ClusterAHistory.objects.filter(time_interval=item).exists():
+                cluster_activity_history = ClusterAHistory.objects.filter(time_interval=item)
+                for obj in cluster_activity_history:
+                    if obj.target_number or obj.target_completed:
+                        tg_num += obj.target_number
+                        completed_tg_num += obj.target_completed
+            interval_target_number.append(tg_num)
+            interval_achievement.append(completed_tg_num)
+        bar_data['Target Number'] = interval_target_number
+        bar_data['Achievement'] = interval_achievement
+
+        return Response(bar_data)
+
+
+class BeneficiaryTypeView(views.APIView):
+
+    def get(self, request):
+        pie_data = {}
+        types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
+            distinct().annotate(total=Count('Type'))
+        for item in types:
+            pie_data[item['Type']] = [round((float(item['total']) / 1500) * 100, 2)]
+
+        return Response(pie_data)
+
 
 # class userCred(View):
 #
