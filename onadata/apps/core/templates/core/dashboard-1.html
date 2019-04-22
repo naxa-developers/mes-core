@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load filters %}
 
 {% block content %}
 <!-- Main Content -->
@@ -27,14 +28,11 @@
                             </div>
                             <div class="card-body">
                                 <ul>
-                                    <li><label>Name :</label><span>House Construction</span></li>
-                                    <li><label>Project Manager :</label><span>Mr.Ramesh khadgi</span></li>
-                                    <li><label>Province :</label><span>Province 2, Province 4</span></li>
-                                    <li><label>district :</label><span>Gorkha, Makawanpur</span></li>
-                                    <li><label>Municipality :</label><span>Thaha, Dhordi</span></li>
-                                    <li><label>Start date :</label><span>01/01/2019</span></li>
-                                    <li><label>End date :</label><span>01/05/2020</span></li>
-                                    <li><label>reporting period :</label><span>Quarterly</span></li>
+                                    <li><label>Name :</label><span>{{ request.project.name }}</span></li>
+                                    <li><label>Project Manager :</label><span>{{ request.project|get_project_manager }}</span></li>
+                                    <li><label>Start date :</label><span>{{ request.project.start_date }}</span></li>
+                                    <li><label>End date :</label><span>{{ request.project.end_date }}</span></li>
+                                    <li><label>reporting period :</label><span>{{ request.project.get_reporting_period_display }}</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -51,13 +49,13 @@
                                     <div class="col-lg-4">
                                         <div class="card card-widget ">
                                             <div class="body">
-                                                <a href="output-form.html">
+                                                <a href="{% url 'output_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-signal"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>1</h3>
+                                                            <h3>{{ request.project.output.count }}</h3>
                                                             <h5>Output</h5>
                                                         </div>
                                                     </div>
@@ -68,13 +66,13 @@
                                     <div class="col-lg-4 ">
                                         <div class="card card-widget ">
                                             <div class="body">
-                                                <a href="#">
+                                                <a href="{% url 'activitygroup_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-object-group"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>3</h3>
+                                                            <h3>{{ request.project.activity_group.count }}</h3>
                                                             <h5>Activity Group</h5>
                                                         </div>
                                                     </div>
@@ -85,13 +83,13 @@
                                     <div class="col-lg-4 ">
                                         <div class="card card-widget ">
                                             <div class="body">
-                                                <a href="#">
+                                                <a href="{% url 'activity_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-line-chart"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>15</h3>
+                                                            <h3>{{ activity_count }}</h3>
                                                             <h5>Activities</h5>
                                                         </div>
                                                     </div>
@@ -103,13 +101,13 @@
                                     <div class="col-lg-4 ">
                                         <div class="card card-widget mrt30">
                                             <div class="body">
-                                                <a href="#">
+                                                <a href="{% url 'cluster_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-transgender-alt"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>31</h3>
+                                                            <h3>{{ request.project.cluster.count }}</h3>
                                                             <h5>Cluster</h5>
                                                         </div>
                                                     </div>
@@ -120,13 +118,13 @@
                                     <div class="col-lg-4 ">
                                         <div class="card card-widget mrt30">
                                             <div class="body">
-                                                <a href="#">
+                                                <a href="{% url 'beneficiary_list' %}">
                                                     <div class="card-content">
                                                         <div class="card-icon">
                                                             <i class="la la-sellsy"></i>
                                                         </div>
                                                         <div class="card-text">
-                                                            <h3>1560</h3>
+                                                            <h3>{{ beneficiary_count }}</h3>
                                                             <h5>Benificiaries</h5>
                                                         </div>
                                                     </div>
@@ -146,24 +144,20 @@
         <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
-                    <form>
+                    <form method="get">
                         <div class="form-group">
                             <div class="select-option">
                                 <span>select District</span>
                                 <div class="select-list">
                                     <ul>
+                                        {% for district in districts %}
                                         <li>
                                             <div class="checkbox">
-                                                <input id="dist_1" type="checkbox" name="dist_1">
-                                                <label for="dist_1">Gorkha</label>
+                                                <input id="dist_{{ district.id }}" type="checkbox" name="dist_{{ district.id }}">
+                                                <label for="dist_{{ district.id }}">{{ district.name }}</label>
                                             </div>
                                         </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="dist_2" type="checkbox" name="dist_2">
-                                                <label for="dist_2">Makawanpur</label>
-                                            </div>
-                                        </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
@@ -173,18 +167,14 @@
                                 <span>select Municipality</span>
                                 <div class="select-list">
                                     <ul>
+                                        {% for municipality in municipalities %}
                                         <li>
                                             <div class="checkbox">
-                                                <input id="mun_1" type="checkbox" name="mun_1">
-                                                <label for="mun_1">Thaha</label>
+                                                <input id="mun_{{ municipality.id }}" type="checkbox" name="mun_{{ municipality.id }}">
+                                                <label for="mun_{{ municipality.id }}">{{ municipality.name }}</label>
                                             </div>
                                         </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="mun_2" type="checkbox" name="mun_2">
-                                                <label for="mun_2">Dhordi</label>
-                                            </div>
-                                        </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
@@ -194,24 +184,14 @@
                                 <span>select cluster</span>
                                 <div class="select-list">
                                     <ul>
+                                        {% for cluster in select_clusters %}
                                         <li>
                                             <div class="checkbox">
-                                                <input id="cl_1" type="checkbox" name="dist_1">
-                                                <label for="cl_1">1</label>
+                                                <input id="cl_{{ cluster.id }}" type="checkbox" name="cl_{{ cluster.id }}">
+                                                <label for="cl_{{ cluster.id }}">{{ cluster.name }}</label>
                                             </div>
                                         </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="cl_2" type="checkbox" name="cl_2">
-                                                <label for="cl_2">2</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="cl_3" type="checkbox" name="cl_3">
-                                                <label for="cl_3">3</label>
-                                            </div>
-                                        </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
@@ -238,55 +218,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="select-option">
-                                <span>select Activity group</span>
-                                <div class="select-list">
-                                    <ul>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="acg_1" type="checkbox" name="acg_1">
-                                                <label for="acg_1">Pre-construction stage</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="acg_2" type="checkbox" name="acg_2">
-                                                <label for="acg_2">Physical construction stage</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="acg_3" type="checkbox" name="acg_3">
-                                                <label for="acg_3">Post construction stage</label>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="select-option">
-                                <span>select activity</span>
-                                <div class="select-list">
-                                    <ul>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="ac_1" type="checkbox" name="ac_1">
-                                                <label for="ac_1">Verification & Listing</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="ac_2" type="checkbox" name="ac_2">
-                                                <label for="ac_2">Household Awareness Creation</label>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <button type="button" class="btn">Filter</button>
+                            <button type="submit" class="btn">Filter</button>
                         </div>
                     </form>
                 </div>
@@ -341,230 +273,39 @@
                                 <h5>Cluster</h5>
                             </div>
                             <div class="card-body">
-                                <table id="basicExample" class="table table-striped table-bordered ">
+                                <table id="Beneficiary_table" class="table table-striped table-bordered ">
                                     <thead>
                                         <tr>
-                                            <th rowspan="2" class="text-center">cluster Name</th>
-                                            <th colspan="7" class="text-center">step to complete house construction</th>
-                                            <th colspan="8" class="text-center">physical construction stage</th>
+                                            <th rowspan="2" class="text-center">Cluster Name</th>
+                                            {% for obj in activity_groups %}
+                                            {% with obj|get_activity_count as count %}
+                                            <th colspan="{{ count }}" class="text-center">{{ obj.name }}</th>
+                                            {% endwith %}
+                                            {% endfor %}
                                         </tr>
                                         <tr>
-                                            <th>Verification & Listing (2%)</th>
-                                            <th>Household Awareness Creation (3%)</th>
-                                            <th>Identification of house type (5%)</th>
-                                            <th>Finaliztion of house design (7%)</th>
-                                            <th>Cost estimation (8%)</th>
-                                            <th>Linkages with service providers (7%)</th>
-                                            <th>Agreement with household (8%)</th>
-                                            <th>Procurement of Materials (6%)</th>
-                                            <th>Constriction upto DPC (12%)</th>
-                                            <th>Construction upto roof (20%)</th>
-                                            <th>Roofing & final completion (12%)</th>
-                                            <th>Receiving 3rd Tranche (12%)</th>
-                                            <th>Verify data (2%)</th>
-                                            <th>Fubak oatnebts for construction (5%)</th>
-                                            <th>Handover house (1%)</th>
+                                            {% for obj in activity_groups %}
+                                            {% for activity in obj.activity.all %}
+                                                <th>{{ activity.name }} ({{ activity.weight }}%)</th>
+                                            {% endfor %}
+                                            {% endfor %}
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    {% for cluster in clusters %}
                                         <tr>
-                                            <td>CLuster 1</td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td>{{ cluster.name }}</td>
+                                            {% for obj in activity_groups %}
+                                            {% for activity in obj.activity.all %}
+                                            {% if activity|check_activity_progress %}
+                                                <td><span class="completed"></span></td>
+                                            {% else %}
+                                                <td></td>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% endfor %}
                                         </tr>
-                                        <tr>
-                                            <td>CLuster 2</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 3</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 4</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 5</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><span class="completed"></span></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 6</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 7</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 8</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 8</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 9</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>CLuster 10</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>

@@ -168,14 +168,22 @@ def get_activity_count(obj):
 
 
 @register.filter
-def check_activity_progress(obj, beneficiary):
+def check_activity_progress(obj, beneficiary=None):
     try:
         cag = ClusterAG.objects.get(cluster=beneficiary.cluster, activity_group=obj.activity_group)
         ca = ClusterA.objects.get(activity=obj, cag=cag)
+        if beneficiary is not None:
+            submission = Submission.objects.get(cluster_activity=ca, beneficiary=beneficiary)
+            if submission:
+                if submission.status == 'approved':
+                    return True
 
-        submission = Submission.objects.get(cluster_activity=ca, beneficiary=beneficiary)
-        if submission:
-            if submission.status == 'approved':
+        else:
+            submissions = Submission.objects.filter(cluster_activity=ca)
+            if submissions:
+                for submission in submissions:
+                    if not submission.status == 'approved':
+                       return False
                 return True
     except:
         return False
@@ -189,3 +197,9 @@ def get_beneficiary_progress(obj):
         if item.status == 'approved':
             progress += item.cluster_activity.activity.weight
     return progress
+
+
+@register.filter
+def get_project_manager(obj):
+    userrole = UserRole.objects.get(project=obj, group__name="project-manager")
+    return userrole.user.username

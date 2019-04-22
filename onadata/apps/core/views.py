@@ -48,7 +48,7 @@ from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroup
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
-from .utils import get_beneficiaries
+from .utils import get_beneficiaries, get_clusters
 
 def logout_view(request):
     logout(request)
@@ -272,6 +272,56 @@ class ErrorView(TemplateView):
 
 class Dashboard1View(TemplateView):
     template_name = 'core/dashboard-1.html'
+
+    def get(self, request):
+        checked = [(name, value) for name, value in request.GET.iteritems()]
+        clusters = []
+        b_types = []
+        districts = []
+        munis = []
+        for item in checked:
+            if item[0].startswith('cl'):
+                clusters.append(int(item[0].split("_")[1]))
+
+            if item[0].startswith('tp'):
+                b_types.append(item[0].split("_")[1])
+
+            if item[0].startswith('mun'):
+                munis.append(int(item[0].split("_")[1]))
+
+            if item[0].startswith('dist'):
+                districts.append(int(item[0].split("_")[1]))
+
+        clusters = get_clusters(districts, munis, clusters)
+        ag = ActivityGroup.objects.all()
+        #
+        # page = request.GET.get('page', 1)
+        # paginator = Paginator(beneficiaries, 100)
+        #
+        # try:
+        #     beneficiaries = paginator.page(page)
+        # except PageNotAnInteger:
+        #     beneficiaries = paginator.page(1)
+        # except EmptyPage:
+        #     beneficiaries = paginator.page(paginator.num_pages)
+
+        districts = District.objects.all()
+        municipalities = Municipality.objects.all()
+        select_cluster = Cluster.objects.all()
+        beneficiary_count = Beneficiary.objects.all().count()
+        activity_count = Activity.objects.all().count()
+        types = Beneficiary.objects.values('Type').distinct('Type')
+        return render(request, self.template_name, {
+            'activity_groups': ag,
+            'districts': districts,
+            'municipalities': municipalities,
+            'select_clusters': select_cluster,
+            'clusters': clusters,
+            'types': types,
+            'beneficiary_count': beneficiary_count,
+            'activity_count': activity_count
+        })
+
 
 
 class Dashboard2View(MultipleObjectMixin, TemplateView):

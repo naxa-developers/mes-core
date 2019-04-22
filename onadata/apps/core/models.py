@@ -15,14 +15,16 @@ from onadata.apps.logger.models.xform import XForm
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .utils import get_interval
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 
 
 class Project(models.Model):
 	name = models.CharField(max_length=200)
 	description = models.CharField(max_length=500)
 	sector = models.CharField(max_length=200)
-	start_date = models.DateTimeField()
-	end_date = models.DateTimeField()
+	start_date = models.DateField()
+	end_date = models.DateField()
 	reporting_period = models.IntegerField(choices=((1,"Monthly"),(2, "Bi-annually"), (3, "Quaterly")))
 	beneficiaries = models.BooleanField(default=True)
 
@@ -114,7 +116,6 @@ class Activity(models.Model):
 		return self.name
 
 
-
 class Beneficiary(models.Model):
 	name = models.CharField(max_length=200)
 	address = models.CharField(max_length=400)
@@ -134,7 +135,7 @@ class UserRole(models.Model):
 	user = models.ForeignKey(User, related_name="user_roles")
 	project = models.ForeignKey('Project', null=True, blank=True)
 	group = models.ForeignKey(Group, related_name="userrole_group")
-	cluster = models.ForeignKey(Cluster, null=True, blank=True, related_name="userrole_cluster")
+	cluster = models.ForeignKey("Cluster", null=True, blank=True, related_name="userrole_cluster")
 
 	def __str__(self):
 		return self.group.name
@@ -238,3 +239,16 @@ def save_interval(sender, instance, **kwargs):
 				intervals.pop(0)
 			except:
 				pass
+
+@receiver(post_save, sender=UserRole)
+def send_email(sender, instance, **kwargs):
+	to_email = instance.user.email
+	mail_subject = 'User role assigned.'
+	message = render_to_string('core/user_role_email.html', {
+		'userrole': instance,
+		'domain': settings.SITE_URL,
+	})
+	email = EmailMessage(
+		mail_subject, message, to=[to_email]
+	)
+	email.send()
