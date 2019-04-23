@@ -414,28 +414,14 @@ $(function() {
             var chart = c3.generate({
                 bindto: '#chart-bar', // id of chart wrapper
                 data: {
-                    columns: [
-                        // each columns data
-                        ['data1', 100, 200, 300, 250, 350, 150,500,1000,400, 800,100, 200, 300, 250, 350, 150,500,1000,400, 800],
-                        ['data2', 200, 150, 600, 350, 250, 300,650, 750, 1200, 1500,200, 150, 600, 350, 250, 300,650, 750, 1200, 1500]
-                    ],
+                    json: progress_data,
                     type: 'bar', // default type of chart
-                    
-                    colors: {
-                        'data1': "#00A890",
-                        'data2': "#0d89df"
-                    },
-                    names: {
-                        // name of each serie
-                        'data1': 'marginlized',
-                        'data2': 'Vulnerable'
-                    }
                 },
                 axis: {
                     x: {
                         type: 'category',
                         // name of each category
-                        categories: ['Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur' , 'Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur','Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur','Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur','Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur' ],
+                        categories: categories,
                         
                     },
                 },
