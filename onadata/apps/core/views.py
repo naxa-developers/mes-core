@@ -50,7 +50,7 @@ from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroup
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
-from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data
+from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, get_progress_data
 
 def logout_view(request):
     logout(request)
@@ -280,9 +280,11 @@ class Dashboard1View(TemplateView):
         activities = Activity.objects.filter(activity_group__project=request.project)
         districts = District.objects.all()
         municipalities = Municipality.objects.all()
-        select_cluster = Cluster.objects.all()
+        select_cluster = Cluster.objects.filter(project=request.project)
         types = Beneficiary.objects.values('Type').distinct('Type')
         intervals = ProjectTimeInterval.objects.values('label').order_by('label')
+        beneficiary_count = Beneficiary.objects.count()
+        activity_count = Activity.objects.count()
         interval = []
 
         for item in intervals:
@@ -317,10 +319,10 @@ class Dashboard1View(TemplateView):
             chart_single = get_cluster_activity_data(request.project)
 
         # get progress overview data on basis of filter used
-        if request.GET.get('progress'):
+        if 'progress' in request.GET:
             checked = [(name, value) for name, value in request.GET.iteritems()]
             clusters = []
-            districts = []
+            select_districts = []
             munis = []
             for item in checked:
                 if item[0].startswith('cl'):
@@ -330,9 +332,12 @@ class Dashboard1View(TemplateView):
                     munis.append(int(item[0].split("_")[1]))
 
                 if item[0].startswith('dist'):
-                    districts.append(int(item[0].split("_")[1]))
+                    select_districts.append(int(item[0].split("_")[1]))
 
-            clusters = get_clusters(districts, munis, clusters)
+            progress_data, categories = get_progress_data(types, clusters, select_districts, munis)
+
+        else:
+            progress_data, categories = get_progress_data(types)
 
         return render(request, self.template_name, {
             'activity_groups': activity_groups,
@@ -341,8 +346,12 @@ class Dashboard1View(TemplateView):
             'municipalities': municipalities,
             'select_clusters': select_cluster,
             'types': types,
+            'activity_count': activity_count,
+            'beneficiary_count': beneficiary_count,
             'intervals': interval,
-            'chart_single': chart_single
+            'chart_single': chart_single,
+            'progress_data': progress_data,
+            'categories': categories
         })
 
 

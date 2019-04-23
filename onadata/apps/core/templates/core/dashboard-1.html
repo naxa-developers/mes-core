@@ -212,7 +212,7 @@
                                             {% for cluster in select_clusters %}
                                             <li>
                                                 <div class="checkbox">
-                                                    <input id="cl_{{ cluster.id }}" type="checkbox" name="dist_{{ cluster.id }}">
+                                                    <input id="cl_{{ cluster.id }}" type="checkbox" name="cl_{{ cluster.id }}">
                                                     <label for="cl_{{ cluster.id }}">{{ cluster.name }}</label>
                                                 </div>
                                             </li>
@@ -403,6 +403,8 @@
 <script>
     intervals = {{ intervals|safe }};
     chart_single = {{ chart_single|safe }};
+    categories = {{ categories|safe }}
+    progress_data = {{ progress_data|safe }};
 </script>
 <script src="{% static 'js/c3.bundle.js' %}"></script>
 <script src="{% static 'js/c3.js' %}"></script>

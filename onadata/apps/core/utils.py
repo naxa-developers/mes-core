@@ -290,18 +290,110 @@ def get_cluster_activity_data(project, activity_group=None, activity=None):
 
     return bar_data
 
-#
-# def get_progress_overview_data(project, districts=None, munis=None, clusters=None):
-#     from .models import Beneficiary, District, Cluster
-#     from django.db.models import Count
-#     progress_data = {}
-#     total_list = []
-#
-#     dist = District.objects.all()
-#
-#     for item in dist:
-#         types = Beneficiary.objects.filter(cluster__project=project, cluster__municipality__district=item).values('Type'). \
-#             distinct().annotate(total=Count('Type'))
-#         for obj in types:
-#             total_list.append(obj['total'])
-#     return progress_data
+
+def get_progress_data(types=None, clusters=None, districts=None, munis=None):
+    from .models import District, Municipality, Cluster, Submission
+    from django.db.models import Sum
+
+    progress_data = {}
+    categories = []
+    if clusters:
+        selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
+        for item in types:
+            total_list = []
+            for obj in selected_clusters:
+                if Submission.objects.filter(
+                        cluster_activity__cag__cluster_id=obj.id,
+                        status='approved',
+                        beneficiary__Type=item['Type']).exists():
+                    submissions = Submission.objects.filter(
+                        cluster_activity__cag__cluster_id=obj.id, status='approved',
+                        beneficiary__Type=item['Type']
+                    ).values('beneficiary__Type').distinct().annotate(
+                        progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                else:
+                    total_list.append(0)
+            progress_data[str(item['Type'])] = total_list
+        for item in selected_clusters:
+            categories.append(str(item.name))
+
+        return progress_data, categories
+
+    elif munis:
+        selected_munis = Municipality.objects.filter(id__in=munis).order_by('name')
+        for item in types:
+            total_list = []
+            for obj in selected_munis:
+                clusters = obj.cluster.all()
+                if Submission.objects.filter(
+                        cluster_activity__cag__cluster__in=clusters,
+                        status='approved',
+                        beneficiary__Type=item['Type']).exists():
+                    submissions = Submission.objects.filter(
+                        cluster_activity__cag__cluster__in=clusters, status='approved',
+                        beneficiary__Type=item['Type']
+                    ).values('beneficiary__Type').distinct().annotate(
+                        progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                else:
+                    total_list.append(0)
+            progress_data[str(item['Type'])] = total_list
+        for item in selected_munis:
+            categories.append(str(item.name))
+
+        return progress_data, categories
+
+    elif districts:
+        selected_districts = District.objects.filter(id__in=districts).order_by('name')
+        for item in types:
+            total_list = []
+            for obj in selected_districts:
+                municipality = Municipality.objects.filter(district=obj)
+                clusters = Cluster.objects.filter(municipality__in=municipality)
+                if Submission.objects.filter(
+                        cluster_activity__cag__cluster__in=clusters,
+                        status='approved',
+                        beneficiary__Type=item['Type']).exists():
+                    submissions = Submission.objects.filter(
+                        cluster_activity__cag__cluster__in=clusters, status='approved',
+                        beneficiary__Type=item['Type']
+                    ).values('beneficiary__Type').distinct().annotate(
+                        progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                else:
+                    total_list.append(0)
+            progress_data[str(item['Type'])] = total_list
+        for item in selected_districts:
+            categories.append(str(item.name))
+
+        return progress_data, categories
+
+    else:
+        selected_districts = District.objects.all().order_by('name')
+        for item in types:
+            total_list = []
+            for obj in selected_districts:
+                municipality = Municipality.objects.filter(district=obj)
+                clusters = Cluster.objects.filter(municipality__in=municipality)
+                if Submission.objects.filter(
+                        cluster_activity__cag__cluster__in=clusters,
+                        status='approved',
+                        beneficiary__Type=item['Type']).exists():
+                    submissions = Submission.objects.filter(
+                        cluster_activity__cag__cluster__in=clusters, status='approved',
+                        beneficiary__Type=item['Type']
+                    ).values('beneficiary__Type').distinct().annotate(
+                        progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                else:
+                    total_list.append(0)
+            progress_data[str(item['Type'])] = total_list
+        for item in selected_districts:
+            categories.append(str(item.name))
+
+        return progress_data, categories
