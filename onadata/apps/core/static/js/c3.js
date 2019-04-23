@@ -1,3 +1,8 @@
+// for local
+//var base_url = 'http://localhost:8001/';
+
+// for server
+var base_url = 'https://mne.naxa.com.np/'
 $(function() {
     "use strict";
     setTimeout(function(){ 
@@ -548,7 +553,7 @@ $(function() {
             var chart = c3.generate({
                 bindto: '#chart-pie', // id of chart wrapper
                 data: {
-                    url: 'http://localhost:8001/core/dashboard/type/',
+                    url: base_url + 'core/dashboard/type/',
                     mimeType: 'json',
                     type: 'pie', // default type of chart,
                 },
