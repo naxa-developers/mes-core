@@ -317,7 +317,7 @@ class ConfigForm(forms.ModelForm):
 
 
 class ChangePasswordform(forms.Form):
-    user = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
+    user = forms.ModelChoiceField(queryset=User.objects.all())
     old_password = forms.CharField(widget=forms.PasswordInput, label='Your Old Password', max_length=100)
     new_password = forms.CharField(widget=forms.PasswordInput, label='Your New Password', max_length=100)
     confirm_new_password = forms.CharField(widget=forms.PasswordInput, label='One more time', max_length=100)
@@ -329,7 +329,7 @@ class ChangePasswordform(forms.Form):
     def clean(self):
         cleaned_data = super(ChangePasswordform, self).clean()
 
-        currentpassword = self.user.password  # user's current password
+        currentpassword = self.cleaned_data.get('user').password  # user's current password
         currentpasswordentered = self.cleaned_data.get("old_password")
         if not check_password(currentpasswordentered, currentpassword):
             raise ValidationError({'old_password': ['Your old password is incorrect!']})
@@ -349,10 +349,10 @@ class ChangePasswordform(forms.Form):
                         {'new_password': ['Password must contain alphabet characters, special characters and numbers']})
 
     def save(self, commit=True):
-        self.user.set_password(self.cleaned_data['new_password'])
+        self.cleaned_data.get('user').set_password(self.cleaned_data['new_password'])
         if commit:
-            self.user.save()
-        return self.user
+            self.cleaned_data.get('user').save()
+        return self.cleaned_data.get('user')
 
 
 
