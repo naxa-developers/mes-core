@@ -103,6 +103,9 @@ urlpatterns = [
         name='password_reset_confirm'),
     url(r'^reset/done/$', auth_views.password_reset_complete, {'template_name': 'core/password_reset_complete.html'},
         name='password_reset_complete'),
+
+    # apis' for dashboard chart
+    url(r'^dashboard/type/$', views.BeneficiaryTypeView.as_view(), name='beneficiary_type'),
 ]
 
 urlpatterns += router.urls

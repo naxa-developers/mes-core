@@ -199,3 +199,99 @@ def get_beneficiaries(districts=None, munis=None, clusters=None, b_types=None):
         beneficiaries = Beneficiary.objects.order_by('name')
 
     return beneficiaries
+
+
+def get_cluster_activity_data(project, cluster_ag=None, cluster_a=None):
+    from onadata.apps.core.models import ClusterA, ProjectTimeInterval, ClusterAHistory
+
+    bar_data = {}
+    interval_target_number = []
+    interval_achievement = []
+    time_intervals = ProjectTimeInterval.objects.filter(project=project).order_by('label')
+    for item in time_intervals:
+        tg_num = 0
+        completed_tg_num = 0
+        if cluster_a and cluster_ag:
+            if ClusterA.objects.filter(time_interval=item, id__in=cluster_a, cag_id__in=cluster_ag).exists():
+                cluster_activity = ClusterA.objects.filter(time_interval=item, id__in=cluster_a, cag_id__in=cluster_ag)
+                for obj in cluster_activity:
+                    if obj.target_number or obj.target_completed:
+                        tg_num += obj.target_number
+                        completed_tg_num += obj.target_completed
+            elif ClusterAHistory.objects.filter(
+                    time_interval=item, clustera_id__in=cluster_a, clustera__cag_id__in=cluster_ag).exists():
+                cluster_activity_history = ClusterAHistory.objects.filter(
+                    time_interval=item, clustera_id__in=cluster_a, clustera__cag_id__in=cluster_ag)
+                for obj in cluster_activity_history:
+                    if obj.target_number or obj.target_completed:
+                        tg_num += obj.target_number
+                        completed_tg_num += obj.target_completed
+
+        elif cluster_a or cluster_ag:
+            if cluster_ag:
+                if ClusterA.objects.filter(time_interval=item, cag_id__in=cluster_ag).exists():
+                    cluster_activity = ClusterA.objects.filter(time_interval=item, cag_id__in=cluster_ag)
+                    for obj in cluster_activity:
+                        if obj.target_number or obj.target_completed:
+                            tg_num += obj.target_number
+                            completed_tg_num += obj.target_completed
+                elif ClusterAHistory.objects.filter(
+                        time_interval=item, clustera__cag_id__in=cluster_ag).exists():
+                    cluster_activity_history = ClusterAHistory.objects.filter(
+                        time_interval=item, clustera__cag_id__in=cluster_ag)
+                    for obj in cluster_activity_history:
+                        if obj.target_number or obj.target_completed:
+                            tg_num += obj.target_number
+                            completed_tg_num += obj.target_completed
+
+            if cluster_a:
+                if ClusterA.objects.filter(time_interval=item, id__in=cluster_a, cag_id__in=cluster_ag).exists():
+                    cluster_activity = ClusterA.objects.filter(time_interval=item, id__in=cluster_a)
+                    for obj in cluster_activity:
+                        if obj.target_number or obj.target_completed:
+                            tg_num += obj.target_number
+                            completed_tg_num += obj.target_completed
+                elif ClusterAHistory.objects.filter(
+                        time_interval=item, clustera_id__in=cluster_a).exists():
+                    cluster_activity_history = ClusterAHistory.objects.filter(
+                        time_interval=item, clustera_id__in=cluster_a)
+                    for obj in cluster_activity_history:
+                        if obj.target_number or obj.target_completed:
+                            tg_num += obj.target_number
+                            completed_tg_num += obj.target_completed
+
+        else:
+            if ClusterA.objects.filter(time_interval=item).exists():
+                cluster_activity = ClusterA.objects.filter(time_interval=item)
+                for obj in cluster_activity:
+                    if obj.target_number or obj.target_completed:
+                        tg_num += obj.target_number
+                        completed_tg_num += obj.target_completed
+            elif ClusterAHistory.objects.filter(time_interval=item).exists():
+                cluster_activity_history = ClusterAHistory.objects.filter(time_interval=item)
+                for obj in cluster_activity_history:
+                    if obj.target_number or obj.target_completed:
+                        tg_num += obj.target_number
+                        completed_tg_num += obj.target_completed
+        interval_target_number.append(tg_num)
+        interval_achievement.append(completed_tg_num)
+    bar_data['Target Number'] = interval_target_number
+    bar_data['Achievement'] = interval_achievement
+
+    return bar_data
+
+#
+# def get_progress_overview_data(project, districts=None, munis=None, clusters=None):
+#     from .models import Beneficiary, District, Cluster
+#     from django.db.models import Count
+#     progress_data = {}
+#     total_list = []
+#
+#     dist = District.objects.all()
+#
+#     for item in dist:
+#         types = Beneficiary.objects.filter(cluster__project=project, cluster__municipality__district=item).values('Type'). \
+#             distinct().annotate(total=Count('Type'))
+#         for obj in types:
+#             total_list.append(obj['total'])
+#     return progress_data
