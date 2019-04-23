@@ -344,11 +344,11 @@
                                     <span>select Activity group</span>
                                     <div class="select-list">
                                         <ul>
-                                            {% for cag in cags %}
+                                            {% for obj in activity_groups %}
                                             <li>
                                                 <div class="checkbox">
-                                                    <input id="acg_{{ cag.id }}" type="checkbox" name="acg_{{ cag.id }}">
-                                                    <label for="acg_{{ cag.id }}">{{ cag.activity_group.name }}</label>
+                                                    <input id="ag_{{ obj.id }}" type="checkbox" name="acg_{{ obj.id }}">
+                                                    <label for="ag_{{ obj.id }}">{{ obj.name }}</label>
                                                 </div>
                                             </li>
                                             {% endfor %}
@@ -361,11 +361,11 @@
                                     <span>select activity</span>
                                     <div class="select-list">
                                         <ul>
-                                            {% for ca in cas %}
+                                            {% for obj in activities %}
                                             <li>
                                                 <div class="checkbox">
-                                                    <input id="ac_{{ ca.id }}" type="checkbox" name="ac_{{ ca.id }}">
-                                                    <label for="ac_{{ ca.id }}">{{ ca.activity.name }}</label>
+                                                    <input id="a_{{ obj.id }}" type="checkbox" name="ac_{{ obj.id }}">
+                                                    <label for="a_{{ obj.id }}">{{ obj.name }}</label>
                                                 </div>
                                             </li>
                                             {% endfor %}
