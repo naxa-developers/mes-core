@@ -276,8 +276,8 @@ class Dashboard1View(TemplateView):
     template_name = 'core/dashboard-1.html'
 
     def get(self, request):
-        cags = ClusterAG.objects.filter(activity_group__project=request.project)
-        cas = ClusterA.objects.filter(cag__activity_group__project=request.project)
+        activity_groups = ActivityGroup.objects.filter(project=request.project)
+        activities = Activity.objects.filter(activity_group__project=request.project)
         districts = District.objects.all()
         municipalities = Municipality.objects.all()
         select_cluster = Cluster.objects.all()
@@ -295,14 +295,14 @@ class Dashboard1View(TemplateView):
             # b_types = []
             # districts = []
             # munis = []
-            cluster_ag = []
-            cluster_a = []
+            activity_group = []
+            activity = []
             for item in checked:
-                if item[0].startswith('acg'):
-                    cluster_ag.append(int(item[0].split("_")[1]))
+                if item[0].startswith('ag'):
+                    activity_group.append(int(item[0].split("_")[1]))
 
-                if item[0].startswith('ac'):
-                    cluster_a.append(item[0].split("_")[1])
+                if item[0].startswith('a'):
+                    activity.append(item[0].split("_")[1])
 
                 # if item[0].startswith('mun'):
                 #     munis.append(int(item[0].split("_")[1]))
@@ -310,7 +310,7 @@ class Dashboard1View(TemplateView):
                 # if item[0].startswith('dist'):
                 #     districts.append(int(item[0].split("_")[1]))
 
-            chart_single = get_cluster_activity_data(request.project, cluster_ag, cluster_a)
+            chart_single = get_cluster_activity_data(request.project, activity_group, activity)
 
         # for no filter used
         else:
@@ -335,8 +335,8 @@ class Dashboard1View(TemplateView):
             clusters = get_clusters(districts, munis, clusters)
 
         return render(request, self.template_name, {
-            'cags': cags,
-            'cas': cas,
+            'activity_groups': activity_groups,
+            'activities': activities,
             'districts': districts,
             'municipalities': municipalities,
             'select_clusters': select_cluster,
