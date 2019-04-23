@@ -50,7 +50,7 @@ from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroup
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
-from .utils import get_beneficiaries, get_clusters
+from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data
 
 def logout_view(request):
     logout(request)
@@ -276,59 +276,74 @@ class Dashboard1View(TemplateView):
     template_name = 'core/dashboard-1.html'
 
     def get(self, request):
-        checked = [(name, value) for name, value in request.GET.iteritems()]
-        clusters = []
-        b_types = []
-        districts = []
-        munis = []
-        for item in checked:
-            if item[0].startswith('cl'):
-                clusters.append(int(item[0].split("_")[1]))
-
-            if item[0].startswith('tp'):
-                b_types.append(item[0].split("_")[1])
-
-            if item[0].startswith('mun'):
-                munis.append(int(item[0].split("_")[1]))
-
-            if item[0].startswith('dist'):
-                districts.append(int(item[0].split("_")[1]))
-
-        clusters = get_clusters(districts, munis, clusters)
-        ag = ActivityGroup.objects.all()
-        #
-        # page = request.GET.get('page', 1)
-        # paginator = Paginator(beneficiaries, 100)
-        #
-        # try:
-        #     beneficiaries = paginator.page(page)
-        # except PageNotAnInteger:
-        #     beneficiaries = paginator.page(1)
-        # except EmptyPage:
-        #     beneficiaries = paginator.page(paginator.num_pages)
-
+        cags = ClusterAG.objects.filter(activity_group__project=request.project)
+        cas = ClusterA.objects.filter(cag__activity_group__project=request.project)
         districts = District.objects.all()
         municipalities = Municipality.objects.all()
         select_cluster = Cluster.objects.all()
-        beneficiary_count = Beneficiary.objects.all().count()
-        activity_count = Activity.objects.all().count()
         types = Beneficiary.objects.values('Type').distinct('Type')
         intervals = ProjectTimeInterval.objects.values('label').order_by('label')
         interval = []
+
         for item in intervals:
             interval.append(str(item['label']))
+
+        # get cluster activity overview data on basis of filter used
+        if 'cluster_activity' in request.GET:
+            checked = [(name, value) for name, value in request.GET.iteritems()]
+            # clusters = []
+            # b_types = []
+            # districts = []
+            # munis = []
+            cluster_ag = []
+            cluster_a = []
+            for item in checked:
+                if item[0].startswith('acg'):
+                    cluster_ag.append(int(item[0].split("_")[1]))
+
+                if item[0].startswith('ac'):
+                    cluster_a.append(item[0].split("_")[1])
+
+                # if item[0].startswith('mun'):
+                #     munis.append(int(item[0].split("_")[1]))
+                #
+                # if item[0].startswith('dist'):
+                #     districts.append(int(item[0].split("_")[1]))
+
+            chart_single = get_cluster_activity_data(request.project, cluster_ag, cluster_a)
+
+        # for no filter used
+        else:
+            chart_single = get_cluster_activity_data(request.project)
+
+        # get progress overview data on basis of filter used
+        if request.GET.get('progress'):
+            checked = [(name, value) for name, value in request.GET.iteritems()]
+            clusters = []
+            districts = []
+            munis = []
+            for item in checked:
+                if item[0].startswith('cl'):
+                    clusters.append(int(item[0].split("_")[1]))
+
+                if item[0].startswith('mun'):
+                    munis.append(int(item[0].split("_")[1]))
+
+                if item[0].startswith('dist'):
+                    districts.append(int(item[0].split("_")[1]))
+
+            clusters = get_clusters(districts, munis, clusters)
+
         return render(request, self.template_name, {
-            'activity_groups': ag,
+            'cags': cags,
+            'cas': cas,
             'districts': districts,
             'municipalities': municipalities,
             'select_clusters': select_cluster,
-            'clusters': clusters,
             'types': types,
-            'beneficiary_count': beneficiary_count,
-            'activity_count': activity_count,
-            'intervals': interval
+            'intervals': interval,
+            'chart_single': chart_single
         })
-
 
 
 class Dashboard2View(MultipleObjectMixin, TemplateView):
@@ -913,36 +928,6 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         cluster = self.request.query_params['cluster']
         return self.queryset.filter(cluster=cluster)
-
-
-class DashboardClusterActivityBarViewSet(views.APIView):
-
-    def get(self, request):
-        bar_data = {}
-        interval_target_number = []
-        interval_achievement = []
-        time_intervals = ProjectTimeInterval.objects.filter(project=request.project).order_by('label')
-        for item in time_intervals:
-            tg_num = 0
-            completed_tg_num = 0
-            if ClusterA.objects.filter(time_interval=item).exists():
-                cluster_activity = ClusterA.objects.filter(time_interval=item)
-                for obj in cluster_activity:
-                    if obj.target_number or obj.target_completed:
-                        tg_num += obj.target_number
-                        completed_tg_num += obj.target_completed
-            elif ClusterAHistory.objects.filter(time_interval=item).exists():
-                cluster_activity_history = ClusterAHistory.objects.filter(time_interval=item)
-                for obj in cluster_activity_history:
-                    if obj.target_number or obj.target_completed:
-                        tg_num += obj.target_number
-                        completed_tg_num += obj.target_completed
-            interval_target_number.append(tg_num)
-            interval_achievement.append(completed_tg_num)
-        bar_data['Target Number'] = interval_target_number
-        bar_data['Achievement'] = interval_achievement
-
-        return Response(bar_data)
 
 
 class BeneficiaryTypeView(views.APIView):

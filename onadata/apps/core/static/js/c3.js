@@ -781,8 +781,7 @@ $(function() {
             var chart = c3.generate({
                 bindto: '#chart-single', // id of chart wrapper
                 data: {
-                    url: 'http://localhost:8001/core/dashboard/bar/',
-                    mimeType: 'json',
+                    json: chart_single,
                     type: 'bar', // default type of chart,
                 },
                 axis: {
