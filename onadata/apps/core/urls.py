@@ -79,6 +79,9 @@ urlpatterns = [
     url(r'submission/(?P<pk>[0-9]+)/$', views.SubmissionView.as_view(), name='submission'),
     url(r'submission-list/(?P<pk>[0-9]+)/$', views.SubmissionListView.as_view(), name='submission_list'),
 
+    # password_change
+    url(r'^change-password/', views.change_password, name='change_password'),
+
     # change status of submission
     url(r'approve', views.accept_submission, name='approve_submission'),
     url(r'reject', views.reject_submission, name='reject_submission'),
