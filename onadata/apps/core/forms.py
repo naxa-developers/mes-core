@@ -317,6 +317,7 @@ class ConfigForm(forms.ModelForm):
 
 
 class ChangePasswordform(forms.Form):
+    user = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
     old_password = forms.CharField(widget=forms.PasswordInput, label='Your Old Password', max_length=100)
     new_password = forms.CharField(widget=forms.PasswordInput, label='Your New Password', max_length=100)
     confirm_new_password = forms.CharField(widget=forms.PasswordInput, label='One more time', max_length=100)

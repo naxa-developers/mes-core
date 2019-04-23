@@ -942,20 +942,23 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
 #             return HttpResponse(json.dumps({'message': e.message}))
 
 
+class Done(TemplateView):
+   template_name = 'core/change-password-done.html'
+
 def change_password(request):
     if request.method == 'POST':
         form = ChangePasswordform(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Important!
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('change_password')
-        else:
-            messages.error(request, 'Please correct the error below.')
+            # messages.success(request, 'Your password was successfully updated!')
+            return redirect('change_password_done')
+
     else:
         form = ChangePasswordform(request.user)
     return render(request, 'core/change-password.html', {
         'form': form
     })
+
 
 
