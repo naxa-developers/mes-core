@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -325,3 +326,47 @@ class ConfigForm(forms.ModelForm):
     class Meta:
         model = Config
         fields = ('available_version', 'updates')
+
+
+class ChangePasswordform(forms.Form):
+    user = forms.ModelChoiceField(queryset=User.objects.all())
+    old_password = forms.CharField(widget=forms.PasswordInput, label='Your Old Password', max_length=100)
+    new_password = forms.CharField(widget=forms.PasswordInput, label='Your New Password', max_length=100)
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput, label='One more time', max_length=100)
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(ChangePasswordform, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(ChangePasswordform, self).clean()
+
+        currentpassword = self.cleaned_data.get('user').password  # user's current password
+        currentpasswordentered = self.cleaned_data.get("old_password")
+        if not check_password(currentpasswordentered, currentpassword):
+            raise ValidationError({'old_password': ['Your old password is incorrect!']})
+        password = self.cleaned_data.get('new_password')
+        password1 = self.cleaned_data.get('confirm_new_password')
+        if password != password1:
+            raise ValidationError({'new_password': ['The passwords did not match']})
+
+        else:
+            if password:
+                if len(password) < 8:
+                    raise ValidationError({'new_password': ['Passwords must be of more than 8 characters']})
+
+                pattern = re.compile(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$")
+                if not bool(pattern.search(password)):
+                    raise ValidationError(
+                        {'new_password': ['Password must contain alphabet characters, special characters and numbers']})
+
+    def save(self, commit=True):
+        self.cleaned_data.get('user').set_password(self.cleaned_data['new_password'])
+        if commit:
+            self.cleaned_data.get('user').save()
+        return self.cleaned_data.get('user')
+
+
+
+
+

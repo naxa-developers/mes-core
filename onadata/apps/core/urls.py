@@ -80,6 +80,10 @@ urlpatterns = [
     url(r'submission-list/(?P<pk>[0-9]+)/$', views.SubmissionListView.as_view(), name='submission_list'),
     url(r'submission-notification/', views.SubNotificationListView.as_view(), name='submission_notify'),
 
+    # password_change
+    url(r'^change-password/', views.change_password, name='change_password'),
+    url(r'^change-password-done/', views.Done.as_view(), name='change_password_done'),
+
     # change status of submission
     url(r'approve', views.accept_submission, name='approve_submission'),
     url(r'reject', views.reject_submission, name='reject_submission'),

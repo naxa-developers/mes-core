@@ -1,4 +1,5 @@
 from django.views.generic import View, TemplateView, ListView, DetailView
+from django.contrib.auth import views
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
@@ -35,6 +36,10 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from .signup_tokens import account_activation_token
 from django.views.generic.list import MultipleObjectMixin
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import render, redirect
+
 
 
 from onadata.apps.logger.models import Instance
@@ -45,7 +50,7 @@ from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficia
     Submission, Config, ProjectTimeInterval, ClusterAHistory, District, Municipality
 
 from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, \
-    BeneficiaryForm, UserRoleForm, ConfigForm
+    BeneficiaryForm, UserRoleForm, ConfigForm, ChangePasswordform
 
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, group_required, ManagerMixin, AdminMixin
@@ -989,3 +994,26 @@ class BeneficiaryTypeView(views.APIView):
 #                 return HttpResponseBadRequest()
 #         except User.DoesNotExist as e:
 #             return HttpResponse(json.dumps({'message': e.message}))
+
+
+class Done(TemplateView):
+   template_name = 'core/change-password-done.html'
+
+
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordform(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            # messages.success(request, 'Your password was successfully updated!')
+            return redirect('change_password_done')
+
+    else:
+        form = ChangePasswordform(request.user)
+    return render(request, 'core/change-password.html', {
+        'form': form
+    })
+
+
+
