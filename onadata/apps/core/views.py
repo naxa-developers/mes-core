@@ -999,6 +999,7 @@ class BeneficiaryTypeView(views.APIView):
 class Done(TemplateView):
    template_name = 'core/change-password-done.html'
 
+
 def change_password(request):
     if request.method == 'POST':
         form = ChangePasswordform(request.user, request.POST)
