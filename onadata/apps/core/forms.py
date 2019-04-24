@@ -337,6 +337,7 @@ class ChangePasswordform(forms.Form):
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super(ChangePasswordform, self).__init__(*args, **kwargs)
+        self.fields['user'].widget.attrs['class'] = 'form-control'
 
     def clean(self):
         cleaned_data = super(ChangePasswordform, self).clean()
