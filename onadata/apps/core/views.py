@@ -295,6 +295,12 @@ class Dashboard1View(TemplateView):
         for item in intervals:
             interval.append(str(item['label']))
 
+        pie_data = {}
+        beneficiary_types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
+            distinct().annotate(total=Count('Type'))
+        for item in beneficiary_types:
+            pie_data[str(item['Type'])] = [round((float(item['total']) / 1500) * 100, 2)]
+
         # get cluster activity overview data on basis of filter used
         if 'cluster_activity' in request.GET:
             checked = [(name, value) for name, value in request.GET.iteritems()]
@@ -339,10 +345,12 @@ class Dashboard1View(TemplateView):
                 if item[0].startswith('dist'):
                     select_districts.append(int(item[0].split("_")[1]))
 
-            progress_data, categories = get_progress_data(types, clusters, select_districts, munis)
+            progress_data, categories, cluster_progress_data = get_progress_data(
+                request.project, types, clusters, select_districts, munis)
 
         else:
-            progress_data, categories = get_progress_data(types)
+            progress_data, categories, cluster_progress_data = get_progress_data(request.project, types)
+        print(cluster_progress_data)
 
         return render(request, self.template_name, {
             'activity_groups': activity_groups,
@@ -356,7 +364,9 @@ class Dashboard1View(TemplateView):
             'intervals': interval,
             'chart_single': chart_single,
             'progress_data': progress_data,
-            'categories': categories
+            'cluster_progress_data': cluster_progress_data,
+            'pie_data': pie_data,
+            'categories': categories,
         })
 
 

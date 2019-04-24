@@ -324,23 +324,6 @@
                             </div>
                             <div class="form-group">
                                 <div class="select-option">
-                                    <span>select type</span>
-                                    <div class="select-list">
-                                        <ul>
-                                            {% for type in types %}
-                                            <li>
-                                                <div class="checkbox">
-                                                    <input id="tp_{{ type.Type }}" type="checkbox" name="tp_{{ type.Type }}">
-                                                    <label for="tp_{{ type.Type }}">{{ type.Type }}</label>
-                                                </div>
-                                            </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="select-option">
                                     <span>select Activity group</span>
                                     <div class="select-list">
                                         <ul>
@@ -405,6 +388,8 @@
     chart_single = {{ chart_single|safe }};
     categories = {{ categories|safe }}
     progress_data = {{ progress_data|safe }};
+    pie_data = {{ pie_data|safe }};
+    cluster_progress_data = {{ cluster_progress_data|safe }};
 </script>
 <script src="{% static 'js/c3.bundle.js' %}"></script>
 <script src="{% static 'js/c3.js' %}"></script>
