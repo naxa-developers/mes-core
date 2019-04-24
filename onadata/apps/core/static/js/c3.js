@@ -1,8 +1,3 @@
-// for local
-//var base_url = 'http://localhost:8001/';
-
-// for server
-var base_url = 'https://mne.naxa.com.np/'
 $(function() {
     "use strict";
     setTimeout(function(){ 
@@ -108,25 +103,8 @@ $(function() {
             var chart = c3.generate({
                 bindto: '#cluseter_time', // id of chart wrapper
                 data: {
-                    columns: [
-                        // each columns data
-                        ['data1', 6.0, 10, 14, 10],
-                        ['data2', 4, 8, 10, 8],
-                        ['data3', 1, 4, 6, 4],
-                    ],
-                    labels: true,
+                    json: cluster_progress_data,
                     type: 'line', // default type of chart
-                    colors: {
-                        'data1': "#193f77",
-                        'data2': "#00A890",
-                        'data3': "#0d89df"
-                    },
-                    names: {
-                        // name of each serie
-                        'data1': 'Cluster-1',
-                        'data2': 'Cluster-2',
-                        'data3': 'Cluster-3'
-                    }
                 },
                 axis: {
                     x: {
@@ -539,8 +517,7 @@ $(function() {
             var chart = c3.generate({
                 bindto: '#chart-pie', // id of chart wrapper
                 data: {
-                    url: base_url + 'core/dashboard/type/',
-                    mimeType: 'json',
+                    json: pie_data,
                     type: 'pie', // default type of chart,
                 },
                 axis: {

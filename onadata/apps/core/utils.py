@@ -291,11 +291,12 @@ def get_cluster_activity_data(project, activity_group=None, activity=None):
     return bar_data
 
 
-def get_progress_data(types=None, clusters=None, districts=None, munis=None):
-    from .models import District, Municipality, Cluster, Submission
+def get_progress_data(project, types=None, clusters=None, districts=None, munis=None):
+    from .models import District, Municipality, Cluster, Submission, ProjectTimeInterval
     from django.db.models import Sum
 
     progress_data = {}
+    cluster_progress_data = {}
     categories = []
     if clusters:
         selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
@@ -319,14 +320,39 @@ def get_progress_data(types=None, clusters=None, districts=None, munis=None):
         for item in selected_clusters:
             categories.append(str(item.name))
 
-        return progress_data, categories
+        interval = ProjectTimeInterval.objects.filter(project=project).order_by('label')
+        for item in selected_clusters:
+            total_list = []
+            for obj in interval:
+                if Submission.objects.filter(cluster_activity__time_interval=obj, status='approved',
+                                             cluster_activity__cag__cluster=item).exists():
+                    submissions = Submission.objects.filter(
+                        cluster_activity__time_interval=obj,
+                        status='approved', cluster_activity__cag__cluster=item).values('cluster_activity'). \
+                        distinct().annotate(progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                elif Submission.objects.filter(
+                        clustera_history__time_interval=obj,
+                        status='approved', clustera_history__clustera__cag__cluster=item).exists():
+                    submissions = Submission.objects.filter(
+                        clustera_history__time_interval=obj,
+                        status='approved', clustera_history__clustera__cag__cluster=item).values('clustera_history'). \
+                        distinct().annotate(progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                else:
+                    total_list.append(0)
+            cluster_progress_data[str(item.name)] = total_list
+
+        return progress_data, categories, cluster_progress_data
 
     elif munis:
         selected_munis = Municipality.objects.filter(id__in=munis).order_by('name')
         for item in types:
             total_list = []
             for obj in selected_munis:
-                clusters = obj.cluster.all()
+                clusters = obj.cluster.all().order_by('name')
                 if Submission.objects.filter(
                         cluster_activity__cag__cluster__in=clusters,
                         status='approved',
@@ -344,15 +370,40 @@ def get_progress_data(types=None, clusters=None, districts=None, munis=None):
         for item in selected_munis:
             categories.append(str(item.name))
 
-        return progress_data, categories
+        interval = ProjectTimeInterval.objects.filter(project=project).order_by('label')
+        for item in clusters:
+            total_list = []
+            for obj in interval:
+                if Submission.objects.filter(cluster_activity__time_interval=obj, status='approved',
+                                             cluster_activity__cag__cluster=item).exists():
+                    submissions = Submission.objects.filter(
+                        cluster_activity__time_interval=obj,
+                        status='approved', cluster_activity__cag__cluster=item).values('cluster_activity'). \
+                        distinct().annotate(progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                elif Submission.objects.filter(
+                        clustera_history__time_interval=obj,
+                        status='approved', clustera_history__clustera__cag__cluster=item).exists():
+                    submissions = Submission.objects.filter(
+                        clustera_history__time_interval=obj,
+                        status='approved', clustera_history__clustera__cag__cluster=item).values('clustera_history'). \
+                        distinct().annotate(progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                else:
+                    total_list.append(0)
+            cluster_progress_data[str(item.name)] = total_list
+
+        return progress_data, categories, cluster_progress_data
 
     elif districts:
         selected_districts = District.objects.filter(id__in=districts).order_by('name')
         for item in types:
             total_list = []
             for obj in selected_districts:
-                municipality = Municipality.objects.filter(district=obj)
-                clusters = Cluster.objects.filter(municipality__in=municipality)
+                municipality = Municipality.objects.filter(district=obj).order_by('name')
+                clusters = Cluster.objects.filter(municipality__in=municipality).order_by('name')
                 if Submission.objects.filter(
                         cluster_activity__cag__cluster__in=clusters,
                         status='approved',
@@ -370,15 +421,40 @@ def get_progress_data(types=None, clusters=None, districts=None, munis=None):
         for item in selected_districts:
             categories.append(str(item.name))
 
-        return progress_data, categories
+        interval = ProjectTimeInterval.objects.filter(project=project).order_by('label')
+        for item in clusters:
+            total_list = []
+            for obj in interval:
+                if Submission.objects.filter(cluster_activity__time_interval=obj, status='approved',
+                                             cluster_activity__cag__cluster=item).exists():
+                    submissions = Submission.objects.filter(
+                        cluster_activity__time_interval=obj,
+                        status='approved', cluster_activity__cag__cluster=item).values('cluster_activity'). \
+                        distinct().annotate(progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                elif Submission.objects.filter(
+                        clustera_history__time_interval=obj,
+                        status='approved', clustera_history__clustera__cag__cluster=item).exists():
+                    submissions = Submission.objects.filter(
+                        clustera_history__time_interval=obj,
+                        status='approved', clustera_history__clustera__cag__cluster=item).values('clustera_history'). \
+                        distinct().annotate(progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                else:
+                    total_list.append(0)
+            cluster_progress_data[str(item.name)] = total_list
+
+        return progress_data, categories, cluster_progress_data
 
     else:
         selected_districts = District.objects.all().order_by('name')
         for item in types:
             total_list = []
             for obj in selected_districts:
-                municipality = Municipality.objects.filter(district=obj)
-                clusters = Cluster.objects.filter(municipality__in=municipality)
+                municipality = Municipality.objects.filter(district=obj).order_by('name')
+                clusters = Cluster.objects.filter(municipality__in=municipality).order_by('name')
                 if Submission.objects.filter(
                         cluster_activity__cag__cluster__in=clusters,
                         status='approved',
@@ -396,4 +472,29 @@ def get_progress_data(types=None, clusters=None, districts=None, munis=None):
         for item in selected_districts:
             categories.append(str(item.name))
 
-        return progress_data, categories
+        interval = ProjectTimeInterval.objects.filter(project=project).order_by('label')
+        clusters = Cluster.objects.filter(project=project).order_by('name')
+        for item in clusters:
+            total_list = []
+            for obj in interval:
+                if Submission.objects.filter(cluster_activity__time_interval=obj, status='approved', cluster_activity__cag__cluster=item).exists():
+                    submissions = Submission.objects.filter(
+                        cluster_activity__time_interval=obj,
+                        status='approved', cluster_activity__cag__cluster=item).values('cluster_activity').\
+                        distinct().annotate(progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                elif Submission.objects.filter(
+                        clustera_history__time_interval=obj,
+                        status='approved', clustera_history__clustera__cag__cluster=item).exists():
+                    submissions = Submission.objects.filter(
+                        clustera_history__time_interval=obj,
+                        status='approved', clustera_history__clustera__cag__cluster=item).values('clustera_history'). \
+                        distinct().annotate(progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        total_list.append(submission['progress'])
+                else:
+                    total_list.append(0)
+            cluster_progress_data[str(item.name)] = total_list
+
+        return progress_data, categories, cluster_progress_data
