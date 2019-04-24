@@ -120,6 +120,9 @@ $(function() {
                     bottom: 0,
                     top: 0
                 },
+                color: {
+                    pattern: ["#0d89df", "#00A890", "#e3e3e3", "#193f77", "#f5b2d0"]
+                },
             });
         });
         //chart area
@@ -419,6 +422,9 @@ $(function() {
                 padding: {
                     bottom: 0,
                     top: 30
+                },
+                color: {
+                    pattern: ["#0d89df", "#00A890", "#e3e3e3", "#193f77", "#f5b2d0"]
                 },
             });
         });
