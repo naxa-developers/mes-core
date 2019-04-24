@@ -110,7 +110,7 @@ $(function() {
                     x: {
                         type: 'category',
                         // name of each category
-                        categories: ['Q1', 'Q2', 'Q3', 'Q4']
+                        categories: intervals
                     },
                 },
                 legend: {

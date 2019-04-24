@@ -304,26 +304,13 @@ class Dashboard1View(TemplateView):
         # get cluster activity overview data on basis of filter used
         if 'cluster_activity' in request.GET:
             checked = [(name, value) for name, value in request.GET.iteritems()]
-            # clusters = []
-            # b_types = []
-            # districts = []
-            # munis = []
             activity_group = []
             activity = []
             for item in checked:
-                if item[0].startswith('ag'):
-                    activity_group.append(int(item[0].split("_")[1]))
-
                 if item[0].startswith('a'):
                     activity.append(item[0].split("_")[1])
 
-                # if item[0].startswith('mun'):
-                #     munis.append(int(item[0].split("_")[1]))
-                #
-                # if item[0].startswith('dist'):
-                #     districts.append(int(item[0].split("_")[1]))
-
-            chart_single = get_cluster_activity_data(request.project, activity_group, activity)
+            chart_single = get_cluster_activity_data(request.project, activity)
 
         # for no filter used
         else:
@@ -350,7 +337,6 @@ class Dashboard1View(TemplateView):
 
         else:
             progress_data, categories, cluster_progress_data = get_progress_data(request.project, types)
-        print(cluster_progress_data)
 
         return render(request, self.template_name, {
             'activity_groups': activity_groups,
