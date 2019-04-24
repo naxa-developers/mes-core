@@ -9,14 +9,16 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from rest_framework.response import Response
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from rest_framework import viewsets
+from rest_framework import viewsets, views
 import pandas as pd
 from django.db.models import Q
+from django.db.models import Avg, Count, Sum
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
@@ -40,7 +42,7 @@ from django.shortcuts import render, redirect
 
 
 
-
+from onadata.apps.logger.models import Instance
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
@@ -53,7 +55,7 @@ from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroup
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
-from .utils import get_beneficiaries, get_clusters
+from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, get_progress_data
 
 def logout_view(request):
     logout(request)
@@ -279,54 +281,83 @@ class Dashboard1View(TemplateView):
     template_name = 'core/dashboard-1.html'
 
     def get(self, request):
-        checked = [(name, value) for name, value in request.GET.iteritems()]
-        clusters = []
-        b_types = []
-        districts = []
-        munis = []
-        for item in checked:
-            if item[0].startswith('cl'):
-                clusters.append(int(item[0].split("_")[1]))
-
-            if item[0].startswith('tp'):
-                b_types.append(item[0].split("_")[1])
-
-            if item[0].startswith('mun'):
-                munis.append(int(item[0].split("_")[1]))
-
-            if item[0].startswith('dist'):
-                districts.append(int(item[0].split("_")[1]))
-
-        clusters = get_clusters(districts, munis, clusters)
-        ag = ActivityGroup.objects.all()
-        #
-        # page = request.GET.get('page', 1)
-        # paginator = Paginator(beneficiaries, 100)
-        #
-        # try:
-        #     beneficiaries = paginator.page(page)
-        # except PageNotAnInteger:
-        #     beneficiaries = paginator.page(1)
-        # except EmptyPage:
-        #     beneficiaries = paginator.page(paginator.num_pages)
-
+        activity_groups = ActivityGroup.objects.filter(project=request.project)
+        activities = Activity.objects.filter(activity_group__project=request.project)
         districts = District.objects.all()
         municipalities = Municipality.objects.all()
-        select_cluster = Cluster.objects.all()
-        beneficiary_count = Beneficiary.objects.all().count()
-        activity_count = Activity.objects.all().count()
+        select_cluster = Cluster.objects.filter(project=request.project)
         types = Beneficiary.objects.values('Type').distinct('Type')
+        intervals = ProjectTimeInterval.objects.values('label').order_by('label')
+        beneficiary_count = Beneficiary.objects.count()
+        activity_count = Activity.objects.count()
+        interval = []
+
+        for item in intervals:
+            interval.append(str(item['label']))
+
+        # get cluster activity overview data on basis of filter used
+        if 'cluster_activity' in request.GET:
+            checked = [(name, value) for name, value in request.GET.iteritems()]
+            # clusters = []
+            # b_types = []
+            # districts = []
+            # munis = []
+            activity_group = []
+            activity = []
+            for item in checked:
+                if item[0].startswith('ag'):
+                    activity_group.append(int(item[0].split("_")[1]))
+
+                if item[0].startswith('a'):
+                    activity.append(item[0].split("_")[1])
+
+                # if item[0].startswith('mun'):
+                #     munis.append(int(item[0].split("_")[1]))
+                #
+                # if item[0].startswith('dist'):
+                #     districts.append(int(item[0].split("_")[1]))
+
+            chart_single = get_cluster_activity_data(request.project, activity_group, activity)
+
+        # for no filter used
+        else:
+            chart_single = get_cluster_activity_data(request.project)
+
+        # get progress overview data on basis of filter used
+        if 'progress' in request.GET:
+            checked = [(name, value) for name, value in request.GET.iteritems()]
+            clusters = []
+            select_districts = []
+            munis = []
+            for item in checked:
+                if item[0].startswith('cl'):
+                    clusters.append(int(item[0].split("_")[1]))
+
+                if item[0].startswith('mun'):
+                    munis.append(int(item[0].split("_")[1]))
+
+                if item[0].startswith('dist'):
+                    select_districts.append(int(item[0].split("_")[1]))
+
+            progress_data, categories = get_progress_data(types, clusters, select_districts, munis)
+
+        else:
+            progress_data, categories = get_progress_data(types)
+
         return render(request, self.template_name, {
-            'activity_groups': ag,
+            'activity_groups': activity_groups,
+            'activities': activities,
             'districts': districts,
             'municipalities': municipalities,
             'select_clusters': select_cluster,
-            'clusters': clusters,
             'types': types,
+            'activity_count': activity_count,
             'beneficiary_count': beneficiary_count,
-            'activity_count': activity_count
+            'intervals': interval,
+            'chart_single': chart_single,
+            'progress_data': progress_data,
+            'categories': categories
         })
-
 
 
 class Dashboard2View(MultipleObjectMixin, TemplateView):
@@ -605,6 +636,7 @@ class ClusterAssignView(ManagerMixin, View):
                                         hist.clustera = ca
                                         hist.target_number = ca.target_number
                                         hist.target_completed = ca.target_completed
+                                        hist.time_interval = ca.time_interval
                                         hist.updated_date = datetime.now()
                                         hist.save()
                                         ca.target_number = check[1]
@@ -615,6 +647,8 @@ class ClusterAssignView(ManagerMixin, View):
                                     if not ca.time_interval == ProjectTimeInterval.objects.get(id=int(check[1])):
                                         hist.clustera = ca
                                         hist.time_interval = ca.time_interval
+                                        hist.target_number = ca.target_number
+                                        hist.target_completed = ca.target_completed
                                         hist.updated_date = datetime.now()
                                         hist.save()
                                         ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
@@ -786,6 +820,13 @@ class SubmissionListView(LoginRequiredMixin, View):
         return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
 
 
+class SubNotificationListView(LoginRequiredMixin, View):
+
+    def get(self, request, **kwargs):
+        submissions = Submission.objects.all().order_by('instance__date_created')
+        return render(request, 'core/submission_notification.html', {'submissions': submissions})
+
+
 class ConfigUpdateView(UpdateView):
     model = Config
     template_name = 'core/config-form.html'
@@ -901,6 +942,19 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         cluster = self.request.query_params['cluster']
         return self.queryset.filter(cluster=cluster)
+
+
+class BeneficiaryTypeView(views.APIView):
+
+    def get(self, request):
+        pie_data = {}
+        types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
+            distinct().annotate(total=Count('Type'))
+        for item in types:
+            pie_data[item['Type']] = [round((float(item['total']) / 1500) * 100, 2)]
+
+        return Response(pie_data)
+
 
 # class userCred(View):
 #

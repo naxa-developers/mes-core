@@ -182,6 +182,9 @@
                 </li>
             </ul>
         </li>
+
+        <li><a href="{% url 'submission_notify' %}" class="mega-menu" title="Submission"><i class="la la-level-up"></i></a></li>
+        
         <li><a href="javascript:void(0);" class="app_calendar" title="Calendar"><i class="la la-calendar"></i></a></li>
         {% ifrole 'manager' %}
         <li class="dropdown">
@@ -309,8 +312,6 @@
 <script src="{% static 'js/select2.min.js' %}"></script>
 <script src="{% static 'js/dateform.js' %}"></script>
 
-<script src="{% static 'js/c3.bundle.js' %}"></script>
-<script src="{% static 'js/c3.js' %}"></script>
 <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
         crossorigin=""></script>
 <!-- Data Tables -->

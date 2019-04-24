@@ -12,7 +12,7 @@
                 <h2>Dashboard-1</h2>
                 <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
             </div>
-            <div class="col-lg-5 col-md-6 col-sm-12">                
+            <div class="col-lg-5 col-md-6 col-sm-12">
                 <button class="btn btn-primary float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
             </div>
         </div>
@@ -46,7 +46,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row clearfix">
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-6">
                                         <div class="card card-widget ">
                                             <div class="body">
                                                 <a href="{% url 'output_list' %}">
@@ -63,24 +63,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4 ">
-                                        <div class="card card-widget ">
-                                            <div class="body">
-                                                <a href="{% url 'activitygroup_list' %}">
-                                                    <div class="card-content">
-                                                        <div class="card-icon">
-                                                            <i class="la la-object-group"></i>
-                                                        </div>
-                                                        <div class="card-text">
-                                                            <h3>{{ request.project.activity_group.count }}</h3>
-                                                            <h5>Activity Group</h5>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 ">
+
+                                    <div class="col-lg-6 ">
                                         <div class="card card-widget ">
                                             <div class="body">
                                                 <a href="{% url 'activity_list' %}">
@@ -97,8 +81,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="col-lg-4 ">
+
+                                    <div class="col-lg-6 ">
                                         <div class="card card-widget mrt30">
                                             <div class="body">
                                                 <a href="{% url 'cluster_list' %}">
@@ -115,7 +99,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4 ">
+                                    <div class="col-lg-6 ">
                                         <div class="card card-widget mrt30">
                                             <div class="body">
                                                 <a href="{% url 'beneficiary_list' %}">
@@ -140,174 +124,271 @@
             </div>
         </div>
     </div>
-    <div class="graph">
-        <div class="container-fluid">
-            <div class="card">
-                <div class="card-header">
-                    <form method="get">
-                        <div class="form-group">
-                            <div class="select-option">
-                                <span>select District</span>
-                                <div class="select-list">
-                                    <ul>
-                                        {% for district in districts %}
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="dist_{{ district.id }}" type="checkbox" name="dist_{{ district.id }}">
-                                                <label for="dist_{{ district.id }}">{{ district.name }}</label>
-                                            </div>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
+    <div class="banificiary-graph">
+            <div class="container-fluid">
+                <div class="graph-wrapper">
+                    <div class="graph-column">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="card ben-card">
+                                    <div class="card-header">
+                                        <h5>Gender</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="gender-donut"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card ben-card">
+                                    <div class="card-header">
+                                        <h5>Type</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="chart-pie"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card ben-card">
+                                    <div class="card-header">
+                                        <h5>Age Group</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="age-bar"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div class="select-option">
-                                <span>select Municipality</span>
-                                <div class="select-list">
-                                    <ul>
-                                        {% for municipality in municipalities %}
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="mun_{{ municipality.id }}" type="checkbox" name="mun_{{ municipality.id }}">
-                                                <label for="mun_{{ municipality.id }}">{{ municipality.name }}</label>
-                                            </div>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="select-option">
-                                <span>select cluster</span>
-                                <div class="select-list">
-                                    <ul>
-                                        {% for cluster in select_clusters %}
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="cl_{{ cluster.id }}" type="checkbox" name="cl_{{ cluster.id }}">
-                                                <label for="cl_{{ cluster.id }}">{{ cluster.name }}</label>
-                                            </div>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="select-option">
-                                <span>select type</span>
-                                <div class="select-list">
-                                    <ul>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="tp_1" type="checkbox" name="tp_1">
-                                                <label for="tp_1">Marginalized</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="checkbox">
-                                                <input id="tp_2" type="checkbox" name="tp_2">
-                                                <label for="tp_2">vulnerable</label>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <button type="submit" class="btn">Filter</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="graph-column">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Cluster</h5>
+    <div class="graph">
+        <div class="container-fluid">
+            <div class="graph-warpper">
+                <div class="card">
+                    <div class="card-header">
+                        <form method="get">
+                            <div class="form-group">
+                                <div class="select-option">
+                                    <span>select District</span>
+                                    <div class="select-list">
+                                        <ul>
+                                            {% for district in districts %}
+                                            <li>
+                                                <div class="checkbox">
+                                                    <input id="dist_{{ district.id }}" type="checkbox" name="dist_{{ district.id }}">
+                                                    <label for="dist_{{ district.id }}">{{ district.name }}</label>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <div id="chart-bar"></div>
+                            <div class="form-group">
+                                <div class="select-option">
+                                    <span>select Municipality</span>
+                                    <div class="select-list">
+                                        <ul>
+                                            {% for muni in municipalities %}
+                                            <li>
+                                                <div class="checkbox">
+                                                    <input id="mun_{{ muni.id }}" type="checkbox" name="mun_{{ muni.id }}">
+                                                    <label for="mun_{{ muni.id }}">{{ muni.name }}</label>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="select-option">
+                                    <span>select cluster</span>
+                                    <div class="select-list">
+                                        <ul>
+                                            {% for cluster in select_clusters %}
+                                            <li>
+                                                <div class="checkbox">
+                                                    <input id="cl_{{ cluster.id }}" type="checkbox" name="cl_{{ cluster.id }}">
+                                                    <label for="cl_{{ cluster.id }}">{{ cluster.name }}</label>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn" name="progress">Filter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="graph-column">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Progress overview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="chart-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>map</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="map" style="height:320px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Cluster</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="cluseter_time"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>map</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="graph activity-graph">
+        <div class="container-fluid">
+            <div class="graph-warpper">
+                <div class="card">
+                    <div class="card-header">
+                        <form method="get">
+                            <div class="form-group">
+                                <div class="select-option">
+                                    <span>select District</span>
+                                    <div class="select-list">
+                                        <ul>
+                                            {% for district in districts %}
+                                            <li>
+                                                <div class="checkbox">
+                                                    <input id="dist_{{ district.id }}" type="checkbox" name="dist_{{ district.id }}">
+                                                    <label for="dist_{{ district.id }}">{{ district.name }}</label>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <div id="map" style="height:320px"></div>
+                            <div class="form-group">
+                                <div class="select-option">
+                                    <span>select Municipality</span>
+                                    <div class="select-list">
+                                        <ul>
+                                            {% for muni in municipalities %}
+                                            <li>
+                                                <div class="checkbox">
+                                                    <input id="mun_{{ muni.id }}" type="checkbox" name="mun_{{ muni.id }}">
+                                                    <label for="mun_{{ muni.id }}">{{ muni.name }}</label>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Cluster</h5>
+                            <div class="form-group">
+                                <div class="select-option">
+                                    <span>select cluster</span>
+                                    <div class="select-list">
+                                        <ul>
+                                            {% for cluster in select_clusters %}
+                                            <li>
+                                                <div class="checkbox">
+                                                    <input id="cl_{{ cluster.id }}" type="checkbox" name="dist_{{ cluster.id }}">
+                                                    <label for="cl_{{ cluster.id }}">{{ cluster.name }}</label>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <div id="cluseter_time"></div>
+                            <div class="form-group">
+                                <div class="select-option">
+                                    <span>select type</span>
+                                    <div class="select-list">
+                                        <ul>
+                                            {% for type in types %}
+                                            <li>
+                                                <div class="checkbox">
+                                                    <input id="tp_{{ type.Type }}" type="checkbox" name="tp_{{ type.Type }}">
+                                                    <label for="tp_{{ type.Type }}">{{ type.Type }}</label>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Cluster</h5>
-                            </div>
-                            <div class="card-body">
-                                <div id="chart-donut"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Cluster</h5>
-                            </div>
-                            <div class="card-body">
-                                <table id="Beneficiary_table" class="table table-striped table-bordered ">
-                                    <thead>
-                                        <tr>
-                                            <th rowspan="2" class="text-center">Cluster Name</th>
+                            <div class="form-group">
+                                <div class="select-option">
+                                    <span>select Activity group</span>
+                                    <div class="select-list">
+                                        <ul>
                                             {% for obj in activity_groups %}
-                                            {% with obj|get_activity_count as count %}
-                                            <th colspan="{{ count }}" class="text-center">{{ obj.name }}</th>
-                                            {% endwith %}
+                                            <li>
+                                                <div class="checkbox">
+                                                    <input id="ag_{{ obj.id }}" type="checkbox" name="acg_{{ obj.id }}">
+                                                    <label for="ag_{{ obj.id }}">{{ obj.name }}</label>
+                                                </div>
+                                            </li>
                                             {% endfor %}
-                                        </tr>
-                                        <tr>
-                                            {% for obj in activity_groups %}
-                                            {% for activity in obj.activity.all %}
-                                                <th>{{ activity.name }} ({{ activity.weight }}%)</th>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="select-option">
+                                    <span>select activity</span>
+                                    <div class="select-list">
+                                        <ul>
+                                            {% for obj in activities %}
+                                            <li>
+                                                <div class="checkbox">
+                                                    <input id="a_{{ obj.id }}" type="checkbox" name="ac_{{ obj.id }}">
+                                                    <label for="a_{{ obj.id }}">{{ obj.name }}</label>
+                                                </div>
+                                            </li>
                                             {% endfor %}
-                                            {% endfor %}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for cluster in clusters %}
-                                        <tr>
-                                            <td>{{ cluster.name }}</td>
-                                            {% for obj in activity_groups %}
-                                            {% for activity in obj.activity.all %}
-                                            {% if activity|check_activity_progress %}
-                                                <td><span class="completed"></span></td>
-                                            {% else %}
-                                                <td></td>
-                                            {% endif %}
-                                            {% endfor %}
-                                            {% endfor %}
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn" name="cluster_activity">Filter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="graph-column">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Cluster level activity overview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="chart-single"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -317,5 +398,15 @@
     </div>
 </section>
 
+{% endblock %}
+{% block scripts %}
+<script>
+    intervals = {{ intervals|safe }};
+    chart_single = {{ chart_single|safe }};
+    categories = {{ categories|safe }}
+    progress_data = {{ progress_data|safe }};
+</script>
+<script src="{% static 'js/c3.bundle.js' %}"></script>
+<script src="{% static 'js/c3.js' %}"></script>
 {% endblock %}
 

@@ -1,3 +1,8 @@
+// for local
+//var base_url = 'http://localhost:8001/';
+
+// for server
+var base_url = 'https://mne.naxa.com.np/'
 $(function() {
     "use strict";
     setTimeout(function(){ 
@@ -409,28 +414,14 @@ $(function() {
             var chart = c3.generate({
                 bindto: '#chart-bar', // id of chart wrapper
                 data: {
-                    columns: [
-                        // each columns data
-                        ['data1', 100, 200, 300, 250, 350, 150,500,1000,400, 800,100, 200, 300, 250, 350, 150,500,1000,400, 800],
-                        ['data2', 200, 150, 600, 350, 250, 300,650, 750, 1200, 1500,200, 150, 600, 350, 250, 300,650, 750, 1200, 1500]
-                    ],
+                    json: progress_data,
                     type: 'bar', // default type of chart
-                    
-                    colors: {
-                        'data1': "#00A890",
-                        'data2': "#0d89df"
-                    },
-                    names: {
-                        // name of each serie
-                        'data1': 'marginlized',
-                        'data2': 'Vulnerable'
-                    }
                 },
                 axis: {
                     x: {
                         type: 'category',
                         // name of each category
-                        categories: ['Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur' , 'Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur','Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur','Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur','Dhordi', 'Makwanpur', 'Dhordi', 'Makwanpur' ],
+                        categories: categories,
                         
                     },
                 },
@@ -548,31 +539,9 @@ $(function() {
             var chart = c3.generate({
                 bindto: '#chart-pie', // id of chart wrapper
                 data: {
-                    columns: [
-                        // each columns data
-                        ['data1', 63],
-                        ['data2', 37],
-                        ['data3', 63],
-                        ['data4', 37],
-                        ['data5', 63],
-                    ],
-                    type: 'pie', // default type of chart
-                    
-                    colors: {
-                        'data1': "#e3e3e3",
-                        'data2': "#00A890",
-                        'data3': "#0d89df",
-                        'data4': "#193f77",
-                        'data5': "#f5b2d0",
-                    },
-                    names: {
-                        // name of each serie
-                        'data1': 'Dalit',
-                        'data2': 'Janajati',
-                        'data3': 'BC',
-                        'data4': 'Muslim',
-                        'data5': 'Others',
-                    }
+                    url: base_url + 'core/dashboard/type/',
+                    mimeType: 'json',
+                    type: 'pie', // default type of chart,
                 },
                 axis: {
                 },
@@ -583,6 +552,9 @@ $(function() {
                     bottom: 0,
                     top: 0
                 },
+                color: {
+                        pattern: ["#e3e3e3", "#00A890", "#0d89df", "#193f77", "#f5b2d0"]
+                }
             });
         });
         //gender donut
@@ -800,29 +772,15 @@ $(function() {
             var chart = c3.generate({
                 bindto: '#chart-single', // id of chart wrapper
                 data: {
-                    columns: [
-                        // each columns data
-                        ['data1', 100, 200, 300, 250, 350, 150,500,1000,400, 800],
-                        ['data2', 50, 100, 150, 125, 175, 300,250,500,800, 400],
-                    ],
-                    type: 'bar', // default type of chart
-                    
-                    colors: {
-                        'data1': "#0d89df",
-                        'data2': "#00A890",
-                    },
-                    names: {
-                        // name of each serie
-                        'data2': 'Achievement',
-                        'data1': 'Target number',
-                    }
+                    json: chart_single,
+                    type: 'bar', // default type of chart,
                 },
                 axis: {
                     x: {
                         type: 'category',
                         // name of each category
-                        categories: ['Q1', 'Q2', 'Q3', 'Q4' , 'Q5', 'Q6' , 'Q7', 'Q8' , 'Q9', 'Q10' ],
-                        
+                        categories: intervals,
+
                     },
                 },
                 bar: {
@@ -841,6 +799,9 @@ $(function() {
                 padding: {
                     bottom: 0,
                     top: 30
+                },
+                color: {
+                        pattern: ["#0d89df", "#00A890"]
                 },
             });
         });

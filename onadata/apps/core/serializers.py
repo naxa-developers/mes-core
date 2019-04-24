@@ -4,7 +4,8 @@ from django.db.models import Max
 from datetime import datetime
 import time
 
-from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary, ClusterAG, ClusterA, Config
+from .models import ActivityGroup, Activity, Output, Project, Cluster, Beneficiary, ClusterAG, ClusterA, \
+    Config, Submission
 
 
 class OutputSerializer(serializers.ModelSerializer):
@@ -55,9 +56,22 @@ class ClusterActivityGroupSerializer(serializers.ModelSerializer):
 
 
 class BeneficiarySerialzier(serializers.ModelSerializer):
+    progress = serializers.SerializerMethodField()
+
+    def get_progress(self, obj):
+        submission = Submission.objects.filter(beneficiary=obj)
+        progress = 0
+        for item in submission:
+            if item.status == 'approved':
+                progress += item.cluster_activity.activity.weight
+        return progress
+
     class Meta:
         model = Beneficiary
-        fields = ('id', 'name', 'address', 'ward_no', 'cluster', 'Type')
+        fields = (
+            'id', 'name', 'address', 'ward_no', 'cluster', 'Type',
+            'GovernmentTranch', 'ConstructionPhase', 'Typesofhouse', 'Remarks', 'progress'
+        )
 
 
 class CASerializer(serializers.ModelSerializer):
@@ -79,10 +93,9 @@ class CASerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ClusterA
-        # fields = ('id', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'id_string', 'beneficiary_level')
         fields = (
-        'id', 'name', 'description', 'target_number', 'target_unit', 'time_interval', 'start_date', 'end_date', 'form', 'id_string',
-        'beneficiary_level')
+            'id', 'name', 'description', 'target_number', 'target_unit', 'time_interval',
+            'start_date', 'end_date', 'form', 'id_string', 'beneficiary_level')
 
 
 class CAGSerializer(serializers.ModelSerializer):
