@@ -171,14 +171,14 @@
                     <div class="card-header">
                         <form method="get">
                             <div class="form-group">
-                                <div class="select-option">
+                                <div class="select-option" id="district_select">
                                     <span>select District</span>
-                                    <div class="select-list">
+                                    <div class="select-list" >
                                         <ul>
                                             {% for district in districts %}
                                             <li>
                                                 <div class="checkbox">
-                                                    <input id="dist_{{ district.id }}" type="checkbox" name="dist_{{ district.id }}">
+                                                    <input id="dist_{{ district.id }}" type="checkbox" class="district_class" data-id="{{ district.id }}" name="dist_{{ district.id }}">
                                                     <label for="dist_{{ district.id }}">{{ district.name }}</label>
                                                 </div>
                                             </li>
@@ -191,11 +191,11 @@
                                 <div class="select-option">
                                     <span>select Municipality</span>
                                     <div class="select-list">
-                                        <ul>
+                                        <ul id="municipalities">
                                             {% for muni in municipalities %}
-                                            <li>
+                                            <li class="municipalities">
                                                 <div class="checkbox">
-                                                    <input id="mun_{{ muni.id }}" type="checkbox" name="mun_{{ muni.id }}">
+                                                    <input id="mun_{{ muni.id }}" type="checkbox" class="municipality_class" data-id="{{ muni.id }}" name="mun_{{ muni.id }}">
                                                     <label for="mun_{{ muni.id }}">{{ muni.name }}</label>
                                                 </div>
                                             </li>
@@ -208,9 +208,9 @@
                                 <div class="select-option">
                                     <span>select cluster</span>
                                     <div class="select-list">
-                                        <ul>
+                                        <ul id="clusters">
                                             {% for cluster in select_clusters %}
-                                            <li>
+                                            <li class="clusters">
                                                 <div class="checkbox">
                                                     <input id="cl_{{ cluster.id }}" type="checkbox" name="cl_{{ cluster.id }}">
                                                     <label for="cl_{{ cluster.id }}">{{ cluster.name }}</label>
@@ -390,6 +390,59 @@
     progress_data = {{ progress_data|safe }};
     pie_data = {{ pie_data|safe }};
     cluster_progress_data = {{ cluster_progress_data|safe }};
+
+
+
+    //for municipality list with respect to districts
+        $(".district_class").on('click', function(){
+            var districts = [];
+            $. each($("input[class='district_class']:checked"), function(){
+                district_id=$(this).attr('data-id');
+                districts.push(district_id);
+
+            });
+            $.ajax({
+                url: '/core/get-municipalities/',
+                type: 'GET',
+                data: {'districts': districts},
+                dataType: "json",
+
+                success: function(result){
+                    $('.municipalities').remove();
+                    municipalities = result.length;
+                    for (i = 0; i < municipalities; i++){
+                        var element = '<li class="municipalities"><div class="checkbox"><input id="mun_' + result[i]['pk'] + '" type="checkbox" class="municipality_class" data-id="' + result[i]['pk'] + '"name="mun_' + result[i]['pk'] + '"><label for="mun_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                        $('#municipalities').append(element);
+                    }
+                }
+            });
+        });
+
+        // for cluster list with respect to municipalities
+        $(".municipality_class").on('click', function(){
+            var municipalities = [];
+            $. each($("input[class='municipality_class']:checked"), function(){
+                municipality_id=$(this).attr('data-id');
+                municipalities.push(municipality_id);
+
+            });
+            $.ajax({
+                url: '/core/get-clusters/',
+                type: 'GET',
+                data: {'municipalities': municipalities},
+                dataType: "json",
+
+                success: function(result){
+                console.log(result);
+                    $('.clusters').remove();
+                    clusters = result.length;
+                    for (i = 0; i < clusters; i++){
+                        var element = '<li class="clusters"><div class="checkbox"><input id="cl_' + result[i]['pk'] + '" type="checkbox" name="cl_' + result[i]['pk'] + '"><label for="cl_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                        $('#clusters').append(element);
+                    }
+                }
+            });
+        });
 </script>
 <script src="{% static 'js/c3.bundle.js' %}"></script>
 <script src="{% static 'js/c3.js' %}"></script>

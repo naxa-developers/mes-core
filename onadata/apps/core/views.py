@@ -39,7 +39,7 @@ from django.views.generic.list import MultipleObjectMixin
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
-
+from django.core.serializers import serialize
 
 
 from onadata.apps.logger.models import Instance
@@ -1012,4 +1012,33 @@ def change_password(request):
     })
 
 
+def get_municipalities(request):
+    if request.is_ajax():
+        districts = request.GET.getlist('districts[]')
+        if districts:
+            municipalities = Municipality.objects.filter(district_id__in=districts)
+            municipalities = serialize("json", municipalities)
+            return HttpResponse(municipalities)
+        else:
+            municipalities = Municipality.objects.all()
+            municipalities = serialize("json", municipalities)
+            return HttpResponse(municipalities)
+    else:
+        return HttpResponse('not ajax request')
 
+
+def get_clusters(request):
+    if request.is_ajax():
+        municipalities = request.GET.getlist('municipalities[]')
+        print(municipalities)
+        if municipalities:
+            clusters = Cluster.objects.filter(municipality__id__in=municipalities)
+            print(clusters)
+            clusters = serialize("json", clusters)
+            return HttpResponse(clusters)
+        else:
+            clusters = Cluster.objects.all()
+            clusters = serialize("json", clusters)
+            return HttpResponse(clusters)
+    else:
+        return HttpResponse('not ajax request')

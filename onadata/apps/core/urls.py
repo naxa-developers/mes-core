@@ -110,6 +110,10 @@ urlpatterns = [
 
     # apis' for dashboard chart
     url(r'^dashboard/type/$', views.BeneficiaryTypeView.as_view(), name='beneficiary_type'),
+
+    # for dynamic drop down list in dashboard
+    url(r'^get-municipalities/$', views.get_municipalities, name="get_municipalities"),
+    url(r'^get-clusters/$', views.get_clusters, name="get_clusters"),
 ]
 
 urlpatterns += router.urls
