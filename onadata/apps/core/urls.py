@@ -114,6 +114,9 @@ urlpatterns = [
     # for dynamic drop down list in dashboard
     url(r'^get-municipalities/$', views.get_municipalities, name="get_municipalities"),
     url(r'^get-clusters/$', views.get_clusters, name="get_clusters"),
+    url(r'^get-activity-groups/$', views.get_activity_group, name="get_activity_groups"),
+    url(r'^get-activities/$', views.get_activity, name="get_activities"),
+
 ]
 
 urlpatterns += router.urls
