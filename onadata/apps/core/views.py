@@ -1047,14 +1047,21 @@ def get_clusters(request):
 def get_activity_group(request):
     if request.is_ajax():
         clusters = request.GET.getlist('clusters[]')
+        print(clusters)
         if clusters:
+            print('inside clusters', clusters)
             cluster_activity_groups = ClusterAG.objects.filter(cluster_id__in=clusters)
-            cluster_activity_groups_list = []
-            for item in cluster_activity_groups:
-                cluster_activity_groups_list.append(item.activity_group.id)
-            activity_groups = ActivityGroup.objects.filter(id__in=cluster_activity_groups_list)
-            activity_groups = serialize("json", activity_groups)
-            return HttpResponse(activity_groups)
+            if cluster_activity_groups:
+                cluster_activity_groups_list = []
+                for item in cluster_activity_groups:
+                    cluster_activity_groups_list.append(item.activity_group.id)
+                activity_groups = ActivityGroup.objects.filter(id__in=cluster_activity_groups_list)
+                activity_groups = serialize("json", activity_groups)
+                return HttpResponse(activity_groups)
+            else:
+                activity_groups = ActivityGroup.objects.all()
+                activity_groups = serialize("json", activity_groups)
+                return HttpResponse(activity_groups)
         else:
             activity_groups = ActivityGroup.objects.all()
             activity_groups = serialize("json", activity_groups)

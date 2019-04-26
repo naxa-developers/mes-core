@@ -189,9 +189,9 @@
                             </div>
                             <div class="form-group">
                                 <div class="select-option">
-                                    <span>select Municipality</span>
+                                    <span>select Municipalitys</span>
                                     <div class="select-list">
-                                        <ul id="municipalities">
+                                        <ul id="municipalities" class="mun_class">
                                             {% for muni in municipalities %}
                                             <li class="municipalities">
                                                 <div class="checkbox">
@@ -292,7 +292,7 @@
                                 <div class="select-option">
                                     <span>select Municipality</span>
                                     <div class="select-list">
-                                        <ul id="cluster_municipalities">
+                                        <ul id="cluster_municipalities" class="cluster_mun_class">
                                             {% for muni in municipalities %}
                                             <li class="cluster_municipalities">
                                                 <div class="checkbox">
@@ -309,7 +309,7 @@
                                 <div class="select-option">
                                     <span>select cluster</span>
                                     <div class="select-list">
-                                        <ul id="cluster_clusters">
+                                        <ul id="cluster_clusters" class="cluster_class">
                                             {% for cluster in select_clusters %}
                                             <li class="cluster_clusters">
                                                 <div class="checkbox">
@@ -326,7 +326,7 @@
                                 <div class="select-option">
                                     <span>select Activity group</span>
                                     <div class="select-list">
-                                        <ul id="cluster_activitygroups">
+                                        <ul id="cluster_activitygroups" class="ag_class">
                                             {% for obj in activity_groups %}
                                             <li class="cluster_activitygroups">
                                                 <div class="checkbox">
@@ -419,7 +419,8 @@
         });
 
         // for cluster list with respect to municipalities in cluster progress
-        $(".municipality_class").on('click', function(){
+        $(".mun_class").on('click','.municipality_class',function(){
+            console.log('municipality');
             var municipalities = [];
             $. each($("input[class='municipality_class']:checked"), function(){
                 municipality_id=$(this).attr('data-id');
@@ -470,7 +471,7 @@
         });
 
         // for cluster list with respect to municipalities in activity target graph
-        $(".cluster_municipality_class").on('click', function(){
+        $(".cluster_mun_class").on('click','.cluster_municipality_class',function(){
             var municipalities = [];
             $. each($("input[class='cluster_municipality_class']:checked"), function(){
                 municipality_id=$(this).attr('data-id');
@@ -496,7 +497,7 @@
         });
 
         // for activity group list with respect to clusters in activity target graph
-        $(".cluster_cluster_class").on('click', function(){
+        $(".cluster_class").on('click', '.cluster_cluster_class', function(){
             var clusters = [];
             $. each($("input[class='cluster_cluster_class']:checked"), function(){
                 cluster_id=$(this).attr('data-id');
@@ -522,7 +523,7 @@
         });
 
         // for activity list with respect to activity groups in activity target graph
-        $(".cluster_activitygroup_class").on('click', function(){
+        $(".ag_class").on('click', '.cluster_activitygroup_class', function(){
             var activity_groups = [];
             $. each($("input[class='cluster_activitygroup_class']:checked"), function(){
                 ag_id=$(this).attr('data-id');
