@@ -275,12 +275,12 @@
                                 <div class="select-option">
                                     <span>select District</span>
                                     <div class="select-list">
-                                        <ul>
+                                        <ul id="cluster_districts">
                                             {% for district in districts %}
-                                            <li>
+                                            <li class="cluster_districts">
                                                 <div class="checkbox">
-                                                    <input id="dist_{{ district.id }}" type="checkbox" name="dist_{{ district.id }}">
-                                                    <label for="dist_{{ district.id }}">{{ district.name }}</label>
+                                                    <input id="distcluster_{{ district.id }}" type="checkbox" class="cluster_district_class" data-id="{{ district.id }}" name="dist_{{ district.id }}">
+                                                    <label for="distcluster_{{ district.id }}">{{ district.name }}</label>
                                                 </div>
                                             </li>
                                             {% endfor %}
@@ -292,12 +292,12 @@
                                 <div class="select-option">
                                     <span>select Municipality</span>
                                     <div class="select-list">
-                                        <ul>
+                                        <ul id="cluster_municipalities">
                                             {% for muni in municipalities %}
-                                            <li>
+                                            <li class="cluster_municipalities">
                                                 <div class="checkbox">
-                                                    <input id="mun_{{ muni.id }}" type="checkbox" name="mun_{{ muni.id }}">
-                                                    <label for="mun_{{ muni.id }}">{{ muni.name }}</label>
+                                                    <input id="muncluster_{{ muni.id }}" type="checkbox" class="cluster_municipality_class" data-id="{{ muni.id }}" name="mun_{{ muni.id }}">
+                                                    <label for="muncluster_{{ muni.id }}">{{ muni.name }}</label>
                                                 </div>
                                             </li>
                                             {% endfor %}
@@ -309,12 +309,12 @@
                                 <div class="select-option">
                                     <span>select cluster</span>
                                     <div class="select-list">
-                                        <ul>
+                                        <ul id="cluster_clusters">
                                             {% for cluster in select_clusters %}
-                                            <li>
+                                            <li class="cluster_clusters">
                                                 <div class="checkbox">
-                                                    <input id="cl_{{ cluster.id }}" type="checkbox" name="dist_{{ cluster.id }}">
-                                                    <label for="cl_{{ cluster.id }}">{{ cluster.name }}</label>
+                                                    <input id="clcluster_{{ cluster.id }}" type="checkbox" class="cluster_cluster_class" data-id="{{ cluster.id }}" name="dist_{{ cluster.id }}">
+                                                    <label for="clcluster_{{ cluster.id }}">{{ cluster.name }}</label>
                                                 </div>
                                             </li>
                                             {% endfor %}
@@ -326,11 +326,11 @@
                                 <div class="select-option">
                                     <span>select Activity group</span>
                                     <div class="select-list">
-                                        <ul>
+                                        <ul id="cluster_activitygroups">
                                             {% for obj in activity_groups %}
-                                            <li>
+                                            <li class="cluster_activitygroups">
                                                 <div class="checkbox">
-                                                    <input id="ag_{{ obj.id }}" type="checkbox" name="acg_{{ obj.id }}">
+                                                    <input id="ag_{{ obj.id }}" type="checkbox" class="cluster_activitygroup_class" data-id="{{ obj.id }}" name="acg_{{ obj.id }}">
                                                     <label for="ag_{{ obj.id }}">{{ obj.name }}</label>
                                                 </div>
                                             </li>
@@ -343,9 +343,9 @@
                                 <div class="select-option">
                                     <span>select activity</span>
                                     <div class="select-list">
-                                        <ul>
+                                        <ul id="cluster_activities">
                                             {% for obj in activities %}
-                                            <li>
+                                            <li class="cluster_activities">
                                                 <div class="checkbox">
                                                     <input id="a_{{ obj.id }}" type="checkbox" name="a_{{ obj.id }}">
                                                     <label for="a_{{ obj.id }}">{{ obj.name }}</label>
@@ -393,7 +393,7 @@
 
 
 
-    //for municipality list with respect to districts
+        //for municipality list with respect to districts in cluster progress
         $(".district_class").on('click', function(){
             var districts = [];
             $. each($("input[class='district_class']:checked"), function(){
@@ -418,7 +418,7 @@
             });
         });
 
-        // for cluster list with respect to municipalities
+        // for cluster list with respect to municipalities in cluster progress
         $(".municipality_class").on('click', function(){
             var municipalities = [];
             $. each($("input[class='municipality_class']:checked"), function(){
@@ -443,6 +443,111 @@
                 }
             });
         });
+
+        //for municipality list with respect to districts in activity target graph
+        $(".cluster_district_class").on('click', function(){
+            var districts = [];
+            $. each($("input[class='cluster_district_class']:checked"), function(){
+                district_id=$(this).attr('data-id');
+                districts.push(district_id);
+
+            });
+            $.ajax({
+                url: '/core/get-municipalities/',
+                type: 'GET',
+                data: {'districts': districts},
+                dataType: "json",
+
+                success: function(result){
+                    $('.cluster_municipalities').remove();
+                    municipalities = result.length;
+                    for (i = 0; i < municipalities; i++){
+                        var element = '<li class="cluster_municipalities"><div class="checkbox"><input id="muncluster_' + result[i]['pk'] + '" type="checkbox" class="cluster_municipality_class" data-id="' + result[i]['pk'] + '"name="muncluster_' + result[i]['pk'] + '"><label for="muncluster_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                        $('#cluster_municipalities').append(element);
+                    }
+                }
+            });
+        });
+
+        // for cluster list with respect to municipalities in activity target graph
+        $(".cluster_municipality_class").on('click', function(){
+            var municipalities = [];
+            $. each($("input[class='cluster_municipality_class']:checked"), function(){
+                municipality_id=$(this).attr('data-id');
+                municipalities.push(municipality_id);
+
+            });
+            $.ajax({
+                url: '/core/get-clusters/',
+                type: 'GET',
+                data: {'municipalities': municipalities},
+                dataType: "json",
+
+                success: function(result){
+                console.log(result);
+                    $('.cluster_clusters').remove();
+                    clusters = result.length;
+                    for (i = 0; i < clusters; i++){
+                        var element = '<li class="cluster_clusters"><div class="checkbox"><input id="clcluster_' + result[i]['pk'] + '" type="checkbox" class="cluster_cluster_class" data-id="' + result[i]['pk'] + '"name="clcluster_' + result[i]['pk'] + '"><label for="clcluster_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                        $('#cluster_clusters').append(element);
+                    }
+                }
+            });
+        });
+
+        // for activity group list with respect to clusters in activity target graph
+        $(".cluster_cluster_class").on('click', function(){
+            var clusters = [];
+            $. each($("input[class='cluster_cluster_class']:checked"), function(){
+                cluster_id=$(this).attr('data-id');
+                clusters.push(cluster_id);
+
+            });
+            $.ajax({
+                url: '/core/get-activity-groups/',
+                type: 'GET',
+                data: {'clusters': clusters},
+                dataType: "json",
+
+                success: function(result){
+                console.log(result);
+                    $('.cluster_activitygroups').remove();
+                    activity_groups = result.length;
+                    for (i = 0; i < activity_groups; i++){
+                        var element = '<li class="cluster_activitygroups"><div class="checkbox"><input id="ag_' + result[i]['pk'] + '" type="checkbox" class="cluster_activitygroup_class"  data-id="' + result[i]['pk'] + '"name="ag_' + result[i]['pk'] + '"><label for="ag_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                        $('#cluster_activitygroups').append(element);
+                    }
+                }
+            });
+        });
+
+        // for activity list with respect to activity groups in activity target graph
+        $(".cluster_activitygroup_class").on('click', function(){
+            var activity_groups = [];
+            $. each($("input[class='cluster_activitygroup_class']:checked"), function(){
+                ag_id=$(this).attr('data-id');
+                activity_groups.push(ag_id);
+
+            });
+            $.ajax({
+                url: '/core/get-activities/',
+                type: 'GET',
+                data: {'activity_groups': activity_groups},
+                dataType: "json",
+
+                success: function(result){
+                console.log(result);
+                    $('.cluster_activities').remove();
+                    activities = result.length;
+                    for (i = 0; i < activities; i++){
+                        var element = '<li class="cluster_activities"><div class="checkbox"><input id="a_' + result[i]['pk'] + '" type="checkbox" name="a_' + result[i]['pk'] + '"><label for="a_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                        $('#cluster_activities').append(element);
+                    }
+                }
+            });
+        });
+
+
 </script>
 <script src="{% static 'js/c3.bundle.js' %}"></script>
 <script src="{% static 'js/c3.js' %}"></script>
