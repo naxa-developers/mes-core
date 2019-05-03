@@ -1030,11 +1030,10 @@ def get_municipalities(request):
 def get_clusters(request):
     if request.is_ajax():
         municipalities = request.GET.getlist('municipalities[]')
-        print(municipalities)
         if municipalities:
-            clusters = Cluster.objects.filter(municipality__id__in=municipalities)
-            print(clusters)
+            clusters = Cluster.objects.filter(municipality__id__in=municipalities).distinct()
             clusters = serialize("json", clusters)
+            print(clusters)
             return HttpResponse(clusters)
         else:
             clusters = Cluster.objects.all()
