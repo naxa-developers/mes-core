@@ -876,7 +876,7 @@ class UserActivityViewSet(viewsets.ModelViewSet):
     serializer_class = CASerializer
 
     def get_queryset(self):
-        role = self.request.role
+        role = self.request.user.user_roles.first()
         activitygroup = ClusterAG.objects.get(pk=self.kwargs.get('pk'))
         if role.group.name == 'social-mobilizer':
             queryset = ClusterA.objects.filter(cag=activitygroup)
