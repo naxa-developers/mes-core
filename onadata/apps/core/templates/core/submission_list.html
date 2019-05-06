@@ -14,7 +14,9 @@
                     <h2>{{ activity.activity.name }}</h2>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
-                        <li class="breadcrumb-item">Project</li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Project</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'cluster_list' %}">Cluster list</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'submission' activity.cag.cluster.pk %}">Cluster {{ activity.cag.cluster.pk|get_cluster_name }} Submission list</a></li>
                         <li class="breadcrumb-item active">Submission list</li>
                     </ul>
                     <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
