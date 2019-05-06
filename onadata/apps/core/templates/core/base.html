@@ -218,8 +218,8 @@
                 <div class="user-info">
                     <a class="image" href="#"><img src="{% static 'images/pf.png' %}" alt="User"></a>
                     <div class="detail">
-                        <h4>Super Admin</h4>
-                        <small>Super Admin</small>                        
+                        <h4>{{ request.user.username|title }}</h4>
+                        <small>{{ request.user.user_roles.first }}</small>
                     </div>
                 </div>
             </li>
