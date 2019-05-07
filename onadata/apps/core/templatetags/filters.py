@@ -156,7 +156,7 @@ def check_status_change_permission(obj, request):
         return True
     elif current_user_role[0].group.name == 'project-coordinator' and submitted_user_role[0].group.name == 'social-mobilizer':
         return True
-    elif current_user_role[0].group.name in ['project-manager', 'super-admin']:
+    elif current_user_role[0].group.name in ['project-manager', 'project-management-unit', 'super-admin']:
         return True
     else:
         return False
