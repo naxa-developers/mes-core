@@ -859,6 +859,19 @@ def reject_submission(request):
     submission = Submission.objects.get(pk=request.GET.get('pk'))
     submission.status = 'rejected'
     submission.save()
+
+    to_email = submission.instance.user.email
+    mail_subject = 'Submission Rejected.'
+    message = render_to_string('core/submission_reject_email.html', {
+        'submission': submission.instance,
+        'rejected_by': request.user.username,
+        'activity': submission.cluster_activity.activity.name,
+        'cluster': submission.cluster_activity.cag.cluster.name,
+    })
+    email = EmailMessage(
+        mail_subject, message, to=[to_email]
+    )
+    email.send()
     return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': request.GET.get('clustera_id')}))
 
 
