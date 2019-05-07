@@ -83,8 +83,8 @@ class ProjectView(LoginRequiredMixin):
 USER_PERMS = {
     'mobilizer': ['community-social-mobilizer', 'social-mobilizer', 'super-admin'],
     'project': ['project-management-unit', 'project-coordinator', 'project-manager', 'super-admin'],
-    'manager_only': ['project-manager'],
-    'manager': ['project-manager', 'super-admin'],
+    'manager_only': ['project-manager', 'project-management-unit'],
+    'manager': ['project-manager', 'super-admin', 'project-management-unit'],
     'admin': ['super-admin'],
 }
 
