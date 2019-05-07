@@ -262,8 +262,10 @@
             
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>
                 <ul class="ml-menu">
+                    <li><a href="{% url 'user_cluster_list' request.user.pk %}">my clusters</a></li>
                     <li><a href="{% url 'cluster_list' %}">cluster list</a></li>
                     <li><a href="{% url 'cluster_add' %}">add cluster</a></li>
+
                 </ul>
             </li>
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-sellsy"></i><span>Benificiaries</span></a>
@@ -274,11 +276,11 @@
                 </ul>
             </li>
             {% end ifrole %}
-            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>
-                <ul class="ml-menu">
-                    <li><a href="{% url 'user_cluster_list' request.user.pk %}">my clusters</a></li>
-                </ul>
-            </li>
+{#            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>#}
+{#                <ul class="ml-menu">#}
+{#                    <li><a href="{% url 'user_cluster_list' request.user.pk %}">my clusters</a></li>#}
+{#                </ul>#}
+{#            </li>#}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-asterisk"></i><span>Config</span></a>
                 <ul class="ml-menu">
                     <li><a href="{% url 'config_edit' 1 %}">config-edit</a></li>
