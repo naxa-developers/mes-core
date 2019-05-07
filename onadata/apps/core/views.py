@@ -69,7 +69,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
     def get(self, request):
         if self.request.group.name in ['project-coordinator', 'social-mobilizer']:
             return HttpResponseRedirect(reverse('user_cluster_list', kwargs={'pk': self.request.user.pk}))
-        elif self.request.group.name in ['project-manager', 'super-admin']:
+        elif self.request.group.name in ['project-manager', 'super-admin', 'project-management-unit']:
             
             output_count = Output.objects.all().count()
             activity_count = Activity.objects.all().count()
