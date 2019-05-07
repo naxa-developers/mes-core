@@ -628,15 +628,27 @@ class ClusterAssignView(ManagerMixin, View):
 
                                 val = 'target_' + item
                                 if check[0] == val:
-                                    if not ca.target_number == int(check[1]):
-                                        hist.clustera = ca
-                                        hist.target_number = ca.target_number
-                                        hist.target_completed = ca.target_completed
-                                        hist.time_interval = ca.time_interval
-                                        hist.updated_date = datetime.now()
-                                        hist.save()
-                                        ca.target_number = check[1]
-                                        ca.target_updated = True
+                                    if ',' in check[1]:
+                                        value = check[1].replace(',', '')
+                                        if not ca.target_number == int(value):
+                                            hist.clustera = ca
+                                            hist.target_number = ca.target_number
+                                            hist.target_completed = ca.target_completed
+                                            hist.time_interval = ca.time_interval
+                                            hist.updated_date = datetime.now()
+                                            hist.save()
+                                            ca.target_number = check[1]
+                                            ca.target_updated = True
+                                    else:
+                                        if not ca.target_number == int(check[1]):
+                                            hist.clustera = ca
+                                            hist.target_number = ca.target_number
+                                            hist.target_completed = ca.target_completed
+                                            hist.time_interval = ca.time_interval
+                                            hist.updated_date = datetime.now()
+                                            hist.save()
+                                            ca.target_number = check[1]
+                                            ca.target_updated = True
 
                                 val = 'interval_' + item
                                 if check[0] == val:
@@ -653,7 +665,11 @@ class ClusterAssignView(ManagerMixin, View):
                             else:
                                 val = 'target_' + item
                                 if check[0] == val:
-                                    ca.target_number = check[1]
+                                    if ',' in check[1]:
+                                        value = check[1].replace(',', '')
+                                        ca.target_number = int(value)
+                                    else:
+                                        ca.target_number = int(check[1])
 
                                 val = 'interval_' + item
                                 if check[0] == val:
@@ -843,6 +859,19 @@ def reject_submission(request):
     submission = Submission.objects.get(pk=request.GET.get('pk'))
     submission.status = 'rejected'
     submission.save()
+
+    to_email = submission.instance.user.email
+    mail_subject = 'Submission Rejected.'
+    message = render_to_string('core/submission_reject_email.html', {
+        'submission': submission.instance,
+        'rejected_by': request.user.username,
+        'activity': submission.cluster_activity.activity.name,
+        'cluster': submission.cluster_activity.cag.cluster.name,
+    })
+    email = EmailMessage(
+        mail_subject, message, to=[to_email]
+    )
+    email.send()
     return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': request.GET.get('clustera_id')}))
 
 
