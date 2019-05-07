@@ -867,6 +867,7 @@ def reject_submission(request):
         'rejected_by': request.user.username,
         'activity': submission.cluster_activity.activity.name,
         'cluster': submission.cluster_activity.cag.cluster.name,
+        'date': datetime.now(),
     })
     email = EmailMessage(
         mail_subject, message, to=[to_email]
