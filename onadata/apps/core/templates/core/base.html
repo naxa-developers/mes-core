@@ -259,15 +259,21 @@
                     <li><a href="{% url 'activity_add' %}">add activity</a></li>
                 </ul>
             </li>
-            
+            {% end ifrole %}
+
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>
                 <ul class="ml-menu">
+                    {% ifrole 'except_CSM_manager' %}
                     <li><a href="{% url 'user_cluster_list' request.user.pk %}">my clusters</a></li>
+                    {% end ifrole %}
+                    {% ifrole 'except_CSM' %}
                     <li><a href="{% url 'cluster_list' %}">cluster list</a></li>
                     <li><a href="{% url 'cluster_add' %}">add cluster</a></li>
-
+                    {% end ifrole %}
                 </ul>
             </li>
+
+            {% ifrole 'manager_only' %}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-sellsy"></i><span>Benificiaries</span></a>
                 <ul class="ml-menu">
                     <li><a href="{% url 'beneficiary_list' %}">beneficiary list</a></li>
@@ -276,6 +282,7 @@
                 </ul>
             </li>
             {% end ifrole %}
+
 {#            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>#}
 {#                <ul class="ml-menu">#}
 {#                    <li><a href="{% url 'user_cluster_list' request.user.pk %}">my clusters</a></li>#}
