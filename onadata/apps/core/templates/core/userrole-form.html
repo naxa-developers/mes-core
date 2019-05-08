@@ -58,9 +58,7 @@
 
                     <div class="form-group">
                         <label>{{ form.cluster.label }}</label>
-                        <div class="select-option">
-                            {{ form.cluster }}
-                        </div>
+                        {{ form.cluster }}
                     </div>
                     {% if form.cluster.errors %}
                     <font color="crimson">{{ form.cluster.errors }}</font>

@@ -314,6 +314,8 @@ class BeneficiaryForm(forms.ModelForm):
 
 
 class UserRoleForm(forms.ModelForm):
+    cluster = forms.ModelMultipleChoiceField(queryset=Cluster.objects.all(), widget=forms.CheckboxSelectMultiple)
+
     class Meta:
         model = UserRole
         fields = ('user', 'project', 'group', 'cluster')
@@ -322,13 +324,13 @@ class UserRoleForm(forms.ModelForm):
             'user': forms.Select(attrs={'class': "custom-select"}),
             'project': forms.Select(attrs={'class': "custom-select"}),
             'group': forms.Select(attrs={'class': "custom-select"}),
-            'cluster': forms.Select(attrs={'class': "custom-select"}),
         }
 
     def clean(self):
         cleaned_data = self.cleaned_data
+        print(cleaned_data)
 
-        if cleaned_data.get('group').name == 'project-manager':
+        if cleaned_data.get('group').name in ['project-manager', 'project-management-unit', 'project-coordinator']:
             if UserRole.objects.filter(group=cleaned_data.get('group'), project=cleaned_data.get('project')).exists():
                 raise ValidationError({
                     'project': [
@@ -336,7 +338,7 @@ class UserRoleForm(forms.ModelForm):
                     ]
                 })
 
-        elif UserRole.objects.filter(group=cleaned_data.get('group'), cluster=cleaned_data.get('cluster')).exists():
+        elif UserRole.objects.filter(group=cleaned_data.get('group'), cluster__in=cleaned_data.get('cluster')).exists():
             raise ValidationError({
                 'cluster': [
                     'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
@@ -344,7 +346,7 @@ class UserRoleForm(forms.ModelForm):
         if not self.instance.pk:
             if UserRole.objects.filter(
                     user=cleaned_data.get('user')).exists() and \
-                    cleaned_data.get('group').name not in ['social-mobilizer', 'project-coordinator']:
+                    cleaned_data.get('group').name not in ['social-mobilizer', 'project-coordinator', 'project-management-unit']:
                 raise ValidationError({
                     'cluster': [
                         'This user has already been assigned to another cluster.']})

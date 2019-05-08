@@ -139,7 +139,7 @@ class UserRole(models.Model):
 	user = models.ForeignKey(User, related_name="user_roles")
 	project = models.ForeignKey('Project', null=True, blank=True)
 	group = models.ForeignKey(Group, related_name="userrole_group")
-	cluster = models.ForeignKey("Cluster", null=True, blank=True, related_name="userrole_cluster")
+	cluster = models.ManyToManyField("Cluster", null=True, blank=True, related_name="userrole_cluster")
 
 	def __str__(self):
 		return self.group.name
