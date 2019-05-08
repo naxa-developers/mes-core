@@ -177,7 +177,18 @@ class ActivityForm(forms.ModelForm):
     class Meta:
         model = Activity
         fields = (
-        'activity_group', 'name', 'description', 'beneficiary_level', 'target_number', 'target_unit', 'time_interval', 'form', 'weight')
+            'activity_group',
+            'name',
+            'description',
+            'beneficiary_level',
+            'target_number',
+            'target_unit',
+            'latitude',
+            'longitude',
+            'time_interval',
+            'form',
+            'weight'
+        )
 
         widgets = {
             'activity_group': forms.Select(attrs={'class': "custom-select"}),
@@ -187,7 +198,9 @@ class ActivityForm(forms.ModelForm):
             'target_unit': forms.TextInput(attrs={'placeholder': 'Target Unit', 'class': 'form-control'}),
             'time_interval': forms.Select(attrs={'class': "custom-select"}),
             'form': forms.Select(attrs={'class': "custom-select"}),
-            'weight': forms.TextInput(attrs={'placeholder': 'Weight', 'class': 'form-control'})
+            'weight': forms.TextInput(attrs={'placeholder': 'Weight', 'class': 'form-control'}),
+            'latitude': forms.TextInput(attrs={'placeholder': 'Latitude', 'class': 'form-control'}),
+            'longitude': forms.TextInput(attrs={'placeholder': 'Longitude', 'class': 'form-control'})
         }
 
     def clean_weight(self):
@@ -203,7 +216,7 @@ class ActivityForm(forms.ModelForm):
             act_g = self.cleaned_data.get('activity_group')
             name = self.cleaned_data.get('name')
             description = self.cleaned_data.get('description')
-            if not act_g == None:
+            if act_g is not None:
                 try:
                     a = Activity.objects.get(activity_group=act_g, name=name, description=description)
                     other_activities = Activity.objects.filter(activity_group=act_g).aggregate(
@@ -241,9 +254,13 @@ class ActivityForm(forms.ModelForm):
         if instance.beneficiary_level:
             instance.target_number = None
             instance.target_unit = None
+            instance.latitude = None
+            instance.longitude = None
         else:
             instance.target_number = self.cleaned_data.get('target_number')
             instance.target_unit = self.cleaned_data.get('target_unit')
+            instance.latitude = self.cleaned_data.get('latitude')
+            instance.longitude = self.cleaned_data.get('longitude')
         if commit:
             instance.save()
         return instance
@@ -268,8 +285,18 @@ class BeneficiaryForm(forms.ModelForm):
     class Meta:
         model = Beneficiary
         fields = (
-        'name', 'address', 'ward_no', 'Type', 'GovernmentTranch', 'ConstructionPhase', 'Typesofhouse', 'Remarks',
-        'cluster')
+            'name',
+            'address',
+            'ward_no',
+            'Type',
+            'GovernmentTranch',
+            'ConstructionPhase',
+            'Typesofhouse',
+            'Remarks',
+            'cluster',
+            'latitude',
+            'longitude'
+        )
 
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
@@ -281,6 +308,8 @@ class BeneficiaryForm(forms.ModelForm):
             'Typesofhouse': forms.TextInput(attrs={'placeholder': 'Types of house', 'class': 'form-control'}),
             'Remarks': forms.TextInput(attrs={'placeholder': 'Remarks', 'class': 'form-control'}),
             'cluster': forms.Select(attrs={'class': "custom-select"}),
+            'latitude': forms.TextInput(attrs={'placeholder': 'Latitude', 'class': 'form-control'}),
+            'longitude': forms.TextInput(attrs={'placeholder': 'Longitude', 'class': 'form-control'}),
         }
 
 
