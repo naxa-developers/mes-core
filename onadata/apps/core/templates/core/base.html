@@ -263,12 +263,13 @@
 
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>cluster</span></a>
                 <ul class="ml-menu">
-                    {% ifrole 'except_CSM_manager' %}
-                    <li><a href="{% url 'user_cluster_list' request.user.pk %}">my clusters</a></li>
-                    {% end ifrole %}
-                    {% ifrole 'except_CSM' %}
+
+                    {% ifrole 'manager' %}
                     <li><a href="{% url 'cluster_list' %}">cluster list</a></li>
                     <li><a href="{% url 'cluster_add' %}">add cluster</a></li>
+                    {% end ifrole %}
+                    {% ifrole 'normal' %}
+                    <li><a href="{% url 'user_cluster_list' request.user.pk %}">my clusters</a></li>
                     {% end ifrole %}
                 </ul>
             </li>
