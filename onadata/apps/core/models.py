@@ -155,6 +155,8 @@ class ClusterA(models.Model):
 	cag = models.ForeignKey('ClusterAG', related_name='ca')
 	target_number = models.IntegerField(null=True, blank=True, default=0)
 	target_unit = models.CharField(max_length=200, null=True, blank=True, default='')
+	latitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0)
+	longitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0)
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='cainterval', null=True, blank=True)
 	target_completed = models.IntegerField(null=True, blank=True, default=0)
 	interval_updated = models.BooleanField(default=False)

@@ -626,6 +626,14 @@ class ClusterAssignView(ManagerMixin, View):
                                 hist = ClusterAHistory()
                                 ca.target_unit = ca.activity.target_unit
 
+                                val = 'lat_' + item
+                                if check[0] == val:
+                                    ca.latitude = check[1]
+
+                                val = 'long_' + item
+                                if check[0] == val:
+                                    ca.longitude = check[1]
+
                                 val = 'target_' + item
                                 if check[0] == val:
                                     if ',' in check[1]:
@@ -663,6 +671,14 @@ class ClusterAssignView(ManagerMixin, View):
                                         ca.interval_updated = True
                                 ca.save()
                             else:
+                                val = 'lat_' + item
+                                if check[0] == val:
+                                    ca.latitude = check[1]
+
+                                val = 'long_' + item
+                                if check[0] == val:
+                                    ca.longitude = check[1]
+
                                 val = 'target_' + item
                                 if check[0] == val:
                                     if ',' in check[1]:
@@ -674,6 +690,7 @@ class ClusterAssignView(ManagerMixin, View):
                                 val = 'interval_' + item
                                 if check[0] == val:
                                     ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
+
 
                                 ca.save()
 
@@ -691,7 +708,6 @@ class ClusterAssignView(ManagerMixin, View):
                             else:
                                 val = 'interval_' + item
                                 if check[0] == val:
-                                    print('created')
                                     ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
                                     ca.save()
         return redirect(reverse_lazy('cluster_list'))
