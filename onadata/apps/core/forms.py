@@ -343,7 +343,7 @@ class UserRoleForm(forms.ModelForm):
                 for user_cluster in userrole:
                     user_clusters = user_cluster.cluster.all()
                     if cluster not in user_clusters and UserRole.objects.filter(
-                            group=cleaned_data.get('group'), cluster__in=cleaned_data.get('cluster')).exists():
+                            group=cleaned_data.get('group'), cluster=cluster).exists():
                         raise ValidationError({
                             'cluster': [
                                 'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
