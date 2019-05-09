@@ -328,8 +328,6 @@ class UserRoleForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        print(cleaned_data)
-
         if cleaned_data.get('group').name in ['project-manager', 'project-management-unit', 'project-coordinator']:
             if UserRole.objects.filter(group=cleaned_data.get('group'), project=cleaned_data.get('project')).exists():
                 raise ValidationError({
@@ -338,13 +336,26 @@ class UserRoleForm(forms.ModelForm):
                     ]
                 })
 
-        elif UserRole.objects.filter(group=cleaned_data.get('group'), cluster__in=cleaned_data.get('cluster')).exists():
-            raise ValidationError({
-                'cluster': [
-                    'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
+        if self.instance.pk:
+            clusters = cleaned_data.get('cluster')
+            userrole = UserRole.objects.filter(group=cleaned_data.get('group'), user=cleaned_data.get('user'))
+            for cluster in clusters:
+                for user_cluster in userrole:
+                    user_clusters = user_cluster.cluster.all()
+                    if cluster not in user_clusters and UserRole.objects.filter(
+                            group=cleaned_data.get('group'), cluster__in=cleaned_data.get('cluster')).exists():
+                        raise ValidationError({
+                            'cluster': [
+                                'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
 
-        if not self.instance.pk:
-            if UserRole.objects.filter(
+        else:
+            if UserRole.objects.filter(group=cleaned_data.get('group'),
+                                         cluster__in=cleaned_data.get('cluster')).exists():
+                raise ValidationError({
+                    'cluster': [
+                        'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
+
+            elif UserRole.objects.filter(
                     user=cleaned_data.get('user')).exists() and \
                     cleaned_data.get('group').name not in ['social-mobilizer', 'project-coordinator', 'project-management-unit']:
                 raise ValidationError({
