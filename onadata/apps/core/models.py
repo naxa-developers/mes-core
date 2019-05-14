@@ -111,8 +111,8 @@ class Activity(models.Model):
 	weight = models.FloatField(default=0)
 
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='activity_interval', null=True, blank=True)
-	latitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0)
-	longitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0)
+	latitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0, null=True, blank=True)
+	longitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0, null=True, blank=True)
 
 	def __str__(self):
 		return self.name
@@ -128,8 +128,8 @@ class Beneficiary(models.Model):
 	ConstructionPhase = models.CharField(max_length=100, blank=True)
 	Typesofhouse = models.CharField(max_length=100, blank=True)
 	Remarks = models.CharField(max_length=100, blank=True)
-	latitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0)
-	longitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0)
+	latitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0, blank=True, null=True)
+	longitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0, blank=True, null=True)
 
 	def __str__(self):
 		return self.name
