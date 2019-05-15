@@ -38,42 +38,42 @@
                         {{ form.address }}
                     </div>
                     {% if form.address.errors %}
-                    <font color="crimson">{{ form.name.errors }}</font>
+                    <font color="crimson">{{ form.address.errors }}</font>
                     {% endif %}
                     <div class="form-group">
                         <label>{{ form.ward_no.label }}</label>
                             {{ form.ward_no}}
                     </div>
                     {% if form.ward_no.errors %}
-                    <font color="crimson">{{ form.name.errors }}</font>
+                    <font color="crimson">{{ form.ward_no.errors }}</font>
                     {% endif %}
                     <div class="form-group">
                         <label>{{ form.Type.label }}</label>
                         {{ form.Type }}
                     </div>
                     {% if form.Type.errors %}
-                    <font color="crimson">{{ form.name.errors }}</font>
+                    <font color="crimson">{{ form.Type.errors }}</font>
                     {% endif %}
                     <div class="form-group">
                         <label>{{ form.GovernmentTranch.label }}</label>
                         {{ form.GovernmentTranch }}
                     </div>
                     {% if form.GovernmentTranch.errors %}
-                    <font color="crimson">{{ form.name.errors }}</font>
+                    <font color="crimson">{{ form.GovernmentTranch.errors }}</font>
                     {% endif %}
                     <div class="form-group">
                         <label>{{ form.ConstructionPhase.label }}</label>
                         {{ form.ConstructionPhase }}
                     </div>
                     {% if form.ConstructionPhase.errors %}
-                    <font color="crimson">{{ form.name.errors }}</font>
+                    <font color="crimson">{{ form.ConstructionPhase.errors }}</font>
                     {% endif %}
                     <div class="form-group">
                         <label>{{ form.Typesofhouse.label }}</label>
                         {{ form.Typesofhouse }}
                     </div>
                     {% if form.Typesofhouse.errors %}
-                    <font color="crimson">{{ form.name.errors }}</font>
+                    <font color="crimson">{{ form.Typesofhouse.errors }}</font>
                     {% endif %}
                     <div class="form-group">
                         <label>{{ form.cluster.label }}</label>
@@ -82,8 +82,25 @@
                         </div>
                     </div>
                     {% if form.cluster.errors %}
-                    <font color="crimson">{{ form.name.errors }}</font>
+                    <font color="crimson">{{ form.cluster.errors }}</font>
                     {% endif %}
+                    <div class="form-group">
+                        <label>Longitude</label>
+                        {% if form.instance %}
+                        <input type="text" name="Longitude" class="form-control" value="{{ form.instance.location.x }}">
+                        {% else %}
+                        <input type="text" name="Longitude" class="form-control">
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label>Latitude</label>
+                        {% if form.instance %}
+                        <input type="text" name="Latitude" class="form-control" value="{{ form.instance.location.y }}">
+                        {% else %}
+                        <input type="text" name="Latitude" class="form-control">
+                        {% endif %}
+                    </div>
 
                     <button type="submit" class="btn btn-xs btn-primary">Submit</button>
 

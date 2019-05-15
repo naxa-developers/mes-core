@@ -8,8 +8,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
 
-from datetime import datetime  
+from datetime import datetime
 
+from django.contrib.gis.db.models import PointField
 from onadata.apps.logger.models import Instance
 from onadata.apps.logger.models.xform import XForm
 from django.db.models.signals import post_save
@@ -68,7 +69,7 @@ class Municipality(models.Model):
 
 class Cluster(models.Model):
 	name = models.CharField(max_length=200)
-	project = models.ForeignKey('Project', related_name='cluster')	
+	project = models.ForeignKey('Project', related_name='cluster')
 	municipality = models.ManyToManyField(Municipality, related_name="cluster")
 	ward = models.CharField(max_length=200)
 
@@ -111,11 +112,20 @@ class Activity(models.Model):
 	weight = models.FloatField(default=0)
 
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='activity_interval', null=True, blank=True)
-	latitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0, null=True, blank=True)
-	longitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0, null=True, blank=True)
+	location = PointField(geography=True, srid=4326, blank=True, null=True)
 
 	def __str__(self):
 		return self.name
+
+	@property
+	def latitude(self):
+		if self.location:
+			return self.location.y
+
+	@property
+	def longitude(self):
+		if self.location:
+			return self.location.x
 
 
 class Beneficiary(models.Model):
@@ -128,11 +138,20 @@ class Beneficiary(models.Model):
 	ConstructionPhase = models.CharField(max_length=100, blank=True)
 	Typesofhouse = models.CharField(max_length=100, blank=True)
 	Remarks = models.CharField(max_length=100, blank=True)
-	latitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0, blank=True, null=True)
-	longitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0, blank=True, null=True)
+	location = PointField(geography=True, srid=4326, blank=True, null=True)
 
 	def __str__(self):
 		return self.name
+
+	@property
+	def latitude(self):
+		if self.location:
+			return self.location.y
+
+	@property
+	def longitude(self):
+		if self.location:
+			return self.location.x
 
 
 class UserRole(models.Model):
@@ -155,12 +174,21 @@ class ClusterA(models.Model):
 	cag = models.ForeignKey('ClusterAG', related_name='ca')
 	target_number = models.IntegerField(null=True, blank=True, default=0)
 	target_unit = models.CharField(max_length=200, null=True, blank=True, default='')
-	latitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0)
-	longitude = models.DecimalField(max_digits=19, decimal_places=15, default=0.0)
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='cainterval', null=True, blank=True)
 	target_completed = models.IntegerField(null=True, blank=True, default=0)
 	interval_updated = models.BooleanField(default=False)
 	target_updated = models.BooleanField(default=False)
+	location = PointField(geography=True, srid=4326, blank=True, null=True)
+
+	@property
+	def latitude(self):
+		if self.location:
+			return self.location.y
+
+	@property
+	def longitude(self):
+		if self.location:
+			return self.location.x
 
 	def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
 		if not self.id:

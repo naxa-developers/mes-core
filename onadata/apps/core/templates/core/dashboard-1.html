@@ -243,6 +243,16 @@
                         <div class="col-lg-6">
                             <div class="card">
                                 <div class="card-header">
+                                    <h5>Cluster Phases</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="cluster_pie"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
                                     <h5>map</h5>
                                 </div>
                                 <div class="card-body">
@@ -547,9 +557,20 @@
             });
         });
 
+        $.ajax({
+            url: '/core/get-map-data/',
+            type: 'GET',
+            data: {},
+            dataType: "json",
 
+            success: function(result){
+                console.log(result);
+                map_data = result;
+            }
+        });
 </script>
 <script src="{% static 'js/c3.bundle.js' %}"></script>
 <script src="{% static 'js/c3.js' %}"></script>
+<script src="{% static 'js/coremap.js' %}"></script>
 {% endblock %}
 

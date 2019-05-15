@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.core.serializers import serialize
 
 
 # divide a datetime range into intervals
@@ -145,12 +146,13 @@ def get_cluster_activity_data(project, activity=None):
 
 
 def get_progress_data(project, types=None, clusters=None, districts=None, munis=None):
-    from .models import District, Municipality, Cluster, Submission, ProjectTimeInterval
+    from .models import District, Municipality, Cluster, Submission, ProjectTimeInterval, ClusterA, Activity
     from django.db.models import Sum
 
     progress_data = {}
     cluster_progress_data = {}
     categories = []
+    map_data = []
     if clusters:
         selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
         for item in types:
