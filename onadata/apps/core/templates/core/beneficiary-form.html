@@ -86,37 +86,17 @@
                     {% endif %}
                     <div class="form-group">
                         <label>Longitude</label>
-                        {% if form.instance %}
-                        <input type="text" name="Longitude" class="form-control" value="{{ form.instance.location.x }}">
-                        {% else %}
-                        <input type="text" name="Longitude" class="form-control">
-                        {% endif %}
+                        <input class="form-control" type="text" name="Longitude"
+                               value="{% if form.instance %}{{ form.instance.location.x }}{% else %}0{% endif %}">
                     </div>
 
                     <div class="form-group">
                         <label>Latitude</label>
-                        {% if form.instance %}
-                        <input type="text" name="Latitude" class="form-control" value="{{ form.instance.location.y }}">
-                        {% else %}
-                        <input type="text" name="Latitude" class="form-control">
-                        {% endif %}
+                        <input class="form-control" type="text" name="Latitude"
+                               value="{% if form.instance %}{{ form.instance.location.y }}{% else %}0{% endif %}">
                     </div>
 
                     <button type="submit" class="btn btn-xs btn-primary">Submit</button>
-
-                    <!--{% for field in form %}-->
-
-                        <!--<div class="form-group">-->
-                            <!--<label class="mylabel">{{ field.label }}</label>-->
-                            <!--<font color="crimson">{{ field.errors }}</font>-->
-                            <!--{{ field }}-->
-                            <!--{{ field.help_text }}-->
-                        <!--</div>-->
-                    <!--{% endfor %}-->
-                    <!--<button type="submit" class="btn btn-xs btn-primary">Submit</button>-->
-                    <!--{% for error in form.errors %}-->
-                    <!--<label>{{ error }}</label>-->
-                    <!--{% endfor %}-->
                 </form>
             </div>
         </div>

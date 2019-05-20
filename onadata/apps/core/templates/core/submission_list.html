@@ -88,7 +88,6 @@ $("#accept").click(function (){
             $('#id_status').html('Approved');
             $('#reject').remove();
             $('#accept').remove();
-            alert('Submission approved');
 
         },
         error: function(data){
@@ -112,8 +111,6 @@ $("#reject").click(function (){
             $('#id_status').html('Rejected');
             $('#reject').remove();
             $('#accept').remove();
-            alert('Submission rejected');
-
         },
         error: function(data){
             console.log(data)

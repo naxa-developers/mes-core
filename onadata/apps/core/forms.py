@@ -298,8 +298,15 @@ class BeneficiaryForm(forms.ModelForm):
         }
 
     def clean(self):
-        lat = self.data.get("Longitude", "85.3240")
-        long = self.data.get("Latitude", "27.7172")
+        if self.data.get("Longitude") == '':
+            lat = 85.3240
+        else:
+            lat = self.data.get("Longitude", "85.3240")
+
+        if self.data.get("Latitude") == '':
+            long = 27.7172
+        else:
+            long = self.data.get("Latitude", "27.7172")
         p = Point(round(float(lat), 6), round(float(long), 6), srid=4326)
         self.cleaned_data["location"] = p
         super(BeneficiaryForm, self).clean()
