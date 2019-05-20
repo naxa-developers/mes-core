@@ -836,7 +836,8 @@ class BeneficiaryUploadView(ManagerMixin, View):
                     GovernmentTranch=df['GovernmentTranch'][row],
                     ConstructionPhase=df['ConstructionPhase'][row],
                     Typesofhouse=df['Typesofhouse'][row],
-                    Remarks=df['Remarks'][row]
+                    district=district,
+                    municipality=municipality
                 )
             return HttpResponseRedirect('/core/beneficiary-list')
         except Exception as e:
