@@ -85,8 +85,8 @@ urlpatterns = [
     url(r'^change-password-done/', views.Done.as_view(), name='change_password_done'),
 
     # change status of submission
-    url(r'approve', views.accept_submission, name='approve_submission'),
-    url(r'reject', views.reject_submission, name='reject_submission'),
+    url(r'approve/(?P<pk>[0-9]+)/(?P<clustera_id>[0-9]+)/', views.accept_submission, name='approve_submission'),
+    url(r'reject/(?P<pk>[0-9]+)/(?P<clustera_id>[0-9]+)/', views.reject_submission, name='reject_submission'),
 
     # update target number of cluster activity
     url(r'update-cluster-act/(?P<cluster_id>[0-9]+)/(?P<pk>[0-9]+)/$', views.update_cluster_activity,
