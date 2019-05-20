@@ -131,13 +131,12 @@ class Activity(models.Model):
 class Beneficiary(models.Model):
 	name = models.CharField(max_length=200)
 	address = models.CharField(max_length=400)
-	ward_no = models.IntegerField('ward number')
+	ward = models.IntegerField('ward', null=True, blank=True)
 	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
 	Type = models.CharField(max_length=100)
-	GovernmentTranch = models.CharField(max_length=100, blank=True)
+	Tranch = models.CharField(max_length=100, blank=True)
 	ConstructionPhase = models.CharField(max_length=100, blank=True)
 	Typesofhouse = models.CharField(max_length=100, blank=True)
-	Remarks = models.CharField(max_length=100, blank=True)
 	location = PointField(geography=True, srid=4326, blank=True, null=True)
 
 	def __str__(self):

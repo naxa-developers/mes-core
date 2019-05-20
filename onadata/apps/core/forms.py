@@ -288,12 +288,11 @@ class BeneficiaryForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
             'address': forms.TextInput(attrs={'placeholder': 'Address', 'class': 'form-control'}),
-            'ward_no': forms.TextInput(attrs={'placeholder': 'Ward Number', 'class': 'form-control'}),
+            'ward': forms.TextInput(attrs={'placeholder': 'Ward', 'class': 'form-control'}),
             'Type': forms.TextInput(attrs={'placeholder': 'Type', 'class': 'form-control'}),
-            'GovernmentTranch': forms.TextInput(attrs={'placeholder': 'Government Tranch', 'class': 'form-control'}),
+            'Tranch': forms.TextInput(attrs={'placeholder': 'Tranch', 'class': 'form-control'}),
             'ConstructionPhase': forms.TextInput(attrs={'placeholder': 'Construction Phase', 'class': 'form-control'}),
             'Typesofhouse': forms.TextInput(attrs={'placeholder': 'Types of house', 'class': 'form-control'}),
-            'Remarks': forms.TextInput(attrs={'placeholder': 'Remarks', 'class': 'form-control'}),
             'cluster': forms.Select(attrs={'class': "custom-select"}),
         }
 
