@@ -77,21 +77,23 @@
                     <font color="crimson">{{ form.target_unit.errors }}</font>
                     {% endif %}
 
-                    <div class="form-group" id="latitude">
-                        <label>{{ form.latitude.label }}</label>
-                            {{ form.latitude }}
-                    </div>
-                    {% if form.latitude.errors %}
-                    <font color="crimson">{{ form.latitude.errors }}</font>
-                    {% endif %}
+                    <!--<div class="form-group" id="longitude">-->
+                        <!--<label>Longitude</label>-->
+                        <!--{% if form.instance %}-->
+                        <!--<input type="text" name="Longitude" class="form-control" value="{{ form.instance.location.x }}">-->
+                        <!--{% else %}-->
+                        <!--<input type="text" name="Longitude" class="form-control">-->
+                        <!--{% endif %}-->
+                    <!--</div>-->
 
-                    <div class="form-group" id="longitude">
-                        <label>{{ form.longitude.label }}</label>
-                            {{ form.longitude }}
-                    </div>
-                    {% if form.longitude.errors %}
-                    <font color="crimson">{{ form.longitude.errors }}</font>
-                    {% endif %}
+                    <!--<div class="form-group" id="latitude">-->
+                        <!--<label>Latitude</label>-->
+                        <!--{% if form.instance %}-->
+                        <!--<input type="text" name="Latitude" class="form-control" value="{{ form.instance.location.y }}">-->
+                        <!--{% else %}-->
+                        <!--<input type="text" name="Latitude" class="form-control">-->
+                        <!--{% endif %}-->
+                    <!--</div>-->
 
                     <div class="form-group">
                         <label>{{ form.time_interval.label }}</label>
@@ -137,27 +139,27 @@
        if ($('#id_beneficiary_level').is(":checked")){
             $('#target_number').hide();
             $('#target_unit').hide();
-            $('#latitude').hide();
-            $('#longitude').hide();
+            <!--$('#latitude').hide();-->
+            <!--$('#longitude').hide();-->
        }
         else{
             $('#target_number').show();
             $('#target_unit').show();
-            $('#latitude').show();
-            $('#longitude').show();
+            <!--$('#latitude').show();-->
+            <!--$('#longitude').show();-->
         }
        $('#id_beneficiary_level').change(function(){
           if ($(this).is(":checked")){
             $('#target_number').hide();
             $('#target_unit').hide();
-            $('#latitude').hide();
-            $('#longitude').hide();
+            <!--$('#latitude').hide();-->
+            <!--$('#longitude').hide();-->
           }
           else{
             $('#target_number').show();
             $('#target_unit').show();
-            $('#latitude').show();
-            $('#longitude').show();
+            <!--$('#latitude').show();-->
+            <!--$('#longitude').show();-->
           }
        });
     });

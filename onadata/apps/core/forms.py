@@ -9,6 +9,7 @@ from django.db.models import Sum
 from django.core.validators import validate_email
 import re
 
+from django.contrib.gis.geos import Point
 from onadata.apps.logger.models import XForm
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, \
     ProjectTimeInterval, Municipality
@@ -174,21 +175,12 @@ class ActivityForm(forms.ModelForm):
         except:
             self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=project)
 
+        if not self.fields['location'].initial:
+            self.fields['location'].initial = Point(85.3240, 27.7172, srid=4326)
+
     class Meta:
         model = Activity
-        fields = (
-            'activity_group',
-            'name',
-            'description',
-            'beneficiary_level',
-            'target_number',
-            'target_unit',
-            'latitude',
-            'longitude',
-            'time_interval',
-            'form',
-            'weight'
-        )
+        fields = '__all__'
 
         widgets = {
             'activity_group': forms.Select(attrs={'class': "custom-select"}),
@@ -199,8 +191,6 @@ class ActivityForm(forms.ModelForm):
             'time_interval': forms.Select(attrs={'class': "custom-select"}),
             'form': forms.Select(attrs={'class': "custom-select"}),
             'weight': forms.TextInput(attrs={'placeholder': 'Weight', 'class': 'form-control'}),
-            'latitude': forms.TextInput(attrs={'placeholder': 'Latitude', 'class': 'form-control'}),
-            'longitude': forms.TextInput(attrs={'placeholder': 'Longitude', 'class': 'form-control'})
         }
 
     def clean_weight(self):
@@ -249,18 +239,21 @@ class ActivityForm(forms.ModelForm):
         except KeyError:
             raise ValidationError('error occured')
 
+        lat = self.data.get("Longitude", "85.3240")
+        long = self.data.get("Latitude", "27.7172")
+        p = Point(round(float(lat), 6), round(float(long), 6), srid=4326)
+        self.cleaned_data["location"] = p
+
     def save(self, commit=True):
         instance = super(ActivityForm, self).save(commit=False)
         if instance.beneficiary_level:
             instance.target_number = None
             instance.target_unit = None
-            instance.latitude = None
-            instance.longitude = None
+            instance.location = None
         else:
             instance.target_number = self.cleaned_data.get('target_number')
             instance.target_unit = self.cleaned_data.get('target_unit')
-            instance.latitude = self.cleaned_data.get('latitude')
-            instance.longitude = self.cleaned_data.get('longitude')
+            instance.location = self.cleaned_data.get('location')
         if commit:
             instance.save()
         return instance
@@ -282,21 +275,15 @@ class ClusterForm(forms.ModelForm):
 
 
 class BeneficiaryForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(BeneficiaryForm, self).__init__(*args, **kwargs)
+        if not self.fields['location'].initial:
+            self.fields['location'].initial = Point(85.3240, 27.7172, srid=4326)
+
     class Meta:
         model = Beneficiary
-        fields = (
-            'name',
-            'address',
-            'ward_no',
-            'Type',
-            'GovernmentTranch',
-            'ConstructionPhase',
-            'Typesofhouse',
-            'Remarks',
-            'cluster',
-            'latitude',
-            'longitude'
-        )
+        fields = '__all__'
 
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
@@ -308,9 +295,28 @@ class BeneficiaryForm(forms.ModelForm):
             'Typesofhouse': forms.TextInput(attrs={'placeholder': 'Types of house', 'class': 'form-control'}),
             'Remarks': forms.TextInput(attrs={'placeholder': 'Remarks', 'class': 'form-control'}),
             'cluster': forms.Select(attrs={'class': "custom-select"}),
-            'latitude': forms.TextInput(attrs={'placeholder': 'Latitude', 'class': 'form-control'}),
-            'longitude': forms.TextInput(attrs={'placeholder': 'Longitude', 'class': 'form-control'}),
         }
+
+    def clean(self):
+        if self.data.get("Longitude") == '':
+            lat = 85.3240
+        else:
+            lat = self.data.get("Longitude", "85.3240")
+
+        if self.data.get("Latitude") == '':
+            long = 27.7172
+        else:
+            long = self.data.get("Latitude", "27.7172")
+        p = Point(round(float(lat), 6), round(float(long), 6), srid=4326)
+        self.cleaned_data["location"] = p
+        super(BeneficiaryForm, self).clean()
+
+    def save(self, commit=True):
+        instance = super(BeneficiaryForm, self).save(commit=False)
+        instance.location = self.cleaned_data.get('location')
+        if commit:
+            instance.save()
+        return instance
 
 
 class UserRoleForm(forms.ModelForm):

@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework.response import Response
+from django.contrib.gis.geos import Point
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
@@ -352,8 +353,30 @@ class Dashboard1View(TemplateView):
             'progress_data': progress_data,
             'cluster_progress_data': cluster_progress_data,
             'pie_data': pie_data,
-            'categories': categories,
+            'categories': categories
         })
+
+
+# for map data
+def get_map_data(request):
+    if request.is_ajax():
+        clusters = Cluster.objects.filter(project=request.project)
+        # beneficiaries = []
+        # for item in ca:
+        #     if item.activity.beneficiary_level:
+        #         cluster = Cluster.objects.filter(id=item.cag.cluster.id)
+        #         beneficiaries.append(*Beneficiary.objects.filter(cluster__in=cluster))
+        activities = ClusterA.objects.filter(
+            cag__cluster__in=clusters, activity__beneficiary_level=False)
+
+        data = serialize(
+            'geojson',
+            activities,
+            geometry_field='location',
+            fields=('activity', 'location', 'target_number', 'target_completed'),
+        )
+        print(data)
+        return HttpResponse(data)
 
 
 class Dashboard2View(MultipleObjectMixin, TemplateView):
@@ -381,6 +404,7 @@ class Dashboard2View(MultipleObjectMixin, TemplateView):
         beneficiaries = get_beneficiaries(districts, munis, clusters, b_types)
 
         ag = ActivityGroup.objects.all()
+
         
         page = request.GET.get('page', 1)
         paginator = Paginator(beneficiaries, 100)
@@ -593,6 +617,7 @@ class ClusterAssignView(ManagerMixin, View):
     def post(self, request, **kwargs):
         cluster = Cluster.objects.get(pk=kwargs.get('pk'))
         checked = [(name, value) for name, value in request.POST.iteritems()]
+        print(checked)
         for item in checked:
             if item[0].startswith('ag_'):
                 item = item[0].strip('ag_')
@@ -625,14 +650,16 @@ class ClusterAssignView(ManagerMixin, View):
                             if not created:
                                 hist = ClusterAHistory()
                                 ca.target_unit = ca.activity.target_unit
+                                longitude = ''
+                                latitude = ''
 
                                 val = 'lat_' + item
                                 if check[0] == val:
-                                    ca.latitude = check[1]
+                                    latitude = check[1]
 
                                 val = 'long_' + item
                                 if check[0] == val:
-                                    ca.longitude = check[1]
+                                    longitude = check[1]
 
                                 val = 'target_' + item
                                 if check[0] == val:
@@ -669,15 +696,29 @@ class ClusterAssignView(ManagerMixin, View):
                                         hist.save()
                                         ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
                                         ca.interval_updated = True
+
+                                if longitude != '':
+                                    ca.location = Point(
+                                        round(float(longitude), 6),
+                                        round(float(ca.latitude.real if ca.latitude else "27.7172"), 6),
+                                        srid=4326)
+
+                                if latitude != '':
+                                    ca.location = Point(
+                                        round(float(ca.longitude.real if ca.longitude else "85.3240"), 6),
+                                        round(float(latitude), 6),
+                                        srid=4326)
                                 ca.save()
                             else:
+                                longitude = ''
+                                latitude = ''
                                 val = 'lat_' + item
                                 if check[0] == val:
-                                    ca.latitude = check[1]
+                                    latitude = check[1]
 
                                 val = 'long_' + item
                                 if check[0] == val:
-                                    ca.longitude = check[1]
+                                    longitude = check[1]
 
                                 val = 'target_' + item
                                 if check[0] == val:
@@ -691,7 +732,17 @@ class ClusterAssignView(ManagerMixin, View):
                                 if check[0] == val:
                                     ca.time_interval = ProjectTimeInterval.objects.get(id=int(check[1]))
 
+                                if longitude != '':
+                                    ca.location = Point(
+                                        round(float(longitude), 6),
+                                        round(float(ca.latitude.real if ca.latitude else "27.7172"), 6),
+                                        srid=4326)
 
+                                if latitude != '':
+                                    ca.location = Point(
+                                        round(float(ca.longitude.real if ca.longitude else "85.3240"), 6),
+                                        round(float(latitude), 6),
+                                        srid=4326)
                                 ca.save()
 
                     else:

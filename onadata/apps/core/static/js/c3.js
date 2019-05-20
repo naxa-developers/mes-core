@@ -540,6 +540,28 @@ $(function() {
                 }
             });
         });
+         //cluster-pie-chart
+        $(document).ready(function(){
+            var chart = c3.generate({
+                bindto: '#cluster_pie', // id of chart wrapper
+                data: {
+                    json: pie_data,
+                    type: 'pie', // default type of chart,
+                },
+                axis: {
+                },
+                legend: {
+                    show: true, //hide legend
+                },
+                padding: {
+                    bottom: 0,
+                    top: 0
+                },
+                color: {
+                        pattern: ["#e3e3e3", "#00A890", "#0d89df"]
+                }
+            });
+        });
         //gender donut
         $(document).ready(function(){
             var chart = c3.generate({
