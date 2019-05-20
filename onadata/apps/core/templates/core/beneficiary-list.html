@@ -32,13 +32,14 @@
                             <tr>
                                 <th>Project Name</th>
                                 <th>Address</th>
-                                <th>Ward Number</th>
+                                <th>District</th>
+                                <th>Municipality</th>
+                                <th>Ward</th>
                                 <th>Cluster</th>
                                 <th>Typed</th>
-                                <th>GovernmentTranch</th>
+                                <th>Tranch</th>
                                 <th>Construction Phase</th>
                                 <th>Types Of House</th>
-                                <th>Remarks</th>
                                 <th>action</th>
                             </tr>
                         </thead>
@@ -47,13 +48,14 @@
                             <tr>
                                 <td>{{ beneficiary.name }}</td>
                                 <td>{{ beneficiary.address }}</td>
-                                <td>{{ beneficiary.ward_no }}
+                                <td>{{ beneficiary.district }}</td>
+                                <td>{{ beneficiary.municipality }}</td>
+                                <td>{{ beneficiary.ward }}
                                 <td>{{ beneficiary.cluster }}</td>
                                 <td>{{ beneficiary.Type }}</td>
-                                <td>{{ beneficiary.GovernmentTranch }}</td>
+                                <td>{{ beneficiary.Tranch }}</td>
                                 <td>{{ beneficiary.ConstructionPhase }}</td>
                                 <td>{{ beneficiary.Typesofhouse }}</td>
-                                <td>{{ beneficiary.Remarks }}</td>
                                 <td class="table-action">
                                     <a href="{% url 'beneficiary_delete' beneficiary.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
                                     <a href="{% url 'beneficiary_edit' beneficiary.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
