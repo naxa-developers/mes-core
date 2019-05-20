@@ -405,15 +405,16 @@ class Dashboard2View(MultipleObjectMixin, TemplateView):
 
         ag = ActivityGroup.objects.all()
 
-        # page = request.GET.get('page', 1)
-        # paginator = Paginator(beneficiaries, 100)
-        #
-        # try:
-        #     beneficiaries = paginator.page(page)
-        # except PageNotAnInteger:
-        #     beneficiaries = paginator.page(1)
-        # except EmptyPage:
-        #     beneficiaries = paginator.page(paginator.num_pages)
+        
+        page = request.GET.get('page', 1)
+        paginator = Paginator(beneficiaries, 100)
+        
+        try:
+            beneficiaries = paginator.page(page)
+        except PageNotAnInteger:
+            beneficiaries = paginator.page(1)
+        except EmptyPage:
+            beneficiaries = paginator.page(paginator.num_pages)
 
         districts = District.objects.all()
         municipalities = Municipality.objects.all()

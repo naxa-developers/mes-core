@@ -153,23 +153,23 @@
                                     {% endfor %}
                                     </tbody>
                                 </table>
-                                <!--<div class="pagination">-->
-                                <!--<span class="step-links">-->
-                                    <!--{% if beneficiaries.has_previous %}-->
-                                        <!--<a href="?page=1">&laquo; first</a>-->
-                                        <!--<a href="?page={{ beneficiaries.previous_page_number }}">previous</a>-->
-                                    <!--{% endif %}-->
+                                <div class="pagination">
+                                <span class="step-links">
+                                    {% if beneficiaries.has_previous %}
+                                        <a href="?page=1">&laquo; first</a>
+                                        <a href="?page={{ beneficiaries.previous_page_number }}">previous</a>
+                                    {% endif %}
 
-                                    <!--<span class="current">-->
-                                        <!--Page {{ beneficiaries.number }} of {{ beneficiaries.paginator.num_pages }}.-->
-                                    <!--</span>-->
+                                    <span class="current">
+                                        Page {{ beneficiaries.number }} of {{ beneficiaries.paginator.num_pages }}.
+                                    </span>
 
-                                    <!--{% if beneficiaries.has_next %}-->
-                                        <!--<a href="?page={{ beneficiaries.next_page_number }}">next</a>-->
-                                        <!--<a href="?page={{ beneficiaries.paginator.num_pages }}">last &raquo;</a>-->
-                                    <!--{% endif %}-->
-                                <!--</span>-->
-                            <!--</div>-->
+                                    {% if beneficiaries.has_next %}
+                                        <a href="?page={{ beneficiaries.next_page_number }}">next</a>
+                                        <a href="?page={{ beneficiaries.paginator.num_pages }}">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                                </div>
                             </div>
                         </div>
                     </div>
