@@ -131,6 +131,8 @@ class Activity(models.Model):
 class Beneficiary(models.Model):
 	name = models.CharField(max_length=200)
 	address = models.CharField(max_length=400)
+	district = models.ForeignKey(District, blank=True, null=True)
+	municipality = models.ForeignKey(Municipality, blank=True, null=True)
 	ward = models.IntegerField('ward', null=True, blank=True)
 	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
 	Type = models.CharField(max_length=100)

@@ -41,6 +41,20 @@
                     <font color="crimson">{{ form.address.errors }}</font>
                     {% endif %}
                     <div class="form-group">
+                        <label>{{ form.district.label }}</label>
+                        {{ form.district }}
+                    </div>
+                    {% if form.district.errors %}
+                    <font color="crimson">{{ form.district.errors }}</font>
+                    {% endif %}
+                    <div class="form-group">
+                        <label>{{ form.municipality.label }}</label>
+                        {{ form.municipality }}
+                    </div>
+                    {% if form.municipality.errors %}
+                    <font color="crimson">{{ form.municipality.errors }}</font>
+                    {% endif %}
+                    <div class="form-group">
                         <label>{{ form.ward.label }}</label>
                             {{ form.ward}}
                     </div>
