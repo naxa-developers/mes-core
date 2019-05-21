@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -292,3 +292,11 @@ def send_email(sender, instance, **kwargs):
 		email.send()
 	else:
 		pass
+
+@receiver(post_save, sender=UserRole)
+def asset_permissions(sender, instance, **kwargs):
+	if instance.group.name in ['project-manager', 'project-management-unit', 'project-coordinator']:
+		codenames = ['add_asset', 'change_asset', 'delete_asset', 'view_asset', 'share_asset']
+		permissions = Permission.objects.filter(codename__in=codenames)
+		for permission in permissions:
+			instance.user.user_permissions.add(permission)
