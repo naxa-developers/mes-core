@@ -281,7 +281,7 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
         beneficiary_types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
             distinct().annotate(total=Count('Type'))
         for item in beneficiary_types:
-            pie_data[str(item['Type'])] = [round((float(item['total']) / 1500) * 100, 2)]
+            pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
 
         # get cluster activity overview data on basis of filter used
         if 'cluster_activity' in request.GET:
@@ -314,11 +314,11 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
                 if item[0].startswith('dist'):
                     select_districts.append(int(item[0].split("_")[1]))
 
-            progress_data, categories, cluster_progress_data = get_progress_data(
+            progress_data, categories, cluster_progress_data, cluster_phase = get_progress_data(
                 request.project, types, clusters, select_districts, munis)
 
         else:
-            progress_data, categories, cluster_progress_data = get_progress_data(request.project, types)
+            progress_data, categories, cluster_progress_data, cluster_phase = get_progress_data(request.project, types)
 
         return render(request, self.template_name, {
             'activity_groups': activity_groups,
@@ -334,7 +334,8 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
             'progress_data': progress_data,
             'cluster_progress_data': cluster_progress_data,
             'pie_data': pie_data,
-            'categories': categories
+            'categories': categories,
+            'cluster_phase': cluster_phase
         })
 
 

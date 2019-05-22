@@ -545,7 +545,7 @@ $(function() {
             var chart = c3.generate({
                 bindto: '#cluster_pie', // id of chart wrapper
                 data: {
-                    json: pie_data,
+                    json: cluster_phase_data,
                     type: 'pie', // default type of chart,
                 },
                 axis: {
