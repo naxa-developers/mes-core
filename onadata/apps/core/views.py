@@ -259,7 +259,7 @@ class ErrorView(TemplateView):
     template_name = 'core/404.html'
 
 
-class Dashboard1View(TemplateView):
+class Dashboard1View(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard-1.html'
 
     def get(self, request):
@@ -360,7 +360,7 @@ def get_map_data(request):
         return HttpResponse(data)
 
 
-class Dashboard2View(MultipleObjectMixin, TemplateView):
+class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
     template_name = 'core/dashboard-2.html'
 
     def get(self, request):
