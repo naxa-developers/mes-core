@@ -356,7 +356,6 @@ def get_map_data(request):
             geometry_field='location',
             fields=('activity', 'location', 'target_number', 'target_completed'),
         )
-        print(data)
         return HttpResponse(data)
 
 
