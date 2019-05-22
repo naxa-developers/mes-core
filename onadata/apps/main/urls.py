@@ -7,6 +7,7 @@ from onadata.apps.api.urls import router, router_with_patch_list
 from onadata.apps.api.urls import XFormListApi
 from onadata.apps.api.urls import XFormSubmissionApi
 from onadata.apps.api.urls import BriefcaseApi
+from onadata.apps.core.views import HomeView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -44,7 +45,8 @@ urlpatterns = patterns(
         name='google-auth-welcome'),
 
     # main website views
-    url(r'^$', 'onadata.apps.main.views.home'),
+    # url(r'^$', 'onadata.apps.main.views.home'),
+    url(r'^$', HomeView.as_view(), name='home'),
     url(r'^tutorial/$', 'onadata.apps.main.views.tutorial', name='tutorial'),
     url(r'^about-us/$', 'onadata.apps.main.views.about_us', name='about-us'),
     url(r'^getting_started/$', 'onadata.apps.main.views.getting_started',

@@ -251,25 +251,6 @@ def activate(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
-class SignUpView(TemplateView):
-    template_name = 'core/sign-up.html'
-
-    def signup(self, request):
-        if request.method == 'POST':
-            form = SignUpForm(request.POST)
-            if form.is_valid():
-                form.save()
-                username = form.cleaned_data.get('username')
-                raw_password = form.cleaned_data.get('password')
-                user = authenticate(username=username, password=raw_password)
-                login(request, user)
-                return redirect('core/sign-in.html')
-
-        else:
-            form = SignUpForm()
-        return render(request, 'core/sign-up.html', {'form': form})
-
-
 class ForgotView(TemplateView):
     template_name = 'core/forgot-password.html'
 

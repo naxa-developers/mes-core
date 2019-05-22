@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'sign-up', views.signup, name='sign_up'),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.activate,
         name='activate'),
-    url(r'logout', views.logout, name='logout'),
+    url(r'logout', views.logout_view, name='logout'),
     url(r'forgot-password', views.ForgotView.as_view(), name='forgot_password'),
     url(r'404 error', views.ErrorView.as_view(), name='404_error'),
     url(r'dashboard-1', views.Dashboard1View.as_view(), name='dashboard-1'),
