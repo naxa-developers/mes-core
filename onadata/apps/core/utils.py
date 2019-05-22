@@ -205,7 +205,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
             cluster_progress_data[str(item.name)] = total_list
 
         # for cluster phase pie chart
-        activity_groups = ActivityGroup.objects.filter(project=project)
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         cluster_phases = {}
         for ag in activity_groups:
             phases = []
@@ -267,7 +267,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
             cluster_progress_data[str(item.name)] = total_list
 
         # for cluster phase pie chart
-        activity_groups = ActivityGroup.objects.filter(project=project)
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         cluster_phases = {}
         for ag in activity_groups:
             phases = []
@@ -330,7 +330,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
             cluster_progress_data[str(item.name)] = total_list
 
         # for cluster phase pie chart
-        activity_groups = ActivityGroup.objects.filter(project=project)
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         cluster_phases = {}
         for ag in activity_groups:
             phases = []
@@ -393,7 +393,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
             cluster_progress_data[str(item.name)] = total_list
 
         # for cluster phase pie chart
-        activity_groups = ActivityGroup.objects.filter(project=project)
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         cluster_phases = {}
         for ag in activity_groups:
             phases = []
