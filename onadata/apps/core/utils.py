@@ -208,11 +208,23 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         cluster_phases = {}
         for ag in activity_groups:
+            beneficiaries = 0
             phases = []
-            beneficiary = Beneficiary.objects.filter(submissions__cluster_activity__cag__activity_group=ag,
-                                                     submissions__cluster_activity__cag__cluster__in=clusters,
-                                                     submissions__status='approved').count()
-            beneficiary = [round((float(beneficiary) / len(activity_groups)) * 100, 2)]
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__cluster__in=clusters,
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
             phases.append(beneficiary)
             cluster_phases[str(ag.name)] = phases
 
@@ -270,11 +282,23 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         cluster_phases = {}
         for ag in activity_groups:
+            beneficiaries = 0
             phases = []
-            beneficiary = Beneficiary.objects.filter(submissions__cluster_activity__cag__activity_group=ag,
-                                                     submissions__cluster_activity__cag__cluster__in=clusters,
-                                                     submissions__status='approved').count()
-            beneficiary = [round((float(beneficiary) / len(activity_groups)) * 100, 2)]
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__cluster__in=clusters,
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
             phases.append(beneficiary)
             cluster_phases[str(ag.name)] = phases
 
@@ -333,11 +357,23 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         cluster_phases = {}
         for ag in activity_groups:
+            beneficiaries = 0
             phases = []
-            beneficiary = Beneficiary.objects.filter(submissions__cluster_activity__cag__activity_group=ag,
-                                                     submissions__cluster_activity__cag__cluster__in=clusters,
-                                                     submissions__status='approved').count()
-            beneficiary = [round((float(beneficiary) / len(activity_groups)) * 100, 2)]
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__cluster__in=clusters,
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
             phases.append(beneficiary)
             cluster_phases[str(ag.name)] = phases
 
@@ -396,11 +432,23 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         cluster_phases = {}
         for ag in activity_groups:
+            beneficiaries = 0
             phases = []
-            beneficiary = Beneficiary.objects.filter(submissions__cluster_activity__cag__activity_group=ag,
-                                                     submissions__cluster_activity__cag__cluster__in=clusters,
-                                                     submissions__status='approved').count()
-            beneficiary = [round((float(beneficiary) / len(activity_groups)) * 100, 2)]
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__cluster__in=clusters,
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
             phases.append(beneficiary)
             cluster_phases[str(ag.name)] = phases
 
