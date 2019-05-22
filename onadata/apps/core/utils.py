@@ -146,7 +146,8 @@ def get_cluster_activity_data(project, activity=None):
 
 
 def get_progress_data(project, types=None, clusters=None, districts=None, munis=None):
-    from .models import District, Municipality, Cluster, Submission, ProjectTimeInterval, ClusterA, Activity
+    from .models import District, Municipality, Cluster, Submission, ProjectTimeInterval, ClusterA, Activity, \
+        ActivityGroup, ClusterAG, Beneficiary
     from django.db.models import Sum
 
     progress_data = {}
@@ -154,6 +155,8 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
     categories = []
     map_data = []
     if clusters:
+
+        # for cluster progress bar data
         selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
         for item in types:
             total_list = []
@@ -175,6 +178,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         for item in selected_clusters:
             categories.append(str(item.name))
 
+        # for cluster progress line data
         interval = ProjectTimeInterval.objects.filter(project=project).order_by('label')
         for item in selected_clusters:
             total_list = []
@@ -200,7 +204,19 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     total_list.append(0)
             cluster_progress_data[str(item.name)] = total_list
 
-        return progress_data, categories, cluster_progress_data
+        # for cluster phase pie chart
+        activity_groups = ActivityGroup.objects.filter(project=project)
+        cluster_phases = {}
+        for ag in activity_groups:
+            phases = []
+            beneficiary = Beneficiary.objects.filter(submissions__cluster_activity__cag__activity_group=ag,
+                                                     submissions__cluster_activity__cag__cluster__in=clusters,
+                                                     submissions__status='approved').count()
+            beneficiary = [round((float(beneficiary) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            cluster_phases[str(ag.name)] = phases
+
+        return progress_data, categories, cluster_progress_data, cluster_phases
 
     elif munis:
         selected_munis = Municipality.objects.filter(id__in=munis).order_by('name')
@@ -250,7 +266,19 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     total_list.append(0)
             cluster_progress_data[str(item.name)] = total_list
 
-        return progress_data, categories, cluster_progress_data
+        # for cluster phase pie chart
+        activity_groups = ActivityGroup.objects.filter(project=project)
+        cluster_phases = {}
+        for ag in activity_groups:
+            phases = []
+            beneficiary = Beneficiary.objects.filter(submissions__cluster_activity__cag__activity_group=ag,
+                                                     submissions__cluster_activity__cag__cluster__in=clusters,
+                                                     submissions__status='approved').count()
+            beneficiary = [round((float(beneficiary) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            cluster_phases[str(ag.name)] = phases
+
+        return progress_data, categories, cluster_progress_data, cluster_phases
 
     elif districts:
         selected_districts = District.objects.filter(id__in=districts).order_by('name')
@@ -301,7 +329,19 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     total_list.append(0)
             cluster_progress_data[str(item.name)] = total_list
 
-        return progress_data, categories, cluster_progress_data
+        # for cluster phase pie chart
+        activity_groups = ActivityGroup.objects.filter(project=project)
+        cluster_phases = {}
+        for ag in activity_groups:
+            phases = []
+            beneficiary = Beneficiary.objects.filter(submissions__cluster_activity__cag__activity_group=ag,
+                                                     submissions__cluster_activity__cag__cluster__in=clusters,
+                                                     submissions__status='approved').count()
+            beneficiary = [round((float(beneficiary) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            cluster_phases[str(ag.name)] = phases
+
+        return progress_data, categories, cluster_progress_data, cluster_phases
 
     else:
         selected_districts = District.objects.all().order_by('name')
@@ -352,4 +392,16 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     total_list.append(0)
             cluster_progress_data[str(item.name)] = total_list
 
-        return progress_data, categories, cluster_progress_data
+        # for cluster phase pie chart
+        activity_groups = ActivityGroup.objects.filter(project=project)
+        cluster_phases = {}
+        for ag in activity_groups:
+            phases = []
+            beneficiary = Beneficiary.objects.filter(submissions__cluster_activity__cag__activity_group=ag,
+                                                     submissions__cluster_activity__cag__cluster__in=clusters,
+                                                     submissions__status='approved').count()
+            beneficiary = [round((float(beneficiary) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            cluster_phases[str(ag.name)] = phases
+
+        return progress_data, categories, cluster_progress_data, cluster_phases

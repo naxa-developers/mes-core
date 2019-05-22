@@ -259,7 +259,7 @@ class ErrorView(TemplateView):
     template_name = 'core/404.html'
 
 
-class Dashboard1View(TemplateView):
+class Dashboard1View(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard-1.html'
 
     def get(self, request):
@@ -281,7 +281,7 @@ class Dashboard1View(TemplateView):
         beneficiary_types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
             distinct().annotate(total=Count('Type'))
         for item in beneficiary_types:
-            pie_data[str(item['Type'])] = [round((float(item['total']) / 1500) * 100, 2)]
+            pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
 
         # get cluster activity overview data on basis of filter used
         if 'cluster_activity' in request.GET:
@@ -314,11 +314,11 @@ class Dashboard1View(TemplateView):
                 if item[0].startswith('dist'):
                     select_districts.append(int(item[0].split("_")[1]))
 
-            progress_data, categories, cluster_progress_data = get_progress_data(
+            progress_data, categories, cluster_progress_data, cluster_phase = get_progress_data(
                 request.project, types, clusters, select_districts, munis)
 
         else:
-            progress_data, categories, cluster_progress_data = get_progress_data(request.project, types)
+            progress_data, categories, cluster_progress_data, cluster_phase = get_progress_data(request.project, types)
 
         return render(request, self.template_name, {
             'activity_groups': activity_groups,
@@ -334,7 +334,8 @@ class Dashboard1View(TemplateView):
             'progress_data': progress_data,
             'cluster_progress_data': cluster_progress_data,
             'pie_data': pie_data,
-            'categories': categories
+            'categories': categories,
+            'cluster_phase': cluster_phase
         })
 
 
@@ -356,11 +357,10 @@ def get_map_data(request):
             geometry_field='location',
             fields=('activity', 'location', 'target_number', 'target_completed'),
         )
-        print(data)
         return HttpResponse(data)
 
 
-class Dashboard2View(MultipleObjectMixin, TemplateView):
+class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
     template_name = 'core/dashboard-2.html'
 
     def get(self, request):
@@ -388,7 +388,7 @@ class Dashboard2View(MultipleObjectMixin, TemplateView):
 
         
         page = request.GET.get('page', 1)
-        paginator = Paginator(beneficiaries, 100)
+        paginator = Paginator(beneficiaries, 50)
         
         try:
             beneficiaries = paginator.page(page)

@@ -225,12 +225,14 @@
                     </div>
                 </div>
             </li>
+            {% ifrole 'manager_only' %}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-tasks"></i><span>Dashboard</span></a>
                 <ul class="ml-menu">
                     <li><a href="{% url 'dashboard-1' %}">Dashboard-1</a></li>
                     <li><a href="{% url 'dashboard-2' %}">Dashboard-2</a></li>
                 </ul>
             </li>
+            {% end ifrole %}
             {% ifrole 'admin' %}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-tasks"></i><span>Projects</span></a>
                 <ul class="ml-menu">
