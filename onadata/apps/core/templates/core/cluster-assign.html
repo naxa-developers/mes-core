@@ -42,6 +42,12 @@
                     <!-- accordion -->
                     <div class="cluster-accordion">
                         <div id="accordion">
+                            <h5>
+                                <div class="checkbox">
+                                    <input id="select-all" type="checkbox" class="select-all" name="select-all">
+                                    <label for="select-all">Select All</label>
+                                </div>
+                            </h5>
                             {% for object in selected_activity_group %}
                             <div class="card">
                                     <div class="card-header" id="selected_heading-{{ object.activity_group.id }}">
@@ -61,15 +67,15 @@
                                             {% if item|check_cluster_activity:object %}
                                             <div class="form-group">
                                                 <div class="checkbox">
-                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" checked value="true">
+                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" checked value="true" class="single-check" data-id="{{ item.id }}">
                                                     <label for="a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
                                                 <div class="checkbox-wrap">
                                                     {% with item|get_cluster_activity:object as ca %}
                                                     <div class="multiple-flex">
-                                                        <button type="button" class="btn btn-sm btn-toggle change-btn active" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="true" autocomplete="off">
-                                                            <div class="handle"></div>
-                                                        </button>
+                                                        <!--<button type="button" class="btn btn-sm btn-toggle change-btn active" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="true" autocomplete="off">-->
+                                                            <!--<div class="handle"></div>-->
+                                                        <!--</button>-->
                                                         {% if not item.beneficiary_level %}
                                                         <div class="assign-flex">
                                                             <label for="target_{{ item.id }}">Target number</label>
@@ -117,13 +123,13 @@
                                             {% else %}
                                             <div class="form-group">
                                                 <div class="checkbox">
-                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
-                                                    <label for="a_id_{{ item.id }}">{{ item.name }}</label>&nbsp
+                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false" class="single-check" data-id="{{ item.id }}">
+                                                    <label for="a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
                                                 <div class="multiple-flex">
-                                                    <button type="button" class="btn btn-sm btn-toggle change-btn" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="false" autocomplete="off">
-                                                        <div class="handle"></div>
-                                                    </button>
+                                                    <!--<button type="button" class="btn btn-sm btn-toggle change-btn" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="false" autocomplete="off">-->
+                                                        <!--<div class="handle"></div>-->
+                                                    <!--</button>-->
                                                     {% with item|get_cluster_activity:object as ca %}
                                                     {% if not item.beneficiary_level %}
                                                     <div class="assign-flex">
@@ -193,13 +199,13 @@
                                             {% for item in object.activity.all %}
                                             <div class="form-group">
                                                 <div class="checkbox">
-                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false">
+                                                    <input id="a_id_{{ item.id }}" type="checkbox" name="a_{{ item.id }}" value="false" class="single-check" data-id="{{ item.id }}">
                                                     <label for="a_id_{{ item.id }}">{{ item.name }}</label>
                                                 </div>
                                                 <div class="multiple-flex">
-                                                    <button type="button" class="btn btn-sm btn-toggle change-btn" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="false" autocomplete="off">
-                                                        <div class="handle"></div>
-                                                    </button>
+                                                    <!--<button type="button" class="btn btn-sm btn-toggle change-btn" data-toggle="button" name="statusChange" data-id="{{ item.id }}" aria-pressed="false" autocomplete="off">-->
+                                                        <!--<div class="handle"></div>-->
+                                                    <!--</button>-->
                                                     {% if not item.beneficiary_level %}
                                                         <div class="assign-flex">
                                                             <label for="target_{{ item.id }}">Target number</label>
@@ -250,7 +256,7 @@
 {% block scripts %}
 <script>
     $(document).ready(function(){
-        $('.change-btn').on('click', function(){
+        $('.single-check').on('click', function(){
            id = $(this).attr('data-id');
            console.log(id);
            v = $('#a_id_'+id).val();
@@ -288,6 +294,14 @@
            else{
                 $('#interval_'+id).attr("disabled", "disabled");
            }
+        });
+
+        $('#select-all').on('click', function(){
+            if(this.checked){
+                $('input.single-check').each(function(){
+                    $(this).val("true");
+                })
+            }
         });
     });
 </script>
