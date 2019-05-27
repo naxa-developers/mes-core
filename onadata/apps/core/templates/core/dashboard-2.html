@@ -106,7 +106,7 @@
                                 <h5>Beneficiary</h5>
                             </div>
                             <div class="card-body">
-                                <table id="Beneficiary_table" class="table table-striped table-bordered ">
+                                <table id="dashboard_table" class="table table-striped table-bordered ">
                                     <thead>
                                         <tr>
                                             <th rowspan="2" class="text-center">Beneficiary name</th>
@@ -114,7 +114,9 @@
                                             <th rowspan="2" class="text-center">Work Progress</th>
                                             {% for obj in activity_groups %}
                                             {% with obj|get_activity_count as count %}
+                                            {% if count != 0 %}
                                             <th colspan="{{ count }}" class="text-center">{{ obj.name }}</th>
+                                            {% endif %}
                                             {% endwith %}
                                             {% endfor %}
                                         </tr>

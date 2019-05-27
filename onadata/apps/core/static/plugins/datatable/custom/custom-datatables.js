@@ -17,6 +17,15 @@ $(function(){
 	});
 });
 
+$(function(){
+	$('#dashboard_table').DataTable({
+		"scrollX": "1000px",
+		"scrollCollapse": true,
+		'iDisplayLength': 25,
+
+	});
+});
+
 
 // Vertical Scroll
 $(function(){
