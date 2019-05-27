@@ -31,10 +31,8 @@
                         <thead>
                             <tr>
                                 <th>Project Name</th>
-                                <th>Address</th>
                                 <th>District</th>
                                 <th>Municipality</th>
-                                <th>Ward</th>
                                 <th>Cluster</th>
                                 <th>Typed</th>
                                 <th>Tranch</th>
@@ -47,10 +45,8 @@
                             {% for beneficiary in object_list %}
                             <tr>
                                 <td>{{ beneficiary.name }}</td>
-                                <td>{{ beneficiary.address }}</td>
                                 <td>{{ beneficiary.district }}</td>
                                 <td>{{ beneficiary.municipality }}</td>
-                                <td>{{ beneficiary.ward }}
                                 <td>{{ beneficiary.cluster }}</td>
                                 <td>{{ beneficiary.Type }}</td>
                                 <td>{{ beneficiary.Tranch }}</td>
