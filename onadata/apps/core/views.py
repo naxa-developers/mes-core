@@ -966,6 +966,8 @@ class UserActivityViewSet(viewsets.ModelViewSet):
             queryset = ClusterA.objects.filter(activity__beneficiary_level=True, cag=activitygroup)
         elif role.group.name == 'super-admin':
             queryset = ClusterA.objects.all()
+        elif role.group.name == 'project-management-unit':
+            queryset = ClusterA.objects.all()
         else:
             return HttpResponseRedirect(reverse('404_error'))
             # raise PermissionDenied()
