@@ -808,18 +808,20 @@ class BeneficiaryUploadView(ManagerMixin, View):
                     cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
                     cluster.municipality.add(municipality)
                     cluster.save()
-                Beneficiary.objects.get_or_create(
-                    name=df['Name'][row],
-                    ward_no=df['Ward'][row],
-                    cluster=cluster,
-                    address=df['Settlement'][row],
-                    Type=df['Type_MPV'][row],
-                    GovernmentTranch=df['GovernmentTranch'][row],
-                    ConstructionPhase=df['ConstructionPhase'][row],
-                    Typesofhouse=df['Typesofhouse'][row],
-                    district=district,
-                    municipality=municipality
-                )
+                # Beneficiary.objects.get_or_create(
+                #     name=df['Name'][row],
+                #     ward=df['Ward'][row],
+                #     cluster=cluster,
+                #     address=df['Settlement'][row],
+                #     Type=df['Type_MPV'][row],
+                #     Tranch=df['GovernmentTranch'][row],
+                #     ConstructionPhase=df['ConstructionPhase'][row],
+                #     Typesofhouse=df['Typesofhouse'][row],
+                #     district=district,
+                #     municipality=municipality
+                # )
+                Beneficiary.objects.filter(name=df['Name'][row]).update(district=district, municipality=municipality)
+
             return HttpResponseRedirect('/core/beneficiary-list')
         except Exception as e:
             print(e)
