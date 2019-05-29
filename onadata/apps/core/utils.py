@@ -171,7 +171,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     ).values('beneficiary__Type').distinct().annotate(
                         progress=Sum('cluster_activity__activity__weight'), beneficiary_count=Count('beneficiary__Type'))
                     for submission in submissions:
-                        total_list.append((submission['progress'] / submission['beneficiary_count']) * 100)
+                        total_list.append((submission['progress'] / 100) * submission['beneficiary_count'])
                 else:
                     total_list.append(0)
             progress_data[str(item['Type'])] = total_list
@@ -250,7 +250,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     ).values('beneficiary__Type').distinct().annotate(
                         progress=Sum('cluster_activity__activity__weight'), beneficiary_count=Count('beneficiary__Type'))
                     for submission in submissions:
-                        total_list.append((submission['progress'] / submission['beneficiary_count']) * 100)
+                        total_list.append((submission['progress'] / 100) * submission['beneficiary_count'])
                 else:
                     total_list.append(0)
             progress_data[str(item['Type'])] = total_list
@@ -329,7 +329,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     ).values('beneficiary__Type').distinct().annotate(
                         progress=Sum('cluster_activity__activity__weight'), beneficiary_count=Count('beneficiary__Type'))
                     for submission in submissions:
-                        total_list.append((submission['progress'] / submission['beneficiary_count']) * 100)
+                        total_list.append((submission['progress'] / 100) * submission['beneficiary_count'])
                 else:
                     total_list.append(0)
             progress_data[str(item['Type'])] = total_list
@@ -408,7 +408,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     ).values('beneficiary__Type').distinct().annotate(
                         progress=Sum('cluster_activity__activity__weight'), beneficiary_count=Count('beneficiary__Type'))
                     for submission in submissions:
-                        total_list.append((submission['progress'] / submission['beneficiary_count']) * 100)
+                        total_list.append((submission['progress'] / 100) * submission['beneficiary_count'])
                 else:
                     total_list.append(0)
             progress_data[str(item['Type'])] = total_list
