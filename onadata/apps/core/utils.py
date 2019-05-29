@@ -155,25 +155,27 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
     categories = []
     map_data = []
     if clusters:
-
         # for cluster progress bar data
         selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
         for item in types:
             total_list = []
             for obj in selected_clusters:
-                if Submission.objects.filter(
-                        cluster_activity__cag__cluster_id=obj.id,
-                        status='approved',
-                        beneficiary__Type=item['Type']).exists():
-                    submissions = Submission.objects.filter(
-                        cluster_activity__cag__cluster_id=obj.id, status='approved',
-                        beneficiary__Type=item['Type']
-                    ).values('beneficiary__Type').distinct().annotate(
-                        progress=Sum('cluster_activity__activity__weight'), beneficiary_count=Count('beneficiary__Type'))
-                    for submission in submissions:
-                        total_list.append((submission['progress'] / 100) * submission['beneficiary_count'])
-                else:
-                    total_list.append(0)
+                complete = 0
+                beneficiary = Beneficiary.objects.filter(cluster=obj, Type=item['Type'])
+                beneficiary_progress = 0
+                for obj in beneficiary:
+                    if Submission.objects.filter(beneficiary=obj).exists():
+                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
+                            'beneficiary__Type'). \
+                            annotate(progress=Sum('cluster_activity__activity__weight'))
+                        for submission in submissions:
+                            beneficiary_progress += submission['progress']
+
+                        if beneficiary_progress == 100:
+                            complete += 1
+                    else:
+                        pass
+                total_list.append(complete)
             progress_data[str(item['Type'])] = total_list
         for item in selected_clusters:
             categories.append(str(item.name))
@@ -239,20 +241,22 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         for item in types:
             total_list = []
             for obj in selected_munis:
-                clusters = obj.cluster.all().order_by('name')
-                if Submission.objects.filter(
-                        cluster_activity__cag__cluster__in=clusters,
-                        status='approved',
-                        beneficiary__Type=item['Type']).exists():
-                    submissions = Submission.objects.filter(
-                        cluster_activity__cag__cluster__in=clusters, status='approved',
-                        beneficiary__Type=item['Type']
-                    ).values('beneficiary__Type').distinct().annotate(
-                        progress=Sum('cluster_activity__activity__weight'), beneficiary_count=Count('beneficiary__Type'))
-                    for submission in submissions:
-                        total_list.append((submission['progress'] / 100) * submission['beneficiary_count'])
-                else:
-                    total_list.append(0)
+                complete = 0
+                beneficiary = Beneficiary.objects.filter(municipality=obj, Type=item['Type'])
+                beneficiary_progress = 0
+                for obj in beneficiary:
+                    if Submission.objects.filter(beneficiary=obj).exists():
+                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
+                            'beneficiary__Type'). \
+                            annotate(progress=Sum('cluster_activity__activity__weight'))
+                        for submission in submissions:
+                            beneficiary_progress += submission['progress']
+
+                        if beneficiary_progress == 100:
+                            complete += 1
+                    else:
+                        pass
+                total_list.append(complete)
             progress_data[str(item['Type'])] = total_list
         for item in selected_munis:
             categories.append(str(item.name))
@@ -317,21 +321,22 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         for item in types:
             total_list = []
             for obj in selected_districts:
-                municipality = Municipality.objects.filter(district=obj).order_by('name')
-                clusters = Cluster.objects.filter(municipality__in=municipality).order_by('name')
-                if Submission.objects.filter(
-                        cluster_activity__cag__cluster__in=clusters,
-                        status='approved',
-                        beneficiary__Type=item['Type']).exists():
-                    submissions = Submission.objects.filter(
-                        cluster_activity__cag__cluster__in=clusters, status='approved',
-                        beneficiary__Type=item['Type']
-                    ).values('beneficiary__Type').distinct().annotate(
-                        progress=Sum('cluster_activity__activity__weight'), beneficiary_count=Count('beneficiary__Type'))
-                    for submission in submissions:
-                        total_list.append((submission['progress'] / 100) * submission['beneficiary_count'])
-                else:
-                    total_list.append(0)
+                complete = 0
+                beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
+                beneficiary_progress = 0
+                for obj in beneficiary:
+                    if Submission.objects.filter(beneficiary=obj).exists():
+                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
+                            'beneficiary__Type'). \
+                            annotate(progress=Sum('cluster_activity__activity__weight'))
+                        for submission in submissions:
+                            beneficiary_progress += submission['progress']
+
+                        if beneficiary_progress == 100:
+                            complete += 1
+                    else:
+                        pass
+                total_list.append(complete)
             progress_data[str(item['Type'])] = total_list
         for item in selected_districts:
             categories.append(str(item.name))
@@ -396,21 +401,21 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         for item in types:
             total_list = []
             for obj in selected_districts:
-                municipality = Municipality.objects.filter(district=obj).order_by('name')
-                clusters = Cluster.objects.filter(municipality__in=municipality).order_by('name')
-                if Submission.objects.filter(
-                        cluster_activity__cag__cluster__in=clusters,
-                        status='approved',
-                        beneficiary__Type=item['Type']).exists():
-                    submissions = Submission.objects.filter(
-                        cluster_activity__cag__cluster__in=clusters, status='approved',
-                        beneficiary__Type=item['Type']
-                    ).values('beneficiary__Type').distinct().annotate(
-                        progress=Sum('cluster_activity__activity__weight'), beneficiary_count=Count('beneficiary__Type'))
-                    for submission in submissions:
-                        total_list.append((submission['progress'] / 100) * submission['beneficiary_count'])
-                else:
-                    total_list.append(0)
+                complete = 0
+                beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
+                beneficiary_progress = 0
+                for obj in beneficiary:
+                    if Submission.objects.filter(beneficiary=obj).exists():
+                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values('beneficiary__Type').\
+                            annotate(progress=Sum('cluster_activity__activity__weight'))
+                        for submission in submissions:
+                            beneficiary_progress += submission['progress']
+
+                        if beneficiary_progress == 100:
+                            complete += 1
+                    else:
+                        pass
+                total_list.append(complete)
             progress_data[str(item['Type'])] = total_list
         for item in selected_districts:
             categories.append(str(item.name))
