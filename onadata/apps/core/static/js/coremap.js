@@ -1,7 +1,7 @@
 (function($) {
     "use strict";
     $(document).ready(function() {
-        var map = L.map('map').setView([27.7, 85.4], 7.89);
+        var map = L.map('map').setView([27.5546, 85.0233], 10.32);
 
         var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
