@@ -6,6 +6,28 @@
 <style>
     .table{
     width:100% !important;}
+
+    .pagination {
+      display: inline-block;
+    }
+
+    .pagination a {
+      color: black;
+      float: left;
+      padding: 8px 16px;
+      text-decoration: none;
+      transition: background-color .3s;
+      border: 1px solid #ddd;
+    }
+
+    .pagination a.active {
+      background-color: #4CAF50;
+      color: white;
+      border: 1px solid #4CAF50;
+    }
+
+    .pagination a:hover:not(.active) {background-color: #ddd;}
+
 </style>
 
 <section class="content">
@@ -162,16 +184,25 @@
                                 <div class="pagination">
                                 <span class="step-links">
                                     {% if beneficiaries.has_previous %}
-                                        <a href="?{% param_replace page=1 %}">&laquo; first</a>
-                                        <a href="?{% param_replace page=page_obj.previous_page_number %}">previous</a>
+                                        <a class="paginate_button" href="?{% param_replace page=1 %}">&laquo; first</a>
+                                        <!--<a class="paginate_button" href="?{% param_replace page=page_obj.previous_page_number %}">previous</a>-->
                                     {% endif %}
 
-                                    <span class="current">
-                                        Page {{ beneficiaries.number }} of {{ beneficiaries.paginator.num_pages }}.
-                                    </span>
+                                    {% with beneficiaries.paginator.num_pages|get_range as n %}
+
+                                    {% for number in n %}
+                                        {% if number == beneficiaries.number %}
+                                            <a href="#" class="active">{{ number }}</a>
+                                        {% else %}
+                                            <a href="?{% param_replace page=number %}">{{ number }}</a>
+                                        {% endif %}
+
+                                    {% endfor %}
+                                    {% endwith %}
+
 
                                     {% if beneficiaries.has_next %}
-                                        <a href="?{% param_replace page=beneficiaries.next_page_number %}">next</a>
+                                        <!--<a href="?{% param_replace page=beneficiaries.next_page_number %}">next</a>-->
                                         <a href="?{% param_replace page=beneficiaries.paginator.num_pages %}">last
                                             &raquo;</a>
                                     {% endif %}
