@@ -344,23 +344,23 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
 
 # for map data
 def get_map_data(request):
-    if request.is_ajax():
-        clusters = Cluster.objects.filter(project=request.project)
-        # beneficiaries = []
-        # for item in ca:
-        #     if item.activity.beneficiary_level:
-        #         cluster = Cluster.objects.filter(id=item.cag.cluster.id)
-        #         beneficiaries.append(*Beneficiary.objects.filter(cluster__in=cluster))
-        activities = ClusterA.objects.filter(
-            cag__cluster__in=clusters, activity__beneficiary_level=False)
+    beneficiaries = Beneficiary.objects.filter(~Q(location=None))
+    # clusters = Cluster.objects.filter(project=request.project)
+    # beneficiaries = []
+    # for item in ca:
+    #     if item.activity.beneficiary_level:
+    #         cluster = Cluster.objects.filter(id=item.cag.cluster.id)
+    #         beneficiaries.append(*Beneficiary.objects.filter(cluster__in=cluster))
+    # activities = ClusterA.objects.filter(
+    #     cag__cluster__in=clusters, activity__beneficiary_level=False)
 
-        data = serialize(
-            'geojson',
-            activities,
-            geometry_field='location',
-            fields=('activity', 'location', 'target_number', 'target_completed'),
-        )
-        return HttpResponse(data)
+    data = serialize(
+        'geojson',
+        beneficiaries,
+        geometry_field='location',
+        fields=('name', 'location', 'Type'),
+    )
+    return HttpResponse(data)
 
 
 class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
@@ -845,6 +845,21 @@ class UserRoleCreateView(ManagerMixin, CreateView):
     template_name = 'core/userrole-form.html'
     form_class = UserRoleForm
     success_url = reverse_lazy('userrole_list')
+
+
+# class UserRoleCreateView(ManagerMixin, View):
+#     def get(self, request, **kwargs):
+#         form = UserRoleForm()
+#         return render(request, 'core/userrole-form.html', {'form': form})
+#
+#     def post(self, request, **kwargs):
+#         form = UserRoleForm(request.POST)
+#         if form.is_valid():
+#             obj = form.save(commit=False)
+#             obj.save()
+#             obj.save_m2m()
+#             return HttpResponseRedirect(reverse('userrole_list'))
+#         return render(request, 'core/userrole-form.html', {'form':form})
 
 
 class UserRoleUpdateView(ManagerMixin, UpdateView):
