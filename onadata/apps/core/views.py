@@ -147,7 +147,10 @@ def signin(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect(reverse('home'))
+                    if user.user_roles.first().group.name == 'project-manager':
+                        return HttpResponseRedirect(reverse('dashboard-1'))
+                    else:
+                        return HttpResponseRedirect(reverse('home'))
                 else:
                     return render(request, 'core/sign-in.html',
                                   {'form': form,
