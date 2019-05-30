@@ -19,9 +19,10 @@ $(function(){
 
 $(function(){
 	$('#dashboard_table').DataTable({
-		"scrollX": "1000px",
+		"scrollX": true,
 		"scrollCollapse": true,
-		'iDisplayLength': 25,
+//		'iDisplayLength': 25,
+		'paging': false,
 
 	});
 });
