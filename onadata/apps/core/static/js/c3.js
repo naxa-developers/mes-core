@@ -424,7 +424,7 @@ $(function() {
                     top: 30
                 },
                 color: {
-                    pattern: ["#0d89df", "#00A890", "#e3e3e3", "#193f77", "#f5b2d0"]
+                    pattern: ["#0d89df", "#00A890", "red", "#193f77", "#f5b2d0"]
                 },
             });
         });
@@ -558,7 +558,7 @@ $(function() {
                     top: 0
                 },
                 color: {
-                        pattern: ["#e3e3e3", "#00A890", "#0d89df"]
+                        pattern: ["#f5b2d0", "#00A890", "#0d89df"]
                 }
             });
         });
