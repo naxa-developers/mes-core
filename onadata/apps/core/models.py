@@ -26,7 +26,7 @@ class Project(models.Model):
 	sector = models.CharField(max_length=200)
 	start_date = models.DateTimeField()
 	end_date = models.DateTimeField()
-	reporting_period = models.IntegerField(choices=((1,"Monthly"),(2, "Bi-annually"), (3, "Quaterly")))
+	reporting_period = models.IntegerField(choices=((1,"Monthly"),(2, "Bi-annually"), (3, "Quarterly")))
 	beneficiaries = models.BooleanField(default=True)
 
 	def __str__(self):
