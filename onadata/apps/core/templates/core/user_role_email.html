@@ -1,6 +1,6 @@
 {% autoescape off %}
 Hi {{ userrole.user.username }},
-You have been assigned as {{ userrole.group.name }} {% if userrole.cluster %}for cluster(s) {% for cluster in clusters %}{{ cluster.name }}, {% endfor %}{% endif %} in the project {{ userrole.project.name }}.
+You have been assigned as {{ userrole.group.name }}{% if clusters %}for cluster(s) {% for cluster in clusters %} {{ cluster.name }}, {% endfor %}{% endif %} in the project {{ userrole.project.name }}.
 Please Login by clicking this link: http://{{domain}}{% url 'sign_in' %}
 
 From,
