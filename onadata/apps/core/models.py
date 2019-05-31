@@ -278,22 +278,6 @@ def save_interval(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=UserRole)
-def send_email(sender, instance, **kwargs):
-	if instance.user.email:
-		to_email = instance.user.email
-		mail_subject = 'User role assigned.'
-		message = render_to_string('core/user_role_email.html', {
-			'userrole': instance,
-			'domain': settings.SITE_URL,
-		})
-		email = EmailMessage(
-			mail_subject, message, to=[to_email]
-		)
-		email.send()
-	else:
-		pass
-
-@receiver(post_save, sender=UserRole)
 def asset_permissions(sender, instance, **kwargs):
 	if instance.group.name in ['project-manager', 'project-management-unit', 'project-coordinator']:
 		codenames = ['add_asset', 'change_asset', 'delete_asset', 'view_asset', 'share_asset']
