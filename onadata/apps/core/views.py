@@ -840,26 +840,43 @@ class UserRoleListView(ManagerMixin, ListView):
     template_name = 'core/userrole-list.html'
 
 
-class UserRoleCreateView(ManagerMixin, CreateView):
-    model = UserRole
-    template_name = 'core/userrole-form.html'
-    form_class = UserRoleForm
-    success_url = reverse_lazy('userrole_list')
+# class UserRoleCreateView(ManagerMixin, CreateView):
+#     model = UserRole
+#     template_name = 'core/userrole-form.html'
+#     form_class = UserRoleForm
+#     success_url = reverse_lazy('userrole_list')
 
 
-# class UserRoleCreateView(ManagerMixin, View):
-#     def get(self, request, **kwargs):
-#         form = UserRoleForm()
-#         return render(request, 'core/userrole-form.html', {'form': form})
-#
-#     def post(self, request, **kwargs):
-#         form = UserRoleForm(request.POST)
-#         if form.is_valid():
-#             obj = form.save(commit=False)
-#             obj.save()
-#             obj.save_m2m()
-#             return HttpResponseRedirect(reverse('userrole_list'))
-#         return render(request, 'core/userrole-form.html', {'form':form})
+class UserRoleCreateView(ManagerMixin, View):
+    def get(self, request, **kwargs):
+        form = UserRoleForm()
+        return render(request, 'core/userrole-form.html', {'form': form})
+
+    def post(self, request, **kwargs):
+        form = UserRoleForm(request.POST)
+        if form.is_valid():
+            clusters = form.cleaned_data.get('cluster')
+            obj = form.save(commit=False)
+            obj.save()
+            for cluster in clusters:
+                obj.cluster.add(cluster)
+            if obj.user.email:
+                clusters = obj.cluster.all()
+                to_email = obj.user.email
+                mail_subject = 'User role assigned.'
+                message = render_to_string('core/user_role_email.html', {
+                    'userrole': obj,
+                    'clusters': clusters,
+                    'domain': settings.SITE_URL,
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+            else:
+                pass
+            return HttpResponseRedirect(reverse('userrole_list'))
+        return render(request, 'core/userrole-form.html', {'form':form})
 
 
 class UserRoleUpdateView(ManagerMixin, UpdateView):
