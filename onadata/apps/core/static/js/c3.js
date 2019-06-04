@@ -390,7 +390,7 @@ $(function() {
                 },
             });
         });
-        double graph for progress overview
+        //double graph for progress overview
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-bar', // id of chart wrapper
