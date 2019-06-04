@@ -390,80 +390,19 @@ $(function() {
                 },
             });
         });
-        //double graph for progress overview
-//        $(document).ready(function(){
-//            var chart = c3.generate({
-//                bindto: '#chart-bar', // id of chart wrapper
-//                data: {
-//                    json: progress_data,
-//                    type: 'bar', // default type of chart
-//                },
-//                axis: {
-//                    x: {
-//                        type: 'category',
-//                        // name of each category
-//                        categories: categories,
-//
-//                    },
-//                },
-//                bar: {
-//                    width: 10
-//                },
-//                legend: {
-//                    show: true, //hide legend
-//                    position: 'inset',
-//                    inset: {
-//                            anchor: 'top-right',
-//                            x: 50,
-//                            y: -30,
-//                            step: 1
-//                        }
-//                },
-//                padding: {
-//                    bottom: 0,
-//                    top: 30
-//                },
-//                color: {
-//                    pattern: ["#0d89df", "#00A890", "red", "#193f77", "#f5b2d0"]
-//                },
-//            });
-//        });
-
+        double graph for progress overview
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-bar', // id of chart wrapper
                 data: {
-                    columns: [
-                        // each columns data
-                        ['data1', 2, 4],
-                        ['data2', 3, 1],
-                        ['data3', 1, 5],
-                        ['data4', 7, 2],
-                        ['data5', 0, 6]
-                    ],
+                    json: progress_data,
                     type: 'bar', // default type of chart
-
-                    colors: {
-                        'data1': "#0d89df",
-                        'data2': "#00A890",
-                        'data3': "red",
-                        'data4': "#193f77",
-                        'data5': "#f5b2d0",
-                    },
-                    names: {
-                        // name of each serie
-                        'data1': 'SC',
-                        'data2': 'Marginal',
-                        'data3': 'PWD',
-                        'data4': 'SW',
-                        'data5': 'CL',
-                    }
                 },
                 axis: {
                     x: {
                         type: 'category',
                         // name of each category
-                        categories: ['Makawanpur', 'Lamjung'],
+                        categories: categories,
 
                     },
                 },
@@ -484,11 +423,72 @@ $(function() {
                     bottom: 0,
                     top: 30
                 },
-//                color: {
-//                    pattern: ["#0d89df", "#00A890", "red", "#193f77", "#f5b2d0"]
-//                },
+                color: {
+                    pattern: ["#0d89df", "#00A890", "red", "#193f77", "#f5b2d0"]
+                },
             });
         });
+
+//        $(document).ready(function(){
+//            var chart = c3.generate({
+//                bindto: '#chart-bar', // id of chart wrapper
+//                data: {
+//                    columns: [
+//                        // each columns data
+//                        ['data1', 2, 4],
+//                        ['data2', 3, 1],
+//                        ['data3', 1, 5],
+//                        ['data4', 7, 2],
+//                        ['data5', 0, 6]
+//                    ],
+//                    type: 'bar', // default type of chart
+//
+//                    colors: {
+//                        'data1': "#0d89df",
+//                        'data2': "#00A890",
+//                        'data3': "red",
+//                        'data4': "#193f77",
+//                        'data5': "#f5b2d0",
+//                    },
+//                    names: {
+//                        // name of each serie
+//                        'data1': 'SC',
+//                        'data2': 'Marginal',
+//                        'data3': 'PWD',
+//                        'data4': 'SW',
+//                        'data5': 'CL',
+//                    }
+//                },
+//                axis: {
+//                    x: {
+//                        type: 'category',
+//                        // name of each category
+//                        categories: ['Makawanpur', 'Lamjung'],
+//
+//                    },
+//                },
+//                bar: {
+//                    width: 10
+//                },
+//                legend: {
+//                    show: true, //hide legend
+//                    position: 'inset',
+//                    inset: {
+//                            anchor: 'top-right',
+//                            x: 50,
+//                            y: -30,
+//                            step: 1
+//                        }
+//                },
+//                padding: {
+//                    bottom: 0,
+//                    top: 30
+//                },
+////                color: {
+////                    pattern: ["#0d89df", "#00A890", "red", "#193f77", "#f5b2d0"]
+////                },
+//            });
+//        });
 
         //roted chart
         $(document).ready(function(){
