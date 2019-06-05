@@ -268,8 +268,8 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
     def get(self, request):
         activity_groups = ActivityGroup.objects.filter(project=request.project)
         activities = Activity.objects.filter(activity_group__project=request.project)
-        districts = District.objects.all()
-        municipalities = Municipality.objects.all()
+        districts = District.objects.all().order_by('name')
+        municipalities = Municipality.objects.all().order_by('name')
         select_cluster = Cluster.objects.filter(project=request.project)
         types = Beneficiary.objects.values('Type').distinct('Type')
         intervals = ProjectTimeInterval.objects.values('label').order_by('label')
@@ -317,11 +317,34 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
                 if item[0].startswith('dist'):
                     select_districts.append(int(item[0].split("_")[1]))
 
-            progress_data, categories, cluster_progress_data, cluster_phase = get_progress_data(
+            progress_data, categories, cluster_progress_data = get_progress_data(
                 request.project, types, clusters, select_districts, munis)
 
         else:
-            progress_data, categories, cluster_progress_data, cluster_phase = get_progress_data(request.project, types)
+            progress_data, categories, cluster_progress_data = get_progress_data(request.project, types)
+
+        # for construction phase pie chart
+        activity_groups = ActivityGroup.objects.filter(project=request.project, output__name='House Construction')
+        construction_phases = {}
+        for ag in activity_groups:
+            beneficiaries = 0
+            phases = []
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            construction_phases[str(ag.name)] = phases
 
         return render(request, self.template_name, {
             'activity_groups': activity_groups,
@@ -338,7 +361,7 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
             'cluster_progress_data': cluster_progress_data,
             'pie_data': pie_data,
             'categories': categories,
-            'cluster_phase': cluster_phase
+            'construction_phases': construction_phases
         })
 
 
