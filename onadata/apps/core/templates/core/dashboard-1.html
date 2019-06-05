@@ -5,6 +5,18 @@
 {% block content %}
 <!-- Main Content -->
 
+<style>
+    .select-list ul{
+        max-height: 200px;
+        overflow: hidden;
+        overflow-y: auto;
+    }
+
+    .leaflet-top.leaflet-left{
+        z-index: 500;
+    }
+</style>
+
 <section class="content">
     <div class="block-header">
         <div class="row">
@@ -129,7 +141,7 @@
                 <div class="graph-wrapper">
                     <div class="graph-column" style="padding:0px;">
                         <div class="row">
-                            <div class="col-lg-4">
+                            <div class="col-lg-6">
                                 <div class="card ben-card">
                                     <div class="card-header">
                                         <h5>Gender Distribution</h5>
@@ -139,7 +151,17 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-6">
+                                <div class="card ben-card">
+                                    <div class="card-header">
+                                        <h5>Age Distribution</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="age-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
                                 <div class="card ben-card">
                                     <div class="card-header">
                                         <h5>Household Category</h5>
@@ -149,13 +171,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-6">
                                 <div class="card ben-card">
                                     <div class="card-header">
-                                        <h5>Age Distribution</h5>
+                                        <h5>Construction Phases</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div id="age-bar"></div>
+                                        <div id="cluster_pie"></div>
                                     </div>
                                 </div>
                             </div>
@@ -173,7 +195,7 @@
                             <div class="form-group">
                                 <div class="select-option" id="district_select">
                                     <span>select District</span>
-                                    <div class="select-list" >
+                                    <div class="select-list">
                                         <ul>
                                             {% for district in districts %}
                                             <li>
@@ -240,17 +262,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Construction Phases</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div id="cluster_pie"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-12">
                             <div class="card">
                                 <div class="card-header">
                                     <h5>Progress overview</h5>
@@ -400,7 +412,7 @@
     progress_data = {{ progress_data|safe }};
     pie_data = {{ pie_data|safe }};
     cluster_progress_data = {{ cluster_progress_data|safe }};
-    cluster_phase_data = {{ cluster_phase|safe }};
+    cluster_phase_data = {{ construction_phases|safe }};
 
         //for municipality list with respect to districts in cluster progress
         $(".district_class").on('click', function(){
