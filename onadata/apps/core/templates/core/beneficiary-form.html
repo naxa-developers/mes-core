@@ -99,6 +99,15 @@
                     <font color="crimson">{{ form.cluster.errors }}</font>
                     {% endif %}
                     <div class="form-group">
+                        <label>{{ form.payment_type.label }}</label>
+                        <div class="select-option">
+                        {{ form.payment_type }}
+                        </div>
+                    </div>
+                    {% if form.cluster.errors %}
+                    <font color="crimson">{{ form.payment_type.errors }}</font>
+                    {% endif %}
+                    <div class="form-group">
                         <label>Longitude</label>
                         <input class="form-control" type="text" name="Longitude"
                                value="{% if form.instance %}{{ form.instance.location.x }}{% else %}0{% endif %}">
@@ -109,6 +118,7 @@
                         <input class="form-control" type="text" name="Latitude"
                                value="{% if form.instance %}{{ form.instance.location.y }}{% else %}0{% endif %}">
                     </div>
+
 
                     <button type="submit" class="btn btn-xs btn-primary">Submit</button>
                 </form>
