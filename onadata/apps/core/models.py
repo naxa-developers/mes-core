@@ -128,6 +128,12 @@ class Activity(models.Model):
 			return self.location.x
 
 
+PAYMENT_CHOICES = (
+	('single', 'One Time Payment'),
+	('daily', 'Daily Basis')
+)
+
+
 class Beneficiary(models.Model):
 	name = models.CharField(max_length=200)
 	address = models.CharField(max_length=400)
@@ -140,6 +146,7 @@ class Beneficiary(models.Model):
 	ConstructionPhase = models.CharField(max_length=100, blank=True)
 	Typesofhouse = models.CharField(max_length=100, blank=True)
 	location = PointField(geography=True, srid=4326, blank=True, null=True)
+	payment_type = models.CharField(max_length=100, choices=PAYMENT_CHOICES, blank=True, null=True)
 
 	def __str__(self):
 		return self.name

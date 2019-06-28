@@ -279,7 +279,7 @@ class BeneficiaryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(BeneficiaryForm, self).__init__(*args, **kwargs)
         if not self.fields['location'].initial:
-            self.fields['location'].initial = Point(85.3240, 27.7172, srid=4326)
+            self.fields['location'].initial = Point(0, 0, srid=4326)
 
     class Meta:
         model = Beneficiary
@@ -296,16 +296,17 @@ class BeneficiaryForm(forms.ModelForm):
             'ConstructionPhase': forms.TextInput(attrs={'placeholder': 'Construction Phase', 'class': 'form-control'}),
             'Typesofhouse': forms.TextInput(attrs={'placeholder': 'Types of house', 'class': 'form-control'}),
             'cluster': forms.Select(attrs={'class': "custom-select"}),
+            'payment_type': forms.Select(attrs={'class': "custom-select"}),
         }
 
     def clean(self):
         if self.data.get("Longitude") == '':
-            lat = 85.3240
+            lat = 0
         else:
             lat = self.data.get("Longitude", "85.3240")
 
         if self.data.get("Latitude") == '':
-            long = 27.7172
+            long = 0
         else:
             long = self.data.get("Latitude", "27.7172")
         p = Point(round(float(lat), 6), round(float(long), 6), srid=4326)
