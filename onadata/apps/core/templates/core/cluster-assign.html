@@ -80,12 +80,12 @@
                                                         <div class="assign-flex">
                                                             <label for="target_{{ item.id }}">Target number</label>
                                                             <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
-                                                            <label for="lat_{{ item.id }}">Latitude</label>
-                                                            <input class="form-control" type="text" id="lat_{{ item.id }}" name="lat_{{ item.id }}" value="{% if ca.latitude %}{{ ca.latitude }}{% else %}0{% endif %}">
-                                                            <label for="long_{{ item.id }}">Longitude</label>
-                                                            <input class="form-control" type="text"
-                                                                   id="long_{{ item.id }}" name="long_{{ item.id }}"
-                                                                   value="{% if ca.longitude %}{{ ca.longitude }}{% else %}0{% endif %}">
+                                                            <!--<label for="lat_{{ item.id }}">Latitude</label>-->
+                                                            <!--<input class="form-control" type="text" id="lat_{{ item.id }}" name="lat_{{ item.id }}" value="{% if ca.latitude %}{{ ca.latitude }}{% else %}0{% endif %}">-->
+                                                            <!--<label for="long_{{ item.id }}">Longitude</label>-->
+                                                            <!--<input class="form-control" type="text"-->
+                                                                   <!--id="long_{{ item.id }}" name="long_{{ item.id }}"-->
+                                                                   <!--value="{% if ca.longitude %}{{ ca.longitude }}{% else %}0{% endif %}">-->
                                                         </div>
                                                         {% endif %}
                                                         <div class="select-option">
@@ -135,14 +135,14 @@
                                                     <div class="assign-flex">
                                                         <label for="target_{{ item.id }}">Target number</label>
                                                         <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}" disabled>
-                                                        <label for="lat_{{ item.id }}">Latitude</label>
-                                                        <input class="form-control" type="text"
-                                                               id="lat_{{ item.id }}" name="lat_{{ item.id }}"
-                                                               value="{% if ca.latitude %}{{ ca.latitude }}{% else %}0{% endif %}" disabled>
-                                                        <label for="long_{{ item.id }}">Longitude</label>
-                                                        <input class="form-control" type="text"
-                                                               id="long_{{ item.id }}" name="long_{{ item.id }}"
-                                                               value="{% if ca.longitude %}{{ ca.longitude }}{% else %}0{% endif %}" disabled>
+                                                        <!--<label for="lat_{{ item.id }}">Latitude</label>-->
+                                                        <!--<input class="form-control" type="text"-->
+                                                               <!--id="lat_{{ item.id }}" name="lat_{{ item.id }}"-->
+                                                               <!--value="{% if ca.latitude %}{{ ca.latitude }}{% else %}0{% endif %}" disabled>-->
+                                                        <!--<label for="long_{{ item.id }}">Longitude</label>-->
+                                                        <!--<input class="form-control" type="text"-->
+                                                               <!--id="long_{{ item.id }}" name="long_{{ item.id }}"-->
+                                                               <!--value="{% if ca.longitude %}{{ ca.longitude }}{% else %}0{% endif %}" disabled>-->
                                                     </div>
                                                     {% endif %}
                                                     <div class="select-option">
@@ -210,15 +210,15 @@
                                                         <div class="assign-flex">
                                                             <label for="target_{{ item.id }}">Target number</label>
                                                             <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.target_number }}" disabled>
-                                                            <label for="lat_{{ item.id }}">Latitude</label>
-                                                            <input class="form-control" type="text"
-                                                                   id="lat_{{ item.id }}" name="lat_{{ item.id }}"
-                                                                   value="{% if item.latitude %}{{ item.latitude }}{% else %}0{% endif %}"
-                                                                   disabled>
-                                                            <label for="long_{{ item.id }}">Longitude</label>
-                                                            <input class="form-control" type="text"
-                                                                   id="long_{{ item.id }}" name="long_{{ item.id }}"
-                                                                   value="{% if item.longitude %}{{ item.longitude }}{% else %}0{% endif %}" disabled>
+                                                            <!--<label for="lat_{{ item.id }}">Latitude</label>-->
+                                                            <!--<input class="form-control" type="text"-->
+                                                                   <!--id="lat_{{ item.id }}" name="lat_{{ item.id }}"-->
+                                                                   <!--value="{% if item.latitude %}{{ item.latitude }}{% else %}0{% endif %}"-->
+                                                                   <!--disabled>-->
+                                                            <!--<label for="long_{{ item.id }}">Longitude</label>-->
+                                                            <!--<input class="form-control" type="text"-->
+                                                                   <!--id="long_{{ item.id }}" name="long_{{ item.id }}"-->
+                                                                   <!--value="{% if item.longitude %}{{ item.longitude }}{% else %}0{% endif %}" disabled>-->
                                                         </div>
                                                         {% endif %}
                                                     <div class="select-option">
@@ -274,19 +274,19 @@
                 $('#target_'+id).attr("disabled", "disabled");
            }
 
-           if($('#lat_'+id).attr("disabled")){
-                $('#lat_'+id).removeAttr('disabled');
-           }
-           else{
-                $('#lat_'+id).attr("disabled", "disabled");
-           }
+           <!--if($('#lat_'+id).attr("disabled")){-->
+                <!--$('#lat_'+id).removeAttr('disabled');-->
+           <!--}-->
+           <!--else{-->
+                <!--$('#lat_'+id).attr("disabled", "disabled");-->
+           <!--}-->
 
-           if($('#long_'+id).attr("disabled")){
-                $('#long_'+id).removeAttr('disabled');
-           }
-           else{
-                $('#long_'+id).attr("disabled", "disabled");
-           }
+           <!--if($('#long_'+id).attr("disabled")){-->
+                <!--$('#long_'+id).removeAttr('disabled');-->
+           <!--}-->
+           <!--else{-->
+                <!--$('#long_'+id).attr("disabled", "disabled");-->
+           <!--}-->
 
            if($('#interval_'+id).attr("disabled")){
                  $('#interval_'+id).removeAttr('disabled');
