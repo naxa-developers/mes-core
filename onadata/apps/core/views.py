@@ -853,11 +853,17 @@ class UserRoleCreateView(ManagerMixin, View):
     def post(self, request, **kwargs):
         form = UserRoleForm(request.POST)
         if form.is_valid():
-            clusters = form.cleaned_data.get('cluster')
             obj = form.save(commit=False)
             obj.save()
-            for cluster in clusters:
-                obj.cluster.add(cluster)
+
+            if obj.group.name == 'project-manager':
+                clusters = Cluster.objects.filter(project=obj.project)
+                for cluster in clusters:
+                    obj.cluster.add(cluster)
+            else:
+                clusters = form.cleaned_data.get('cluster')
+                for cluster in clusters:
+                    obj.cluster.add(cluster)
             if obj.user.email:
                 clusters = obj.cluster.all()
                 to_email = obj.user.email
