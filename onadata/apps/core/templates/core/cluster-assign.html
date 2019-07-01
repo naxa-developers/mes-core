@@ -79,7 +79,7 @@
                                                         {% if not item.beneficiary_level %}
                                                         <div class="assign-flex">
                                                             <label for="target_{{ item.id }}">Target number</label>
-                                                            <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}">
+                                                            <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{% if ca.target_number %}{{ ca.target_number }}{% else %}0{% endif %}">
                                                             <!--<label for="lat_{{ item.id }}">Latitude</label>-->
                                                             <!--<input class="form-control" type="text" id="lat_{{ item.id }}" name="lat_{{ item.id }}" value="{% if ca.latitude %}{{ ca.latitude }}{% else %}0{% endif %}">-->
                                                             <!--<label for="long_{{ item.id }}">Longitude</label>-->
@@ -134,7 +134,7 @@
                                                     {% if not item.beneficiary_level %}
                                                     <div class="assign-flex">
                                                         <label for="target_{{ item.id }}">Target number</label>
-                                                        <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ ca.target_number }}" disabled>
+                                                        <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{% if ca.target_number %}{{ ca.target_number }}{% else %}0{% endif %}" disabled>
                                                         <!--<label for="lat_{{ item.id }}">Latitude</label>-->
                                                         <!--<input class="form-control" type="text"-->
                                                                <!--id="lat_{{ item.id }}" name="lat_{{ item.id }}"-->
@@ -209,7 +209,7 @@
                                                     {% if not item.beneficiary_level %}
                                                         <div class="assign-flex">
                                                             <label for="target_{{ item.id }}">Target number</label>
-                                                            <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{{ item.target_number }}" disabled>
+                                                            <input class="form-control" type="text" id="target_{{ item.id }}" name="target_{{ item.id }}" value="{% if item.target_number %}{{ item.target_number }}{% else %}0{% endif %}" disabled>
                                                             <!--<label for="lat_{{ item.id }}">Latitude</label>-->
                                                             <!--<input class="form-control" type="text"-->
                                                                    <!--id="lat_{{ item.id }}" name="lat_{{ item.id }}"-->
