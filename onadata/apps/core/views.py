@@ -271,7 +271,7 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
         select_cluster = Cluster.objects.filter(project=request.project)
-        types = Beneficiary.objects.values('Type').distinct('Type')
+        types = Beneficiary.objects.values('category').distinct('category')
         intervals = ProjectTimeInterval.objects.values('label').order_by('label')
         beneficiary_count = Beneficiary.objects.count()
         activity_count = Activity.objects.count()
@@ -281,10 +281,10 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
             interval.append(str(item['label']))
 
         pie_data = {}
-        beneficiary_types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
-            distinct().annotate(total=Count('Type'))
+        beneficiary_types = Beneficiary.objects.filter(cluster__project=request.project).values('category').\
+            distinct().annotate(total=Count('category'))
         for item in beneficiary_types:
-            pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
+            pie_data[str(item['category'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
 
         # get cluster activity overview data on basis of filter used
         if 'cluster_activity' in request.GET:
@@ -356,7 +356,7 @@ def get_map_data(request):
         'geojson',
         beneficiaries,
         geometry_field='location',
-        fields=('name', 'location', 'Type'),
+        fields=('name', 'location', 'category'),
     )
     return HttpResponse(data)
 
@@ -401,7 +401,7 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
         cluster = Cluster.objects.all()
-        types = Beneficiary.objects.values('Type').distinct('Type')
+        types = Beneficiary.objects.values('category').distinct('category')
         return render(request, self.template_name, {
             'activity_groups': ag, 
             'beneficiaries': beneficiaries, 
@@ -783,46 +783,32 @@ class BeneficiaryUploadView(ManagerMixin, View):
         try:
             filename = request.FILES['inputFile']
             df = pd.read_excel(filename).fillna(value='')
-
-            total = df['SN'].count()
-
+            total = df['Name '].count()
             for row in range(0, total):
                 if 'Project' in df:
                     project = Project.objects.get(id=df['Project'][row])
                 else:
                     project = Project.objects.last()
 
-                district, created = District.objects.get_or_create(name=df['District'][row])
+                district, created = District.objects.get_or_create(name=df['District '][row])
                 municipality, created = Municipality.objects.get_or_create(
-                    district=district, name=df['Municipality'][row])
-                try:
-                    cluster, created = Cluster.objects.get_or_create(
-                        id=df['ClusterNumber'][row],
-                        ward=df['Ward'][row],
-                        project=project,
-                        name=df['ClusterNumber'][row])
-                    cluster.municipality.add(municipality)
-                    cluster.save()
-                # capture integrity constraint exception if any field name is incorrect
-                # for a cluster with already existing cluster number
-                except:
-                    cluster = Cluster.objects.get(id=df['ClusterNumber'][row])
-                    cluster.municipality.add(municipality)
-                    cluster.save()
-                # Beneficiary.objects.get_or_create(
-                #     name=df['Name'][row],
-                #     ward=df['Ward'][row],
-                #     cluster=cluster,
-                #     address=df['Settlement'][row],
-                #     Type=df['Type_MPV'][row],
-                #     Tranch=df['GovernmentTranch'][row],
-                #     ConstructionPhase=df['ConstructionPhase'][row],
-                #     Typesofhouse=df['Typesofhouse'][row],
-                #     district=district,
-                #     municipality=municipality
-                # )
-                Beneficiary.objects.filter(name=df['Name'][row]).update(district=district, municipality=municipality)
-
+                    district=district, name=df['Municipal'][row])
+                cluster, created = Cluster.objects.get_or_create(
+                    name=df['Cluster'][row],
+                    project=project)
+                Beneficiary.objects.create(
+                    name=df['Name '][row],
+                    ward=df['Ward'][row],
+                    cluster=cluster,
+                    category=df['Category'][row],
+                    vulnerabilityType=df['Vulnerability Type'][row],
+                    Tranch=df['Government Tranch Received'][row],
+                    ConstructionPhase=df['House Construction Progress (as per 15 steps)'][row],
+                    Typesofhouse=df['House Type (CSEB, Brick, Stone)'][row],
+                    district=district,
+                    municipality=municipality
+                )
+                # Beneficiary.objects.filter(name=df['Name'][row]).update(district=district, municipality=municipality)
             return HttpResponseRedirect('/core/beneficiary-list')
         except Exception as e:
             print(e)
@@ -1067,10 +1053,10 @@ class BeneficiaryTypeView(views.APIView):
 
     def get(self, request):
         pie_data = {}
-        types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
-            distinct().annotate(total=Count('Type'))
+        types = Beneficiary.objects.filter(cluster__project=request.project).values('category').\
+            distinct().annotate(total=Count('category'))
         for item in types:
-            pie_data[item['Type']] = [round((float(item['total']) / 1500) * 100, 2)]
+            pie_data[item['category']] = [round((float(item['total']) / 1500) * 100, 2)]
 
         return Response(pie_data)
 

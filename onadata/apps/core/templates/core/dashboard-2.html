@@ -113,8 +113,8 @@
                                         {% for type in types %}
                                         <li>
                                             <div class="checkbox">
-                                                <input id="tp_{{ type.Type }}" type="checkbox" name="tp_{{ type.Type }}">
-                                                <label for="tp_{{ type.Type }}">{{ type.Type }}</label>
+                                                <input id="tp_{{ type.category }}" type="checkbox" name="tp_{{ type.category }}">
+                                                <label for="tp_{{ type.category }}">{{ type.category }}</label>
                                             </div>
                                         </li>
                                         {% endfor %}
@@ -164,7 +164,7 @@
                                     {% for beneficiary in beneficiaries %}
                                         <tr>
                                             <td>{{ beneficiary.name }}</td>
-                                            <td>{{ beneficiary.Type }}</td>
+                                            <td>{{ beneficiary.category }}</td>
                                             {% with beneficiary|get_beneficiary_progress as progress %}
                                             <td>
                                                 <div class="progress">
