@@ -803,7 +803,7 @@ class BeneficiaryUploadView(ManagerMixin, View):
                     name=df['Name '][row],
                     ward_no=df['Ward'][row],
                     cluster=cluster,
-                    Type=df['Type'][row],
+                    Type=df['Category'][row],
                     vulnerabilityType=df['Vulnerability Type'][row],
                     GovernmentTranch=df['Government Tranch Received'][row],
                     ConstructionPhase=df['House Construction Progress (as per 15 steps)'][row],
