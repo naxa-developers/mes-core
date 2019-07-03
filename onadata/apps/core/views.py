@@ -271,7 +271,7 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
         select_cluster = Cluster.objects.filter(project=request.project)
-        types = Beneficiary.objects.values('category').distinct('category')
+        types = Beneficiary.objects.values('Type').distinct('Type')
         intervals = ProjectTimeInterval.objects.values('label').order_by('label')
         beneficiary_count = Beneficiary.objects.count()
         activity_count = Activity.objects.count()
@@ -281,10 +281,10 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
             interval.append(str(item['label']))
 
         pie_data = {}
-        beneficiary_types = Beneficiary.objects.filter(cluster__project=request.project).values('category').\
-            distinct().annotate(total=Count('category'))
+        beneficiary_types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
+            distinct().annotate(total=Count('Type'))
         for item in beneficiary_types:
-            pie_data[str(item['category'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
+            pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
 
         # get cluster activity overview data on basis of filter used
         if 'cluster_activity' in request.GET:
@@ -356,7 +356,7 @@ def get_map_data(request):
         'geojson',
         beneficiaries,
         geometry_field='location',
-        fields=('name', 'location', 'category'),
+        fields=('name', 'location', 'Type'),
     )
     return HttpResponse(data)
 
@@ -401,7 +401,7 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
         cluster = Cluster.objects.all()
-        types = Beneficiary.objects.values('category').distinct('category')
+        types = Beneficiary.objects.values('Type').distinct('Type')
         return render(request, self.template_name, {
             'activity_groups': ag, 
             'beneficiaries': beneficiaries, 
@@ -801,11 +801,11 @@ class BeneficiaryUploadView(ManagerMixin, View):
                     project=project)
                 Beneficiary.objects.create(
                     name=df['Name '][row],
-                    ward=df['Ward'][row],
+                    ward_no=df['Ward'][row],
                     cluster=cluster,
-                    category=df['Category'][row],
+                    Type=df['Type'][row],
                     vulnerabilityType=df['Vulnerability Type'][row],
-                    Tranch=df['Government Tranch Received'][row],
+                    GovernmentTranch=df['Government Tranch Received'][row],
                     ConstructionPhase=df['House Construction Progress (as per 15 steps)'][row],
                     Typesofhouse=df['House Type (CSEB, Brick, Stone)'][row],
                     district=district,
@@ -1056,10 +1056,10 @@ class BeneficiaryTypeView(views.APIView):
 
     def get(self, request):
         pie_data = {}
-        types = Beneficiary.objects.filter(cluster__project=request.project).values('category').\
-            distinct().annotate(total=Count('category'))
+        types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
+            distinct().annotate(total=Count('Type'))
         for item in types:
-            pie_data[item['category']] = [round((float(item['total']) / 1500) * 100, 2)]
+            pie_data[item['Type']] = [round((float(item['total']) / 1500) * 100, 2)]
 
         return Response(pie_data)
 

@@ -55,11 +55,11 @@
                     <font color="crimson">{{ form.municipality.errors }}</font>
                     {% endif %}
                     <div class="form-group">
-                        <label>{{ form.ward.label }}</label>
-                            {{ form.ward}}
+                        <label>{{ form.ward_no.label }}</label>
+                            {{ form.ward_no }}
                     </div>
                     {% if form.ward.errors %}
-                    <font color="crimson">{{ form.ward.errors }}</font>
+                    <font color="crimson">{{ form.ward_no.errors }}</font>
                     {% endif %}
                     <div class="form-group">
                         <label>{{ form.Type.label }}</label>
@@ -69,11 +69,11 @@
                     <font color="crimson">{{ form.Type.errors }}</font>
                     {% endif %}
                     <div class="form-group">
-                        <label>{{ form.Tranch.label }}</label>
-                        {{ form.Tranch }}
+                        <label>{{ form.GovernmentTranch.label }}</label>
+                        {{ form.GovernmentTranch }}
                     </div>
-                    {% if form.Tranch.errors %}
-                    <font color="crimson">{{ form.Tranch.errors }}</font>
+                    {% if form.GovernmentTranch.errors %}
+                    <font color="crimson">{{ form.GovernmentTranch.errors }}</font>
                     {% endif %}
                     <div class="form-group">
                         <label>{{ form.ConstructionPhase.label }}</label>
