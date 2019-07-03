@@ -336,7 +336,7 @@ class UserRoleForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        if cleaned_data.get('group').name in ['project-manager', 'project-management-unit', 'project-coordinator']:
+        if cleaned_data.get('group').name in ['project-manager']:
             if UserRole.objects.filter(group=cleaned_data.get('group'), project=cleaned_data.get('project')).exists():
                 raise ValidationError({
                     'project': [
