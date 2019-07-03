@@ -599,11 +599,14 @@ class ClusterAssignView(ManagerMixin, View):
     def post(self, request, **kwargs):
         cluster = Cluster.objects.get(pk=kwargs.get('pk'))
         checked = [(name, value) for name, value in request.POST.iteritems()]
-        print(checked)
+        ClusterAG.objects.filter(cluster=cluster).delete()
         for item in checked:
+            print(item)
             if item[0].startswith('ag_'):
                 item = item[0].strip('ag_')
+                print(item)
                 activity_group = ActivityGroup.objects.get(id=int(item))
+                print(activity_group)
                 ClusterAG.objects.get_or_create(
                     activity_group=activity_group,
                     cluster=cluster
