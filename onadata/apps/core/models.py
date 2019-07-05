@@ -140,7 +140,7 @@ class Beneficiary(models.Model):
 	district = models.ForeignKey(District, blank=True, null=True)
 	municipality = models.ForeignKey(Municipality, blank=True, null=True)
 	ward_no = models.IntegerField('ward number', null=True, blank=True)
-	cluster = models.ForeignKey('Cluster', related_name='beneficiary')
+	cluster = models.ForeignKey('Cluster', related_name='beneficiary', null=True, blank=True)
 	Type = models.CharField(max_length=100, null=True, blank=True)
 	vulnerabilityType = models.CharField(max_length=100)
 	GovernmentTranch = models.CharField(max_length=100, blank=True)
