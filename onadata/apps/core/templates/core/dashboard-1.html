@@ -406,6 +406,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+    //these data are used in the c3 chart js
     intervals = {{ intervals|safe }};
     chart_single = {{ chart_single|safe }};
     categories = {{ categories|safe }}
@@ -414,171 +415,171 @@
     cluster_progress_data = {{ cluster_progress_data|safe }};
     cluster_phase_data = {{ construction_phases|safe }};
 
-        //for municipality list with respect to districts in cluster progress
-        $(".district_class").on('click', function(){
-            var districts = [];
-            $. each($("input[class='district_class']:checked"), function(){
-                district_id=$(this).attr('data-id');
-                districts.push(district_id);
+    //for municipality list with respect to districts in cluster progress
+    $(".district_class").on('click', function(){
+        var districts = [];
+        $. each($("input[class='district_class']:checked"), function(){
+            district_id=$(this).attr('data-id');
+            districts.push(district_id);
 
-            });
-            $.ajax({
-                url: '/core/get-municipalities/',
-                type: 'GET',
-                data: {'districts': districts},
-                dataType: "json",
-
-                success: function(result){
-                    $('.municipalities').remove();
-                    municipalities = result.length;
-                    for (i = 0; i < municipalities; i++){
-                        var element = '<li class="municipalities"><div class="checkbox"><input id="mun_' + result[i]['pk'] + '" type="checkbox" class="municipality_class" data-id="' + result[i]['pk'] + '"name="mun_' + result[i]['pk'] + '"><label for="mun_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
-                        $('#municipalities').append(element);
-                    }
-                }
-            });
         });
-
-        // for cluster list with respect to municipalities in cluster progress
-        $(".mun_class").on('click','.municipality_class',function(){
-            console.log('municipality');
-            var municipalities = [];
-            $. each($("input[class='municipality_class']:checked"), function(){
-                municipality_id=$(this).attr('data-id');
-                municipalities.push(municipality_id);
-
-            });
-            $.ajax({
-                url: '/core/get-clusters/',
-                type: 'GET',
-                data: {'municipalities': municipalities},
-                dataType: "json",
-
-                success: function(result){
-                    $('.clusters').remove();
-                    clusters = result.length;
-                    for (i = 0; i < clusters; i++){
-                        var element = '<li class="clusters"><div class="checkbox"><input id="cl_' + result[i]['pk'] + '" type="checkbox" name="cl_' + result[i]['pk'] + '"><label for="cl_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
-                        $('#clusters').append(element);
-                    }
-                }
-            });
-        });
-
-        //for municipality list with respect to districts in activity target graph
-        $(".cluster_district_class").on('click', function(){
-            var districts = [];
-            $. each($("input[class='cluster_district_class']:checked"), function(){
-                district_id=$(this).attr('data-id');
-                districts.push(district_id);
-
-            });
-            $.ajax({
-                url: '/core/get-municipalities/',
-                type: 'GET',
-                data: {'districts': districts},
-                dataType: "json",
-
-                success: function(result){
-                    $('.cluster_municipalities').remove();
-                    municipalities = result.length;
-                    for (i = 0; i < municipalities; i++){
-                        var element = '<li class="cluster_municipalities"><div class="checkbox"><input id="muncluster_' + result[i]['pk'] + '" type="checkbox" class="cluster_municipality_class" data-id="' + result[i]['pk'] + '"name="muncluster_' + result[i]['pk'] + '"><label for="muncluster_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
-                        $('#cluster_municipalities').append(element);
-                    }
-                }
-            });
-        });
-
-        // for cluster list with respect to municipalities in activity target graph
-        $(".cluster_mun_class").on('click','.cluster_municipality_class',function(){
-            var municipalities = [];
-            $. each($("input[class='cluster_municipality_class']:checked"), function(){
-                municipality_id=$(this).attr('data-id');
-                municipalities.push(municipality_id);
-
-            });
-            $.ajax({
-                url: '/core/get-clusters/',
-                type: 'GET',
-                data: {'municipalities': municipalities},
-                dataType: "json",
-
-                success: function(result){
-                console.log(result);
-                    $('.cluster_clusters').remove();
-                    clusters = result.length;
-                    for (i = 0; i < clusters; i++){
-                        var element = '<li class="cluster_clusters"><div class="checkbox"><input id="clcluster_' + result[i]['pk'] + '" type="checkbox" class="cluster_cluster_class" data-id="' + result[i]['pk'] + '"name="clcluster_' + result[i]['pk'] + '"><label for="clcluster_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
-                        $('#cluster_clusters').append(element);
-                    }
-                }
-            });
-        });
-
-        // for activity group list with respect to clusters in activity target graph
-        $(".cluster_class").on('click', '.cluster_cluster_class', function(){
-            var clusters = [];
-            $. each($("input[class='cluster_cluster_class']:checked"), function(){
-                cluster_id=$(this).attr('data-id');
-                clusters.push(cluster_id);
-
-            });
-            $.ajax({
-                url: '/core/get-activity-groups/',
-                type: 'GET',
-                data: {'clusters': clusters},
-                dataType: "json",
-
-                success: function(result){
-                console.log(result);
-                    $('.cluster_activitygroups').remove();
-                    activity_groups = result.length;
-                    for (i = 0; i < activity_groups; i++){
-                        var element = '<li class="cluster_activitygroups"><div class="checkbox"><input id="ag_' + result[i]['pk'] + '" type="checkbox" class="cluster_activitygroup_class"  data-id="' + result[i]['pk'] + '"name="ag_' + result[i]['pk'] + '"><label for="ag_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
-                        $('#cluster_activitygroups').append(element);
-                    }
-                }
-            });
-        });
-
-        // for activity list with respect to activity groups in activity target graph
-        $(".ag_class").on('click', '.cluster_activitygroup_class', function(){
-            var activity_groups = [];
-            $. each($("input[class='cluster_activitygroup_class']:checked"), function(){
-                ag_id=$(this).attr('data-id');
-                activity_groups.push(ag_id);
-
-            });
-            $.ajax({
-                url: '/core/get-activities/',
-                type: 'GET',
-                data: {'activity_groups': activity_groups},
-                dataType: "json",
-
-                success: function(result){
-                console.log(result);
-                    $('.cluster_activities').remove();
-                    activities = result.length;
-                    for (i = 0; i < activities; i++){
-                        var element = '<li class="cluster_activities"><div class="checkbox"><input id="a_' + result[i]['pk'] + '" type="checkbox" name="a_' + result[i]['pk'] + '"><label for="a_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
-                        $('#cluster_activities').append(element);
-                    }
-                }
-            });
-        });
-
         $.ajax({
-            url: '/core/get-map-data/',
+            url: '/core/get-municipalities/',
             type: 'GET',
-            data: {},
+            data: {'districts': districts},
             dataType: "json",
 
             success: function(result){
-                console.log(result);
-                map_data = result;
+                $('.municipalities').remove();
+                municipalities = result.length;
+                for (i = 0; i < municipalities; i++){
+                    var element = '<li class="municipalities"><div class="checkbox"><input id="mun_' + result[i]['pk'] + '" type="checkbox" class="municipality_class" data-id="' + result[i]['pk'] + '"name="mun_' + result[i]['pk'] + '"><label for="mun_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                    $('#municipalities').append(element);
+                }
             }
         });
+    });
+
+    // for cluster list with respect to municipalities in cluster progress
+    $(".mun_class").on('click','.municipality_class',function(){
+        console.log('municipality');
+        var municipalities = [];
+        $. each($("input[class='municipality_class']:checked"), function(){
+            municipality_id=$(this).attr('data-id');
+            municipalities.push(municipality_id);
+
+        });
+        $.ajax({
+            url: '/core/get-clusters/',
+            type: 'GET',
+            data: {'municipalities': municipalities},
+            dataType: "json",
+
+            success: function(result){
+                $('.clusters').remove();
+                clusters = result.length;
+                for (i = 0; i < clusters; i++){
+                    var element = '<li class="clusters"><div class="checkbox"><input id="cl_' + result[i]['pk'] + '" type="checkbox" name="cl_' + result[i]['pk'] + '"><label for="cl_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                    $('#clusters').append(element);
+                }
+            }
+        });
+    });
+
+    //for municipality list with respect to districts in activity target graph
+    $(".cluster_district_class").on('click', function(){
+        var districts = [];
+        $. each($("input[class='cluster_district_class']:checked"), function(){
+            district_id=$(this).attr('data-id');
+            districts.push(district_id);
+
+        });
+        $.ajax({
+            url: '/core/get-municipalities/',
+            type: 'GET',
+            data: {'districts': districts},
+            dataType: "json",
+
+            success: function(result){
+                $('.cluster_municipalities').remove();
+                municipalities = result.length;
+                for (i = 0; i < municipalities; i++){
+                    var element = '<li class="cluster_municipalities"><div class="checkbox"><input id="muncluster_' + result[i]['pk'] + '" type="checkbox" class="cluster_municipality_class" data-id="' + result[i]['pk'] + '"name="muncluster_' + result[i]['pk'] + '"><label for="muncluster_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                    $('#cluster_municipalities').append(element);
+                }
+            }
+        });
+    });
+
+    // for cluster list with respect to municipalities in activity target graph
+    $(".cluster_mun_class").on('click','.cluster_municipality_class',function(){
+        var municipalities = [];
+        $. each($("input[class='cluster_municipality_class']:checked"), function(){
+            municipality_id=$(this).attr('data-id');
+            municipalities.push(municipality_id);
+
+        });
+        $.ajax({
+            url: '/core/get-clusters/',
+            type: 'GET',
+            data: {'municipalities': municipalities},
+            dataType: "json",
+
+            success: function(result){
+            console.log(result);
+                $('.cluster_clusters').remove();
+                clusters = result.length;
+                for (i = 0; i < clusters; i++){
+                    var element = '<li class="cluster_clusters"><div class="checkbox"><input id="clcluster_' + result[i]['pk'] + '" type="checkbox" class="cluster_cluster_class" data-id="' + result[i]['pk'] + '"name="clcluster_' + result[i]['pk'] + '"><label for="clcluster_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                    $('#cluster_clusters').append(element);
+                }
+            }
+        });
+    });
+
+    // for activity group list with respect to clusters in activity target graph
+    $(".cluster_class").on('click', '.cluster_cluster_class', function(){
+        var clusters = [];
+        $. each($("input[class='cluster_cluster_class']:checked"), function(){
+            cluster_id=$(this).attr('data-id');
+            clusters.push(cluster_id);
+
+        });
+        $.ajax({
+            url: '/core/get-activity-groups/',
+            type: 'GET',
+            data: {'clusters': clusters},
+            dataType: "json",
+
+            success: function(result){
+            console.log(result);
+                $('.cluster_activitygroups').remove();
+                activity_groups = result.length;
+                for (i = 0; i < activity_groups; i++){
+                    var element = '<li class="cluster_activitygroups"><div class="checkbox"><input id="ag_' + result[i]['pk'] + '" type="checkbox" class="cluster_activitygroup_class"  data-id="' + result[i]['pk'] + '"name="ag_' + result[i]['pk'] + '"><label for="ag_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                    $('#cluster_activitygroups').append(element);
+                }
+            }
+        });
+    });
+
+    // for activity list with respect to activity groups in activity target graph
+    $(".ag_class").on('click', '.cluster_activitygroup_class', function(){
+        var activity_groups = [];
+        $. each($("input[class='cluster_activitygroup_class']:checked"), function(){
+            ag_id=$(this).attr('data-id');
+            activity_groups.push(ag_id);
+
+        });
+        $.ajax({
+            url: '/core/get-activities/',
+            type: 'GET',
+            data: {'activity_groups': activity_groups},
+            dataType: "json",
+
+            success: function(result){
+            console.log(result);
+                $('.cluster_activities').remove();
+                activities = result.length;
+                for (i = 0; i < activities; i++){
+                    var element = '<li class="cluster_activities"><div class="checkbox"><input id="a_' + result[i]['pk'] + '" type="checkbox" name="a_' + result[i]['pk'] + '"><label for="a_' + result[i]['pk'] + '">' + result[i]['fields']['name'] + '</label></div></li>';
+                    $('#cluster_activities').append(element);
+                }
+            }
+        });
+    });
+
+    $.ajax({
+        url: '/core/get-map-data/',
+        type: 'GET',
+        data: {},
+        dataType: "json",
+
+        success: function(result){
+            console.log(result);
+            map_data = result;
+        }
+    });
 </script>
 <script src="{% static 'js/c3.bundle.js' %}"></script>
 <script src="{% static 'js/c3.js' %}"></script>
