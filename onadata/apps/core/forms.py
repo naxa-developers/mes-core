@@ -126,6 +126,7 @@ class ActivityGroupForm(forms.ModelForm):
     # 	self.fields['output'].queryset = Output.objects.none()
     # 	self.fields['project'].queryset = Project.objects.none()
 
+    # the weight of an activity should be a number
     def clean_weight(self):
         if not isinstance(self.cleaned_data.get('weight'), int) and not isinstance(self.cleaned_data.get('weight'),
                                                                                    float):
@@ -133,6 +134,7 @@ class ActivityGroupForm(forms.ModelForm):
         else:
             return self.cleaned_data.get('weight')
 
+    # make sure that the weights of activity groups in a output does not exceed than that of the weight of output(w=100 by default)
     def clean(self):
         try:
             output = self.cleaned_data.get('output')
@@ -200,6 +202,7 @@ class ActivityForm(forms.ModelForm):
         else:
             return self.cleaned_data.get('weight')
 
+    # make sure that the weights of the activities combined in an activity group does not exceed the weight of activity group
     def clean(self):
         cleaned_data = self.cleaned_data
         try:

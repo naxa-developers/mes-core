@@ -98,6 +98,8 @@ def get_beneficiaries(districts=None, munis=None, clusters=None, b_types=None):
     return beneficiaries
 
 
+# get data required for the bar chart of activity progress in dashboard 1
+# return the target number of each activity and the achievements for each time interval
 def get_cluster_activity_data(project, activity=None):
     from onadata.apps.core.models import ClusterA, ProjectTimeInterval, ClusterAHistory
 
@@ -108,6 +110,8 @@ def get_cluster_activity_data(project, activity=None):
     for item in time_intervals:
         tg_num = 0
         completed_tg_num = 0
+
+        # if activities are selected
         if activity:
             if ClusterA.objects.filter(time_interval=item, activity_id__in=activity).exists():
                 cluster_activity = ClusterA.objects.filter(time_interval=item, activity_id__in=activity)
@@ -145,6 +149,7 @@ def get_cluster_activity_data(project, activity=None):
     return bar_data
 
 
+# get the data required in the cluster progress charts of dashboard 1
 def get_progress_data(project, types=None, clusters=None, districts=None, munis=None):
     from .models import District, Municipality, Cluster, Submission, ProjectTimeInterval, ClusterA, Activity, \
         ActivityGroup, ClusterAG, Beneficiary
@@ -154,8 +159,12 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
     cluster_progress_data = {}
     categories = []
     map_data = []
+
+    # if clusters are selected
     if clusters:
         # for cluster progress bar data
+        # gives the data of the volume of beneficiaries that have completed all the activities as per the type of beneficiaries
+        # increase by 1 if all the activities have been completed(all submissions are approved)
         selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
         for item in types:
             total_list = []
@@ -181,6 +190,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
             categories.append(str(item.name))
 
         # for cluster progress line data
+        # gives the progress (weight of the activities that are completed) in each cluster
         interval = ProjectTimeInterval.objects.filter(project=project).order_by('label')
         for item in selected_clusters:
             total_list = []
@@ -211,6 +221,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
             cluster_progress_data[str(item.name)] = total_list
 
         # for construction phase pie chart
+        # gives the data of number of beneficiaries that have completed their activities on basis of activity groups
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         construction_phases = {}
         for ag in activity_groups:
@@ -236,6 +247,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
 
         return progress_data, categories, cluster_progress_data, construction_phases
 
+    # if municipalities are selected in drop down
     elif munis:
         selected_munis = Municipality.objects.filter(id__in=munis).order_by('name')
         for item in types:
@@ -316,6 +328,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
 
         return progress_data, categories, cluster_progress_data, construction_phases
 
+    # if districts are selected in the drop down
     elif districts:
         selected_districts = District.objects.filter(id__in=districts).order_by('name')
         for item in types:
@@ -372,6 +385,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
 
         return progress_data, categories, cluster_progress_data
 
+    # for initial data or no drop down selected
     else:
         selected_districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         for item in types:

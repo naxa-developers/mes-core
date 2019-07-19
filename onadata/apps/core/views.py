@@ -266,20 +266,25 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard-1.html'
 
     def get(self, request):
+        # data required for charts and drop down menus
+
         activity_groups = ActivityGroup.objects.filter(project=request.project)
         activities = Activity.objects.filter(activity_group__project=request.project)
         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
         select_cluster = Cluster.objects.filter(project=request.project)
+
         types = Beneficiary.objects.values('Type').distinct('Type')
         intervals = ProjectTimeInterval.objects.values('label').order_by('label')
         beneficiary_count = Beneficiary.objects.count()
         activity_count = Activity.objects.count()
         interval = []
 
+        # time intervals for activity progress data
         for item in intervals:
             interval.append(str(item['label']))
 
+        # for beneficiary type pie data
         pie_data = {}
         beneficiary_types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
             distinct().annotate(total=Count('Type'))
@@ -340,7 +345,7 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
         })
 
 
-# for map data
+# for map data in dashboard1
 def get_map_data(request):
     beneficiaries = Beneficiary.objects.filter(~Q(location=None))
     # clusters = Cluster.objects.filter(project=request.project)
@@ -361,6 +366,7 @@ def get_map_data(request):
     return HttpResponse(data)
 
 
+# it contains tabular data of each beneficiary and their progress
 class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
     template_name = 'core/dashboard-2.html'
 
@@ -579,6 +585,7 @@ class ClusterDeleteView(ManagerMixin, DeleteView):
     success_url = reverse_lazy('cluster_list')
 
 
+# for assigning activity groups and activities to clusters
 class ClusterAssignView(ManagerMixin, View):
 
     def get(self, request, **kwargs):
@@ -597,16 +604,21 @@ class ClusterAssignView(ManagerMixin, View):
 
     @transaction.atomic
     def post(self, request, **kwargs):
+        # ag_ represents the activity groups that were selected
+        # a_ represents the activities that were selected
         cluster = Cluster.objects.get(pk=kwargs.get('pk'))
         checked = [(name, value) for name, value in request.POST.iteritems()]
+
+        # make sure all the cluster activity groups are deleted before hand assigning activity groups to the cluster
+        # this helps to delete the activity groups that were not selected to be assigned if they are already assigned
+
         ClusterAG.objects.filter(cluster=cluster).delete()
+
+        # for all the selected items
         for item in checked:
-            print(item)
             if item[0].startswith('ag_'):
                 item = item[0].strip('ag_')
-                print(item)
                 activity_group = ActivityGroup.objects.get(id=int(item))
-                print(activity_group)
                 ClusterAG.objects.get_or_create(
                     activity_group=activity_group,
                     cluster=cluster
@@ -630,8 +642,10 @@ class ClusterAssignView(ManagerMixin, View):
                         activity=activity,
                         cag=cluster_ag
                     )
+                    # is activity is not of beneficiary level then target number and target input are required
                     if not ca.activity.beneficiary_level:
                         for check in checked:
+                            # if the cluster activity is already created, any changes are to be recorded in the history
                             if not created:
                                 hist = ClusterAHistory()
                                 ca.target_unit = ca.activity.target_unit
@@ -779,6 +793,8 @@ class BeneficiaryDeleteView(ManagerMixin, DeleteView):
     success_url = reverse_lazy('beneficiary_list')
 
 
+# change this view if new excel sheets are to be uploaded
+# better try matching the headers in the excel sheet
 class BeneficiaryUploadView(ManagerMixin, View):
     template_name = 'core/beneficiary-upload.html'
 
@@ -853,6 +869,8 @@ class UserRoleCreateView(ManagerMixin, View):
                 clusters = form.cleaned_data.get('cluster')
                 for cluster in clusters:
                     obj.cluster.add(cluster)
+
+            # send email to the user
             if obj.user.email:
                 clusters = obj.cluster.all()
                 to_email = obj.user.email
@@ -956,6 +974,7 @@ def reject_submission(request, *args, **kwargs):
     return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': kwargs.get('clustera_id')}))
 
 
+# update the target number from the submission listing page
 @transaction.atomic
 def update_cluster_activity(request, **kwargs):
     pk = kwargs.get('pk')
@@ -964,7 +983,6 @@ def update_cluster_activity(request, **kwargs):
     cahistory = ClusterAHistory()
     if target_number is not None:
         if not ca.target_completed == float(target_number):
-            print(ca.target_completed, target_number)
             cahistory.clustera = ca
             cahistory.target_number = ca.target_number
             cahistory.time_interval = ca.time_interval
@@ -1145,7 +1163,6 @@ def get_clusters(request):
         if municipalities:
             clusters = Cluster.objects.filter(municipality__id__in=municipalities).distinct()
             clusters = serialize("json", clusters)
-            print(clusters)
             return HttpResponse(clusters)
         else:
             clusters = Cluster.objects.all()
@@ -1158,9 +1175,7 @@ def get_clusters(request):
 def get_activity_group(request):
     if request.is_ajax():
         clusters = request.GET.getlist('clusters[]')
-        print(clusters)
         if clusters:
-            print('inside clusters', clusters)
             cluster_activity_groups = ClusterAG.objects.filter(cluster_id__in=clusters)
             if cluster_activity_groups:
                 cluster_activity_groups_list = []
