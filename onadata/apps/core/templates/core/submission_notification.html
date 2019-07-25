@@ -51,8 +51,11 @@
                                         {% endwith %}
                                         {% if submission|check_status_change_permission:request %}
                                             {% if submission.status == 'pending' %}
-                                                <a href="{% url 'approve_submission' submission.id submission.cluster_activity.id %}" class="btn"><i class="la la-check"></i>Approve</a>
-                                                <a href="{% url 'reject_submission' submission.id submission.cluster_activity.id %}" class="btn remove"><i class="la la-trash-o"></i> Reject</a>
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <button name="approve" value={{submission.id}} class="btn"><i class="la la-check"></i>Approve</button>
+                                                <button name="reject" value={{submission.id}} class="btn remove"><i class="la la-trash-o"></i> Reject</button>
+                                            </form>
                                             {% endif %}
                                         {% endif %}
                                     </td>
