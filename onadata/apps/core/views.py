@@ -928,6 +928,35 @@ class SubmissionListView(LoginRequiredMixin, View):
         submissions = Submission.objects.filter(cluster_activity=cluster_activity)
         return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
 
+    def post(self, request, **kwargs):
+        if 'approve' in request.POST:
+            submission = Submission.objects.get(pk=request.POST.get('approve'))
+            submission.status = 'approved'
+            submission.save()
+
+        elif 'reject' in request.POST:
+            submission = Submission.objects.get(pk=request.POST.get('approve'))
+            submission.status = 'rejected'
+            submission.save()
+            if submission.instance.user:
+                to_email = submission.instance.user.email
+                mail_subject = 'Submission Rejected.'
+                message = render_to_string('core/submission_reject_email.html', {
+                    'submission': submission.instance,
+                    'rejected_by': request.user.username,
+                    'activity': submission.cluster_activity.activity.name,
+                    'cluster': submission.cluster_activity.cag.cluster.name,
+                    'date': datetime.now(),
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+
+        cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
+        submissions = Submission.objects.filter(cluster_activity=cluster_activity)
+        return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
+
 
 class SubNotificationListView(LoginRequiredMixin, View):
 
@@ -935,6 +964,33 @@ class SubNotificationListView(LoginRequiredMixin, View):
         submissions = Submission.objects.all().order_by('instance__date_created')
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
+    def post(self, request, **kwargs):
+        if 'approve' in request.POST:
+            submission = Submission.objects.get(pk=request.POST.get('approve'))
+            submission.status = 'approved'
+            submission.save()
+
+        elif 'reject' in request.POST:
+            submission = Submission.objects.get(pk=request.POST.get('approve'))
+            submission.status = 'rejected'
+            submission.save()
+            if submission.instance.user:
+                to_email = submission.instance.user.email
+                mail_subject = 'Submission Rejected.'
+                message = render_to_string('core/submission_reject_email.html', {
+                    'submission': submission.instance,
+                    'rejected_by': request.user.username,
+                    'activity': submission.cluster_activity.activity.name,
+                    'cluster': submission.cluster_activity.cag.cluster.name,
+                    'date': datetime.now(),
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+
+        submissions = Submission.objects.all().order_by('instance__date_created')
+        return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
 class ConfigUpdateView(UpdateView):
     model = Config
@@ -943,36 +999,6 @@ class ConfigUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('config_edit', kwargs={'pk': 1})
-
-
-def accept_submission(request, *args, **kwargs):
-    submission = Submission.objects.get(pk=kwargs.get('pk'))
-    submission.status = 'approved'
-    submission.save()
-    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': kwargs.get('clustera_id')}))
-
-
-def reject_submission(request, *args, **kwargs):
-    submission = Submission.objects.get(pk=kwargs.get('pk'))
-    submission.status = 'rejected'
-    submission.save()
-
-    if submission.instance.user:
-        to_email = submission.instance.user.email
-        mail_subject = 'Submission Rejected.'
-        message = render_to_string('core/submission_reject_email.html', {
-            'submission': submission.instance,
-            'rejected_by': request.user.username,
-            'activity': submission.cluster_activity.activity.name,
-            'cluster': submission.cluster_activity.cag.cluster.name,
-            'date': datetime.now(),
-        })
-        email = EmailMessage(
-            mail_subject, message, to=[to_email]
-        )
-        email.send()
-    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': kwargs.get('clustera_id')}))
-
 
 # update the target number from the submission listing page
 @transaction.atomic
