@@ -1000,36 +1000,6 @@ class ConfigUpdateView(UpdateView):
     def get_success_url(self):
         return reverse('config_edit', kwargs={'pk': 1})
 
-
-def accept_submission(request, *args, **kwargs):
-    submission = Submission.objects.get(pk=kwargs.get('pk'))
-    submission.status = 'approved'
-    submission.save()
-    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': kwargs.get('clustera_id')}))
-
-
-def reject_submission(request, *args, **kwargs):
-    submission = Submission.objects.get(pk=kwargs.get('pk'))
-    submission.status = 'rejected'
-    submission.save()
-
-    if submission.instance.user:
-        to_email = submission.instance.user.email
-        mail_subject = 'Submission Rejected.'
-        message = render_to_string('core/submission_reject_email.html', {
-            'submission': submission.instance,
-            'rejected_by': request.user.username,
-            'activity': submission.cluster_activity.activity.name,
-            'cluster': submission.cluster_activity.cag.cluster.name,
-            'date': datetime.now(),
-        })
-        email = EmailMessage(
-            mail_subject, message, to=[to_email]
-        )
-        email.send()
-    return HttpResponseRedirect(reverse('submission_list', kwargs={'pk': kwargs.get('clustera_id')}))
-
-
 # update the target number from the submission listing page
 @transaction.atomic
 def update_cluster_activity(request, **kwargs):
