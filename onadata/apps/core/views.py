@@ -961,7 +961,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 class SubNotificationListView(LoginRequiredMixin, View):
 
     def get(self, request, **kwargs):
-        submissions = Submission.objects.filter(status='pending', beneficiary__isnull=False).order_by('instance__date_created')
+        submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
     def post(self, request, **kwargs):
@@ -989,7 +989,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
                 )
                 email.send()
 
-        submissions = Submission.objects.filter(status='pending', beneficiary__isnull=False).order_by('instance__date_created')
+        submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
 class ConfigUpdateView(UpdateView):
