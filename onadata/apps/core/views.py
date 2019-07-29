@@ -930,12 +930,20 @@ class SubmissionListView(LoginRequiredMixin, View):
 
     def post(self, request, **kwargs):
         if 'approve' in request.POST:
-            submission = Submission.objects.get(pk=request.POST.get('approve'))
+            if ',' in request.POST.get('approve'):
+                sub_id = request.POST.get('approve').replace(',', '')
+            else:
+                sub_id = request.POST.get('approve')
+            submission = Submission.objects.get(pk=sub_id)
             submission.status = 'approved'
             submission.save()
 
         elif 'reject' in request.POST:
-            submission = Submission.objects.get(pk=request.POST.get('approve'))
+            if ',' in request.POST.get('reject'):
+                sub_id = request.POST.get('reject').replace(',', '')
+            else:
+                sub_id = request.POST.get('reject')
+            submission = Submission.objects.get(pk=sub_id)
             submission.status = 'rejected'
             submission.save()
             if submission.instance.user:
@@ -966,12 +974,21 @@ class SubNotificationListView(LoginRequiredMixin, View):
 
     def post(self, request, **kwargs):
         if 'approve' in request.POST:
-            submission = Submission.objects.get(pk=request.POST.get('approve'))
+            if ',' in request.POST.get('approve'):
+                sub_id = request.POST.get('approve').replace(',', '')
+            else:
+                sub_id = request.POST.get('approve')
+            submission = Submission.objects.get(pk=sub_id)
             submission.status = 'approved'
             submission.save()
 
         elif 'reject' in request.POST:
-            submission = Submission.objects.get(pk=request.POST.get('approve'))
+
+            if ',' in request.POST.get('reject'):
+                sub_id = request.POST.get('reject').replace(',', '')
+            else:
+                sub_id = request.POST.get('reject')
+            submission = Submission.objects.get(pk=sub_id)
             submission.status = 'rejected'
             submission.save()
             if submission.instance.user:
