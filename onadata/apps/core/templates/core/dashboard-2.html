@@ -145,17 +145,21 @@
                                             <th rowspan="2" class="text-center">Type</th>
                                             <th rowspan="2" class="text-center">Work Progress</th>
                                             {% for obj in activity_groups %}
-                                            {% with obj|get_activity_count as count %}
-                                            {% if count != 0 %}
-                                            <th colspan="{{ count }}" class="text-center">{{ obj.name }}</th>
-                                            {% endif %}
-                                            {% endwith %}
+                                                {% if obj.weight != 0.0 %}
+                                                    {% with obj|get_activity_count as count %}
+                                                        {% if count != 0 %}
+                                                            <th colspan="{{ count }}" class="text-center">{{ obj.name }}</th>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                {% endif %}
                                             {% endfor %}
                                         </tr>
                                         <tr>
                                             {% for obj in activity_groups %}
                                             {% for activity in obj.activity.all %}
+                                                {% if activity.weight != 0.0 %}
                                                 <th>{{ activity.name }} ({{ activity.weight }}%)</th>
+                                                {% endif %}
                                             {% endfor %}
                                             {% endfor %}
                                         </tr>
@@ -175,13 +179,17 @@
                                             </td>
                                             {% endwith %}
                                             {% for obj in activity_groups %}
-                                            {% for activity in obj.activity.all %}
-                                            {% if activity|check_activity_progress:beneficiary %}
-                                                <td><span class="completed"></span></td>
-                                            {% else %}
-                                                <td></td>
-                                            {% endif %}
-                                            {% endfor %}
+                                                {% if obj.weight != 0.0 %}
+                                                    {% for activity in obj.activity.all %}
+                                                        {% if activity.weight != 0.0 %}
+                                                            {% if activity|check_activity_progress:beneficiary %}
+                                                                <td><span class="completed"></span></td>
+                                                            {% else %}
+                                                                <td></td>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
                                             {% endfor %}
                                         </tr>
                                     {% endfor %}
