@@ -180,7 +180,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                         for submission in submissions:
                             beneficiary_progress += submission['progress']
 
-                        if beneficiary_progress == 100:
+                        if beneficiary_progress >= 100:
                             complete += 1
                     else:
                         pass
@@ -254,7 +254,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                         for submission in submissions:
                             beneficiary_progress += submission['progress']
 
-                        if beneficiary_progress == 100:
+                        if beneficiary_progress >= 100:
                             complete += 1
                     else:
                         pass
@@ -325,7 +325,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                         for submission in submissions:
                             beneficiary_progress += submission['progress']
 
-                        if beneficiary_progress == 100:
+                        if beneficiary_progress >= 100:
                             complete += 1
                     else:
                         pass
@@ -394,7 +394,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                         for submission in submissions:
                             beneficiary_progress += submission['progress']
 
-                        if beneficiary_progress == 100:
+                        if beneficiary_progress >= 100:
                             complete += 1
                     else:
                         pass
