@@ -295,6 +295,7 @@ class BeneficiaryForm(forms.ModelForm):
             'municipality': forms.Select(attrs={'class': "custom-select"}),
             'ward_no': forms.TextInput(attrs={'placeholder': 'ward_no', 'class': 'form-control'}),
             'Type': forms.TextInput(attrs={'placeholder': 'Category', 'class': 'form-control'}),
+            'vulnerabilityType': forms.TextInput(attrs={'placeholder': 'Vulnerability Type', 'class': 'form-control'}),
             'GovernmentTranch': forms.TextInput(attrs={'placeholder': 'Tranch', 'class': 'form-control'}),
             'ConstructionPhase': forms.TextInput(attrs={'placeholder': 'Construction Phase', 'class': 'form-control'}),
             'Typesofhouse': forms.TextInput(attrs={'placeholder': 'Types of house', 'class': 'form-control'}),
