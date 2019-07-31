@@ -590,9 +590,9 @@ class ClusterAssignView(ManagerMixin, View):
 
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
-        clusterag = ClusterAG.objects.filter(cluster_id=pk)
-        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag))
-        selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group')
+        clusterag = ClusterAG.objects.filter(cluster_id=pk).order_by('id')
+        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag)).order_by('id')
+        selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group').order_by('id')
         time_interval = ProjectTimeInterval.objects.filter(project=request.project)
         return render(request, 'core/cluster-assign.html',
                       {
