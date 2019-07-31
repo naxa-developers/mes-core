@@ -250,6 +250,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
     # if municipalities are selected in drop down
     elif munis:
         selected_munis = Municipality.objects.filter(id__in=munis).order_by('name')
+        clusters = Cluster.objects.filter(municipality__in=selected_munis)
         for item in types:
             total_list = []
             for obj in selected_munis:
@@ -331,6 +332,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
     # if districts are selected in the drop down
     elif districts:
         selected_districts = District.objects.filter(id__in=districts).order_by('name')
+        clusters = Cluster.objects.filter(municipality__district__in=selected_districts)
         for item in types:
             total_list = []
             for obj in selected_districts:
@@ -383,7 +385,31 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     total_list.append(0)
             cluster_progress_data[str(item.name)] = total_list
 
-        return progress_data, categories, cluster_progress_data
+        # for construction phase pie chart
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
+        construction_phases = {}
+        for ag in activity_groups:
+            beneficiaries = 0
+            phases = []
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__cluster__in=clusters,
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            construction_phases[str(ag.name)] = phases
+
+        return progress_data, categories, cluster_progress_data, construction_phases
 
     # for initial data or no drop down selected
     else:
