@@ -67,7 +67,12 @@
                     var popUpContent = "";
                     popUpContent += '<table style="width:100%;" id="CHAL-popup" class="popuptable">';
                     for (var data in layer.feature.properties) {
-                        popUpContent += "<tr>" + "<td>" + data + "</td>" + "<td>" + "  " + layer.feature.properties[data] + "</td>" + "</tr>";
+                        if(data == 'progress'){
+                            popUpContent += "<tr>" + "<td>" + data + "</td>" + "<td>" + "  " + layer.feature.properties[data] + '%'  + "</td>" + "</tr>";
+                        }
+                        else{
+                            popUpContent += "<tr>" + "<td>" + data + "</td>" + "<td>" + "  " + layer.feature.properties[data] + "</td>" + "</tr>";
+                        }
                     }
                     popUpContent += '</table>';
 

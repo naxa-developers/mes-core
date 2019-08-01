@@ -181,7 +181,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     else:
                         pass
                 try:
-                    total_list.append(beneficiary_progress/len(beneficiary))
+                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
                 except Exception:
                     total_list.append(beneficiary_progress/1)
             progress_data[str(item['Type'])] = total_list
@@ -254,7 +254,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     else:
                         pass
                 try:
-                    total_list.append(beneficiary_progress / len(beneficiary))
+                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
                 except Exception:
                     total_list.append(beneficiary_progress / 1)
             progress_data[str(item['Type'])] = total_list
@@ -324,7 +324,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     else:
                         pass
                 try:
-                    total_list.append(beneficiary_progress / len(beneficiary))
+                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
                 except Exception:
                     total_list.append(beneficiary_progress / 1)
             progress_data[str(item['Type'])] = total_list
@@ -392,7 +392,7 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                     else:
                         pass
                 try:
-                    total_list.append(beneficiary_progress / len(beneficiary))
+                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
                 except Exception:
                     total_list.append(beneficiary_progress / 1)
             progress_data[str(item['Type'])] = total_list
