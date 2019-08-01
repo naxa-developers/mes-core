@@ -376,12 +376,7 @@ def get_map_data(request):
 
     beneficiaries = Beneficiary.objects.filter(~Q(location=None))
 
-    data = serialize(
-        'geojson',
-        beneficiaries,
-        geometry_field='location',
-        fields=('name', 'location', 'Type'),
-    )
+    data = serialize('custom_geojson', beneficiaries, fields=('name', 'Type', 'location'))
     return HttpResponse(data)
 
 
