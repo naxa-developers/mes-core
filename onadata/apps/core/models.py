@@ -142,7 +142,7 @@ class Beneficiary(models.Model):
 	ward_no = models.IntegerField('ward number', null=True, blank=True)
 	cluster = models.ForeignKey('Cluster', related_name='beneficiary', null=True, blank=True)
 	Type = models.CharField(max_length=100, null=True, blank=True)
-	vulnerabilityType = models.CharField(max_length=100)
+	vulnerabilityType = models.CharField(max_length=100, null=True, blank=True)
 	GovernmentTranch = models.CharField(max_length=100, blank=True)
 	ConstructionPhase = models.CharField(max_length=100, blank=True)
 	Typesofhouse = models.CharField(max_length=100, blank=True)

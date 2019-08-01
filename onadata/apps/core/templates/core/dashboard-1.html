@@ -406,6 +406,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+
     //these data are used in the c3 chart js
     intervals = {{ intervals|safe }};
     chart_single = {{ chart_single|safe }};
@@ -567,18 +568,6 @@
                 }
             }
         });
-    });
-
-    $.ajax({
-        url: '/core/get-map-data/',
-        type: 'GET',
-        data: {},
-        dataType: "json",
-
-        success: function(result){
-            console.log(result);
-            map_data = result;
-        }
     });
 </script>
 <script src="{% static 'js/c3.bundle.js' %}"></script>

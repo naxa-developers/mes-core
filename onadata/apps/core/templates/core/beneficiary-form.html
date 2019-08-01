@@ -69,6 +69,13 @@
                     <font color="crimson">{{ form.Type.errors }}</font>
                     {% endif %}
                     <div class="form-group">
+                        <label>{{ form.vulnerabilityType.label }}</label>
+                        {{ form.vulnerabilityType }}
+                    </div>
+                    {% if form.vulnerabilityType.errors %}
+                    <font color="crimson">{{ form.vulnerabilityType.errors }}</font>
+                    {% endif %}
+                    <div class="form-group">
                         <label>{{ form.GovernmentTranch.label }}</label>
                         {{ form.GovernmentTranch }}
                     </div>
