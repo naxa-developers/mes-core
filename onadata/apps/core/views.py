@@ -41,9 +41,11 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 from django.core.serializers import serialize
+import json
+import ast
+from django.contrib.gis.geos import Point
 
-
-from onadata.apps.logger.models import Instance
+from onadata.apps.logger.models import Instance, XForm
 from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSerializer, ProjectSerializer, \
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
@@ -56,7 +58,7 @@ from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroup
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
-from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, get_progress_data
+from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, get_progress_data, get_form_location_label
 
 def logout_view(request):
     logout(request)
@@ -345,17 +347,34 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
         })
 
 
+def get_answer(json, labels):
+    value = []
+    for label in labels:
+        if label in json:
+            value.append(json[label])
+    return value
+
+
 # for map data in dashboard1
 def get_map_data(request):
+    form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
+    form_json = form.json
+    labels = get_form_location_label(json.loads(form_json))
+
+    instances = Instance.objects.filter(xform_id=form.id)
+    for instance in instances:
+        instance_json = instance.json
+        instance_json = ast.literal_eval(str(instance_json))
+        answers = get_answer(instance_json, labels)
+        beneficiary = Beneficiary.objects.filter(submissions__instance=instance)
+        for item in beneficiary:
+            if answers:
+                if not item.location:
+                    pnt = Point(float(answers[1]), float(answers[0]))
+                    item.location = pnt
+                    item.save()
+
     beneficiaries = Beneficiary.objects.filter(~Q(location=None))
-    # clusters = Cluster.objects.filter(project=request.project)
-    # beneficiaries = []
-    # for item in ca:
-    #     if item.activity.beneficiary_level:
-    #         cluster = Cluster.objects.filter(id=item.cag.cluster.id)
-    #         beneficiaries.append(*Beneficiary.objects.filter(cluster__in=cluster))
-    # activities = ClusterA.objects.filter(
-    #     cag__cluster__in=clusters, activity__beneficiary_level=False)
 
     data = serialize(
         'geojson',

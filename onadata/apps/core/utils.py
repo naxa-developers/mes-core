@@ -446,3 +446,36 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
             construction_phases[str(ag.name)] = phases
 
         return progress_data, categories, cluster_progress_data, construction_phases
+
+
+def parse_group(parent_json, label):
+    multi_label = []
+    label = label + '/'
+    for questions in parent_json:
+        if questions.get('type') == 'group':
+            parse_group(questions.get('children'), questions.get('name'))
+        if questions.get('type') == 'geopoint':
+            label = label + questions.get('name')
+            return label
+        if questions.get('name') == 'Longitude':
+            multi_label.append(label + questions.get('name'))
+        if questions.get('name') == 'Latitude':
+            multi_label.append(label + questions.get('name'))
+    return multi_label
+
+
+# get the fields that are either of type location or refer to lat long fields
+def get_form_location_label(json):
+    label = []
+    for questions in json.get('children'):
+        if questions.get('type') == 'group':
+            group_label = parse_group(questions.get('children'), questions.get('name'))
+            return group_label
+        if questions.get('type') == 'geopoint':
+            label = questions.get('name')
+            return label
+        if questions.get('name') == 'Longitude':
+            label.append(questions.get('name'))
+        if questions.get('name') == 'Latitude':
+            label.append(questions.get('name'))
+    return label

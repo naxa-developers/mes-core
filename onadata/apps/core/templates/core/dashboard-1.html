@@ -406,17 +406,21 @@
 {% endblock %}
 {% block scripts %}
 <script>
-    $.ajax({
-        url: '/core/get-map-data/',
-        type: 'GET',
-        data: {},
-        dataType: "json",
+    $.when(getMapData()).done(function(){});
 
-        success: function(result){
-            console.log(result);
-            map_data = result;
-        }
-    });
+    function getMapData(){
+        $.ajax({
+            url: '/core/get-map-data/',
+            type: 'GET',
+            data: {},
+            dataType: "json",
+
+            success: function(result){
+                console.log(result);
+                map_data = result;
+            }
+        });
+    }
 
     //these data are used in the c3 chart js
     intervals = {{ intervals|safe }};
