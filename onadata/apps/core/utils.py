@@ -169,7 +169,6 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         for item in types:
             total_list = []
             for obj in selected_clusters:
-                complete = 0
                 beneficiary = Beneficiary.objects.filter(cluster=obj, Type=item['Type'])
                 beneficiary_progress = 0
                 for obj in beneficiary:
@@ -179,12 +178,12 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                             annotate(progress=Sum('cluster_activity__activity__weight'))
                         for submission in submissions:
                             beneficiary_progress += submission['progress']
-
-                        if beneficiary_progress >= 100:
-                            complete += 1
                     else:
                         pass
-                total_list.append(complete)
+                try:
+                    total_list.append(beneficiary_progress/len(beneficiary))
+                except Exception:
+                    total_list.append(beneficiary_progress/1)
             progress_data[str(item['Type'])] = total_list
         for item in selected_clusters:
             categories.append(str(item.name))
@@ -243,7 +242,6 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         for item in types:
             total_list = []
             for obj in selected_munis:
-                complete = 0
                 beneficiary = Beneficiary.objects.filter(municipality=obj, Type=item['Type'])
                 beneficiary_progress = 0
                 for obj in beneficiary:
@@ -253,12 +251,12 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                             annotate(progress=Sum('cluster_activity__activity__weight'))
                         for submission in submissions:
                             beneficiary_progress += submission['progress']
-
-                        if beneficiary_progress >= 100:
-                            complete += 1
                     else:
                         pass
-                total_list.append(complete)
+                try:
+                    total_list.append(beneficiary_progress / len(beneficiary))
+                except Exception:
+                    total_list.append(beneficiary_progress / 1)
             progress_data[str(item['Type'])] = total_list
         for item in selected_munis:
             categories.append(str(item.name))
@@ -314,7 +312,6 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         for item in types:
             total_list = []
             for obj in selected_districts:
-                complete = 0
                 beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
                 beneficiary_progress = 0
                 for obj in beneficiary:
@@ -324,12 +321,12 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                             annotate(progress=Sum('cluster_activity__activity__weight'))
                         for submission in submissions:
                             beneficiary_progress += submission['progress']
-
-                        if beneficiary_progress >= 100:
-                            complete += 1
                     else:
                         pass
-                total_list.append(complete)
+                try:
+                    total_list.append(beneficiary_progress / len(beneficiary))
+                except Exception:
+                    total_list.append(beneficiary_progress / 1)
             progress_data[str(item['Type'])] = total_list
         for item in selected_districts:
             categories.append(str(item.name))
@@ -384,7 +381,6 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
         for item in types:
             total_list = []
             for obj in selected_districts:
-                complete = 0
                 beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
                 beneficiary_progress = 0
                 for obj in beneficiary:
@@ -393,12 +389,12 @@ def get_progress_data(project, types=None, clusters=None, districts=None, munis=
                             annotate(progress=Sum('cluster_activity__activity__weight'))
                         for submission in submissions:
                             beneficiary_progress += submission['progress']
-
-                        if beneficiary_progress >= 100:
-                            complete += 1
                     else:
                         pass
-                total_list.append(complete)
+                try:
+                    total_list.append(beneficiary_progress / len(beneficiary))
+                except Exception:
+                    total_list.append(beneficiary_progress / 1)
             progress_data[str(item['Type'])] = total_list
         for item in selected_districts:
             categories.append(str(item.name))

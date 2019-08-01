@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import datetime
+from django.db.models import Sum
 
 from datetime import datetime
 
@@ -162,6 +163,15 @@ class Beneficiary(models.Model):
 	def longitude(self):
 		if self.location:
 			return self.location.x
+
+	@property
+	def progress(self):
+		submissions = Submission.objects.filter(beneficiary=self)
+		progress = 0
+		for item in submissions:
+			if item.status == 'approved':
+				progress += item.cluster_activity.activity.weight
+		return progress
 
 
 class UserRole(models.Model):
