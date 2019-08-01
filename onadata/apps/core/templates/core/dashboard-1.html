@@ -406,21 +406,6 @@
 {% endblock %}
 {% block scripts %}
 <script>
-    $.when(getMapData()).done(function(){});
-
-    function getMapData(){
-        $.ajax({
-            url: '/core/get-map-data/',
-            type: 'GET',
-            data: {},
-            dataType: "json",
-
-            success: function(result){
-                console.log(result);
-                map_data = result;
-            }
-        });
-    }
 
     //these data are used in the c3 chart js
     intervals = {{ intervals|safe }};
@@ -585,8 +570,8 @@
         });
     });
 </script>
-<script src="{% static 'js/coremap.js' %}"></script>
 <script src="{% static 'js/c3.bundle.js' %}"></script>
 <script src="{% static 'js/c3.js' %}"></script>
+<script src="{% static 'js/coremap.js' %}"></script>
 {% endblock %}
 

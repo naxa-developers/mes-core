@@ -370,7 +370,7 @@ def get_map_data(request):
         for item in beneficiary:
             if answers:
                 if not item.location:
-                    pnt = Point(float(answers[1]), float(answers[0]))
+                    pnt = Point(float(answers[0]), float(answers[1]))
                     item.location = pnt
                     item.save()
 

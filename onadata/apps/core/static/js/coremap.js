@@ -1,7 +1,7 @@
 (function($) {
     "use strict";
     $(document).ready(function() {
-        var map = L.map('map').setView([27.5546, 85.0233], 10.32);
+        var map = L.map('map').setView([28.1281, 84.4392], 10.32);
 
         var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -36,41 +36,54 @@
         map.addLayer(osm);
         var layerswitcher = L.control.layers(baseLayers, {}, {collapsed: true}).addTo(map);
 
+        var beneficiaries = $.ajax({
+            url: '/core/get-map-data/',
+            type: 'GET',
+            data: {},
+            dataType: "json",
 
-        //add geojson file for informal settlements point
-            var name = new L.geoJson(map_data, {
-            pointToLayer: function(feature,Latlng)
-            {
-                var icons=L.icon({
-                  iconSize: [20, 22],
-                  iconAnchor: [10, 22],
-                  popupAnchor:  [2, -24],
-
-                  iconUrl:"https://unpkg.com/leaflet@1.0.3/dist/images/marker-icon.png"
-                });
-                var marker = L.marker(Latlng,{icon:icons});
-                return marker;
-            },
-            onEachFeature: function (feature, layer) {
-                var popUpContent = "";
-                popUpContent += '<table style="width:100%;" id="CHAL-popup" class="popuptable">';
-                for (var data in layer.feature.properties) {
-                    popUpContent += "<tr>" + "<td>" + data + "</td>" + "<td>" + "  " + layer.feature.properties[data] + "</td>" + "</tr>";
-                }
-                popUpContent += '</table>';
-
-                //layer.bindLabel("CHAL");
-
-                layer.bindPopup(L.popup({
-                    closeOnClick: true,
-                    closeButton: true,
-                    keepInView: true,
-                    autoPan: true,
-                    maxHeight: 200,
-                    minWidth: 250
-                }).setContent(popUpContent));
+            success: function(result){
+                console.log(result);
+                var map_data = result;
             }
-        }).addTo(map);
+        });
+
+        $.when(beneficiaries).done(function(){
+            //add geojson file for informal settlements point
+                var name = new L.geoJson(beneficiaries.responseJSON, {
+                pointToLayer: function(feature,Latlng)
+                {
+                    var icons=L.icon({
+                      iconSize: [20, 22],
+                      iconAnchor: [10, 22],
+                      popupAnchor:  [2, -24],
+
+                      iconUrl:"https://unpkg.com/leaflet@1.0.3/dist/images/marker-icon.png"
+                    });
+                    var marker = L.marker(Latlng,{icon:icons});
+                    return marker;
+                },
+                onEachFeature: function (feature, layer) {
+                    var popUpContent = "";
+                    popUpContent += '<table style="width:100%;" id="CHAL-popup" class="popuptable">';
+                    for (var data in layer.feature.properties) {
+                        popUpContent += "<tr>" + "<td>" + data + "</td>" + "<td>" + "  " + layer.feature.properties[data] + "</td>" + "</tr>";
+                    }
+                    popUpContent += '</table>';
+
+                    //layer.bindLabel("CHAL");
+
+                    layer.bindPopup(L.popup({
+                        closeOnClick: true,
+                        closeButton: true,
+                        keepInView: true,
+                        autoPan: true,
+                        maxHeight: 200,
+                        minWidth: 250
+                    }).setContent(popUpContent));
+                }
+            }).addTo(map);
+        });
 
             
     
