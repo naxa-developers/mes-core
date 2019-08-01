@@ -169,15 +169,13 @@
                                         <tr>
                                             <td>{{ beneficiary.name }}</td>
                                             <td>{{ beneficiary.Type }}</td>
-                                            {% with beneficiary|get_beneficiary_progress as progress %}
                                             <td>
                                                 <div class="progress">
                                                     <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" id="p_e_nfunc" aria-valuemax="200" style="width:{{ progress }}%;">
-                                                        <span class="popOver">{{ progress }}%</span>
+                                                        <span class="popOver">{{ beneficiary.progress }}%</span>
                                                     </div>
                                                 </div>
                                             </td>
-                                            {% endwith %}
                                             {% for obj in activity_groups %}
                                                 {% if obj.weight != 0.0 %}
                                                     {% for activity in obj.activity.all %}
