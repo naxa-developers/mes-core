@@ -245,6 +245,6 @@ def abbreviate(obj):
     splits = obj.split(' ')
     abbr = []
     for item in splits:
-        if item not in ['and', 'with', 'of', 'the', 'a']:
+        if item not in ['and', 'with', 'of', 'the', 'a', 'for', 'an', 'in', 'as', 'by', 'into']:
             abbr.append(item[0])
     return abbr
