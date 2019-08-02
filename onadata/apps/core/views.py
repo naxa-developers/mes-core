@@ -276,7 +276,7 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
         select_cluster = Cluster.objects.filter(project=request.project)
 
-        types = Beneficiary.objects.values('Type').distinct('Type')
+        types = Beneficiary.objects.values('Type').distinct()
         intervals = ProjectTimeInterval.objects.values('label').order_by('label')
         beneficiary_count = Beneficiary.objects.count()
         activity_count = Activity.objects.count()
@@ -288,8 +288,7 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
 
         # for beneficiary type pie data
         pie_data = {}
-        beneficiary_types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').\
-            distinct().annotate(total=Count('Type'))
+        beneficiary_types = types.annotate(total=Count('Type'))
         for item in beneficiary_types:
             pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
 
