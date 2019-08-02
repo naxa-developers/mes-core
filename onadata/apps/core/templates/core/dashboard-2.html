@@ -157,10 +157,9 @@
                                             {% for obj in activity_groups %}
                                             {% for activity in obj.activity.all %}
                                                 {% if activity.weight != 0.0 %}
-                                                    <th data-toggle="popover" data-content="{{ activity.name }}" data-trigger="hover" data-placement="top">{% with activity.name|abbreviate as abbr %}
+                                                    <th data-toggle="popover" data-content="{{ activity.name }}({{activity.weight}}%)" data-trigger="hover" data-placement="top">{% with activity.name|abbreviate as abbr %}
                                                             {% for item in abbr %}{{item|capfirst}} {% endfor %}
                                                         {% endwith %}
-                                                        {{ activity.weight }}%
                                                     </th>
                                                 {% endif %}
                                             {% endfor %}
