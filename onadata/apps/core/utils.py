@@ -62,15 +62,8 @@ def get_clusters(districts=None, munis=None, clusters=None):
 def get_beneficiaries(districts=None, munis=None, clusters=None, b_types=None):
     from .models import Cluster, Beneficiary
     if clusters and b_types and munis and districts:
-        muni_cluster = Cluster.objects.filter(municipality__in=munis)
-        for item in muni_cluster:
-            clusters.append(item.id)
-
-        district_cluster = Cluster.objects.filter(municipality__district__in=districts)
-        for item in district_cluster:
-            clusters.append(item.id)
-
-        beneficiaries = Beneficiary.objects.filter(cluster__in=clusters, Type__in=b_types).order_by('name')
+        beneficiaries = Beneficiary.objects.filter(
+            cluster__in=clusters, municipality__in=munis, district__in=districts, Type__in=b_types).order_by('name')
 
     elif b_types:
         beneficiaries = Beneficiary.objects.filter(Type__in=b_types).order_by('name')
@@ -79,18 +72,10 @@ def get_beneficiaries(districts=None, munis=None, clusters=None, b_types=None):
         beneficiaries = Beneficiary.objects.filter(cluster__in=clusters).order_by('name')
 
     elif munis:
-        muni_cluster = Cluster.objects.filter(municipality__in=munis)
-        for item in muni_cluster:
-            clusters.append(item.id)
-
-        beneficiaries = Beneficiary.objects.filter(cluster__in=clusters).order_by('name')
+        beneficiaries = Beneficiary.objects.filter(municipality__in=munis).order_by('name')
 
     elif districts:
-        district_cluster = Cluster.objects.filter(municipality__district__in=districts)
-        for item in district_cluster:
-            clusters.append(item.id)
-
-        beneficiaries = Beneficiary.objects.filter(cluster__in=clusters).order_by('name')
+        beneficiaries = Beneficiary.objects.filter(district__in=districts).order_by('name')
 
     else:
         beneficiaries = Beneficiary.objects.order_by('name')
