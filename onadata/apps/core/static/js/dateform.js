@@ -97,7 +97,8 @@
       $('.target-group').append(newTarget);
     });
 
-    
+    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover();
     $(".progress-bar").each(function () {
       var now=$(this).attr('aria-valuenow')
       var max=$(this).attr('aria-valuemax')
@@ -108,6 +109,7 @@
       $(this).parent().find('.progress-value').html(" " + now);
   });
     $('.select2').select2();
+
     
   })(jQuery);
 

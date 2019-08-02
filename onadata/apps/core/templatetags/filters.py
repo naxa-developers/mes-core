@@ -238,3 +238,13 @@ def param_replace(context, **kwargs):
 @register.filter
 def get_range(obj):
     return range(1, obj+1)
+
+
+@register.filter
+def abbreviate(obj):
+    splits = obj.split(' ')
+    abbr = []
+    for item in splits:
+        if item not in ['and', 'with', 'of', 'the', 'a']:
+            abbr.append(item[0])
+    return abbr
