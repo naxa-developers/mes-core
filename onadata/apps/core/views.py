@@ -408,7 +408,7 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
 
         
         page = request.GET.get('page', 1)
-        paginator = Paginator(beneficiaries, 50)
+        paginator = Paginator(beneficiaries, 200)
         
         try:
             beneficiaries = paginator.page(page)
