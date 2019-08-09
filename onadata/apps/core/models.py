@@ -166,7 +166,7 @@ class Beneficiary(models.Model):
 
 	@property
 	def progress(self):
-		submissions = Submission.objects.filter(beneficiary=self)
+		submissions = Submission.objects.filter(beneficiary=self).distinct('cluster_activity')
 		progress = 0
 		for item in submissions:
 			if item.status == 'approved':
