@@ -171,6 +171,8 @@ class Beneficiary(models.Model):
 		for item in submissions:
 			if item.status == 'approved':
 				progress += item.cluster_activity.activity.weight
+		if progress > 100:
+			return 100
 		return progress
 
 
