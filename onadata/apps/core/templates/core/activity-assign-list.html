@@ -1,0 +1,74 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Activity List{% endblock %}
+
+{% block content %}
+<!-- Main Content -->
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>Activity list</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Project</a></li>
+                        <li class="breadcrumb-item active">Activity list</li>
+                    </ul>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">                
+                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                    <a href="{% url 'activity_add' %}" ><button class="btn btn-success btn-icon float-right" type="button"><i class="la la-plus"></i></button></a>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="card project_list">
+                <div class="table-responsive">
+                    <table id="Beneficiary_table" class="table table-hover c_table">
+                        <thead>
+                            <tr>                                       
+                                <th>Activity group</th>
+                                <th>Activity Name</th>
+                                <th>Target number</th>
+                                <th>Target unit</th>
+                                <th>Form Title</th>
+                                <th>Benificiaries</th>
+                                <th>Weight</th>
+                                <th>Action</th>
+                        </thead>
+                        <tbody>
+                            {% for activity in object_list %}
+                            <tr>
+                                <td>{{ activity.activity_group }}</td>
+                                <td>{{ activity.name }}</td>
+                                <td>{{ activity.target_number }}</td>
+                                <td>{{ activity.target_unit }}</td>
+                                <td>{{ activity.form.title }}</td>
+                                <td>{{ activity.beneficiary_level }}</td>
+                                <td>{{ activity.weight }}</td>
+                                <td class="table-action">
+                                    <a href="{% url 'activity_assign' activity.pk %}" class="btn"> <i class="la la-sellsy"> </i> Assign</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <a class="btn float-right" href="{% url 'activity_add' %}"><i class="la la-plus"></i> Add Activity</a>
+<!--                     <ul class="pagination pagination-primary">
+                        <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>
+                    </ul> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

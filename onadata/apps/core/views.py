@@ -1018,6 +1018,15 @@ class SubNotificationListView(LoginRequiredMixin, View):
                     mail_subject, message, to=[to_email]
                 )
                 email.send()
+        elif 'approve-all' in request.POST:
+            Submission.objects.filter(status='pending').update(status='approved')
+        
+        elif 'approve-selected' in request.POST:
+            checked = request.POST.get('checked[]')
+            for item in checked:
+                submission = Submission.objects.get(id=int(item))
+                submission.status = 'approved'
+                submission.save()
 
         submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
@@ -1265,3 +1274,43 @@ def get_activity(request):
             return HttpResponse(activity)
     else:
         return HttpResponse('not ajax request')
+
+
+class ActivityAssignListView(ManagerMixin, ListView):
+    model = Activity
+    template_name = 'core/activity-assign-list.html'
+
+
+def assign_activity(request, *args, **kwargs):
+    activity = Activity.objects.get(pk=kwargs.get('pk'))
+    if request.method == 'GET':
+        cluster_activity_groups = ClusterAG.objects.filter(activity_group=activity.activity_group)
+        clusters = Cluster.objects.all()
+    elif request.method == 'POST':
+        activity = Activity.objects.get(pk=kwargs.get('pk'))
+        clusters = Cluster.objects.all()
+        if 'assign' in request.POST:
+            cluster = request.POST.getlist('clusters[]')
+            for item in cluster:
+                cluster = Cluster.objects.get(id=int(item))
+                cag = ClusterAG.objects.create(cluster=cluster, activity_group=activity.activity_group)
+                ca, created = ClusterA.objects.get_or_create(
+                    activity=activity,
+                    cag=cag,
+                )
+
+                if activity.beneficiary_level:
+                    ca.target_number = None
+                    ca.target_unit = None
+                    ca.location = None
+                
+                else:
+                    ca.target_number = activity.target_number
+                    ca.target_unit = activity.target_unit
+                    if activity.location:
+                        ca.location = activity.location
+                ca.time_interval = activity.time_interval
+                ca.save()
+                
+                
+    return render(request, 'core/activity-assign.html', {'clusters': clusters})

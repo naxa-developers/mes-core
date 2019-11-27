@@ -52,6 +52,8 @@ urlpatterns = [
     url(r'activity-detail/(?P<pk>[0-9]+)/$', views.ActivityDetailView.as_view(), name='activity_detail'),
     url(r'activity-edit/(?P<pk>[0-9]+)/$', views.ActivityUpdateView.as_view(), name='activity_edit'),
     url(r'activity-delete/(?P<pk>[0-9]+)/$', views.ActivityDeleteView.as_view(), name='activity_delete'),
+    url(r'activity-assign-list/', views.ActivityAssignListView.as_view(), name='activity_assign_list'),
+    url(r'activity-assign/(?P<pk>[0-9]+)/$', views.assign_activity, name='activity_assign'),
 
     url(r'cluster-list', views.ClusterListView.as_view(), name='cluster_list'),
     url(r'my-clusters/(?P<pk>[0-9]+)/$', views.UserClusterListView.as_view(), name='user_cluster_list'),
