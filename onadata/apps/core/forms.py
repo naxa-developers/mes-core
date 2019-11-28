@@ -351,25 +351,31 @@ class UserRoleForm(forms.ModelForm):
         elif self.instance.pk:
             clusters = cleaned_data.get('cluster')
             if clusters:
-                userrole = UserRole.objects.filter(group=cleaned_data.get('group'), user=cleaned_data.get('user'))
-                for cluster in clusters:
-                    for user_cluster in userrole:
-                        user_clusters = user_cluster.cluster.all()
-                        if cluster not in user_clusters and UserRole.objects.filter(
-                                group=cleaned_data.get('group'), cluster=cluster).exists():
-                            raise ValidationError({
-                                'cluster': [
-                                    'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
+                if cleaned_data.get('group').name in ['social-mobilizer']:
+                    pass
+                else:
+                    userrole = UserRole.objects.filter(group=cleaned_data.get('group'), user=cleaned_data.get('user'))
+                    for cluster in clusters:
+                        for user_cluster in userrole:
+                            user_clusters = user_cluster.cluster.all()
+                            if cluster not in user_clusters and UserRole.objects.filter(
+                                    group=cleaned_data.get('group'), cluster=cluster).exists():
+                                raise ValidationError({
+                                    'cluster': [
+                                        'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
 
         else:
             if cleaned_data.get('cluster'):
-                if UserRole.objects.filter(group=cleaned_data.get('group'),
-                                             cluster__in=cleaned_data.get('cluster')).exists():
-                    raise ValidationError({
-                        'cluster': [
-                            'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
+                if cleaned_data.get('group').name in ['social-mobilizer']:
+                    pass
+                else:
+                    if UserRole.objects.filter(group=cleaned_data.get('group'),
+                                                cluster__in=cleaned_data.get('cluster')).exists():
+                        raise ValidationError({
+                            'cluster': [
+                                'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
 
-                elif UserRole.objects.filter(
+                if UserRole.objects.filter(
                         user=cleaned_data.get('user')).exists() and \
                         cleaned_data.get('group').name not in ['social-mobilizer', 'project-coordinator', 'project-management-unit']:
                     raise ValidationError({
