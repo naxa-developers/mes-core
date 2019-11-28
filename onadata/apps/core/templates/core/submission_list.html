@@ -27,11 +27,16 @@
             </div>
         </div>
         <div class="container-fluid">
-            <div class="card project_list">
-                <div class="table-responsive">
+            <form method="post">
+                {% csrf_token %}
+                <button name='approve-all' class='btn'><i class="la la-check">Approve All</i></button>
+                <button name='approve-selected' class='btn'><i class="la la-check">Approve Selected</i> </button>
+                <div class="card project_list">
+                    <div class="table-responsive">
                     <table id="Beneficiary_table" class="table table-hover c_table">
                         <thead>
                             <tr>
+                                <th>Select</th>
                                 <th>Date</th>
                                 <th>Activity</th>
                                 <th>Beneficiary</th>
@@ -42,6 +47,9 @@
                         <tbody>
                             {% for submission in submissions %}
                                 <tr>
+                                    <td>
+                                        <input name="checked[]" type="checkbox" value="{{ submission.id }}">
+                                    </td>
                                     <td>{{ submission.instance.date_created }}</td>
                                     <td>{{ submission.cluster_activity.activity.name }}</td>
                                     <td>{{ submission.beneficiary.name }}</td>
@@ -69,6 +77,7 @@
                 </div>
 
             </div>
+            </form>
         </div>
     </div>
 </section>

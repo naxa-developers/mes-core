@@ -884,21 +884,21 @@ class UserRoleCreateView(ManagerMixin, View):
                     obj.cluster.add(cluster)
 
             # send email to the user
-            if obj.user.email:
-                clusters = obj.cluster.all()
-                to_email = obj.user.email
-                mail_subject = 'User role assigned.'
-                message = render_to_string('core/user_role_email.html', {
-                    'userrole': obj,
-                    'clusters': clusters,
-                    'domain': settings.SITE_URL,
-                })
-                email = EmailMessage(
-                    mail_subject, message, to=[to_email]
-                )
-                email.send()
-            else:
-                pass
+            # if obj.user.email:
+            #     clusters = obj.cluster.all()
+            #     to_email = obj.user.email
+            #     mail_subject = 'User role assigned.'
+            #     message = render_to_string('core/user_role_email.html', {
+            #         'userrole': obj,
+            #         'clusters': clusters,
+            #         'domain': settings.SITE_URL,
+            #     })
+            #     email = EmailMessage(
+            #         mail_subject, message, to=[to_email]
+            #     )
+            #     email.send()
+            # else:
+            #     pass
             return HttpResponseRedirect(reverse('userrole_list'))
         return render(request, 'core/userrole-form.html', {'form':form})
 
@@ -974,6 +974,17 @@ class SubmissionListView(LoginRequiredMixin, View):
                 )
                 email.send()
 
+        elif 'approve-all' in request.POST:
+            Submission.objects.filter(status='pending').update(status='approved')
+        
+        elif 'approve-selected' in request.POST:
+            checked = request.POST.getlist('checked[]')
+            if checked:
+                for item in checked:
+                    submission = Submission.objects.get(id=int(item))
+                    submission.status = 'approved'
+                    submission.save()
+
         cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
         submissions = Submission.objects.filter(cluster_activity=cluster_activity)
         return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
@@ -1022,11 +1033,12 @@ class SubNotificationListView(LoginRequiredMixin, View):
             Submission.objects.filter(status='pending').update(status='approved')
         
         elif 'approve-selected' in request.POST:
-            checked = request.POST.get('checked[]')
-            for item in checked:
-                submission = Submission.objects.get(id=int(item))
-                submission.status = 'approved'
-                submission.save()
+            checked = request.POST.getlist('checked[]')
+            if checked:
+                for item in checked:
+                    submission = Submission.objects.get(id=int(item))
+                    submission.status = 'approved'
+                    submission.save()
 
         submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
