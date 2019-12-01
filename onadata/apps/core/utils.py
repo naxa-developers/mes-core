@@ -1,5 +1,10 @@
+import os
 from datetime import datetime
 from django.core.serializers import serialize
+from django.conf import settings
+from django.core.files.storage import get_storage_class
+from onadata.apps.logger.xform_instance_parser import get_uuid_from_xml, clean_and_parse_xml
+from xml.dom import Node
 
 
 # divide a datetime range into intervals
@@ -460,3 +465,62 @@ def get_form_location_label(json):
         if questions.get('name') == 'Latitude':
             label.append(questions.get('name'))
     return label
+
+
+def get_path(path, suffix):
+    fileName, fileExtension = os.path.splitext(path)
+    return fileName + suffix + fileExtension
+
+
+def image_urls_dict(instance):
+    default_storage = get_storage_class()()
+    urls = dict()
+    suffix = settings.THUMB_CONF['medium']['suffix']
+    for a in instance.attachments.all():
+        filename = a.media_file.name
+        if default_storage.exists(get_path(a.media_file.name, suffix)):
+            url = default_storage.url(
+                get_path(a.media_file.name, suffix))
+        else:
+            url = a.media_file.url
+        file_basename = os.path.basename(filename)
+        if url.startswith('/'):
+            url = settings.KOBOCAT_URL + url
+        urls[file_basename] = url
+    return urls
+
+
+def inject_instanceid(xml_str, uuid):
+    if get_uuid_from_xml(xml_str) is None:
+        xml = clean_and_parse_xml(xml_str)
+        children = xml.childNodes
+        if children.length == 0:
+            raise ValueError(_("XML string must have a survey element."))
+
+        # check if we have a meta tag
+        survey_node = children.item(0)
+        meta_tags = [
+            n for n in survey_node.childNodes
+            if n.nodeType == Node.ELEMENT_NODE
+            and n.tagName.lower() == "meta"]
+        if len(meta_tags) == 0:
+            meta_tag = xml.createElement("meta")
+            xml.documentElement.appendChild(meta_tag)
+        else:
+            meta_tag = meta_tags[0]
+
+        # check if we have an instanceID tag
+        uuid_tags = [
+            n for n in meta_tag.childNodes
+            if n.nodeType == Node.ELEMENT_NODE
+            and n.tagName == "instanceID"]
+        if len(uuid_tags) == 0:
+            uuid_tag = xml.createElement("instanceID")
+            meta_tag.appendChild(uuid_tag)
+        else:
+            uuid_tag = uuid_tags[0]
+        # insert meta and instanceID
+        text_node = xml.createTextNode(u"uuid:%s" % uuid)
+        uuid_tag.appendChild(text_node)
+        return xml.toxml()
+    return xml_str

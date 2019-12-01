@@ -4,13 +4,16 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework.response import Response
 from django.contrib.gis.geos import Point
+from django.template import RequestContext
+from django.utils.translation import ugettext as _
+from onadata.libs.utils.viewer_tools import enketo_url
 
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
@@ -58,7 +61,11 @@ from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroup
 from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, ProjectView, ProjectRequiredMixin, \
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
-from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, get_progress_data, get_form_location_label
+from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, get_progress_data, \
+    get_form_location_label, image_urls_dict, inject_instanceid
+
+from onadata.libs.utils.viewer_tools import _get_form_url
+
 
 def logout_view(request):
     logout(request)
@@ -1326,3 +1333,52 @@ def assign_activity(request, *args, **kwargs):
                 
                 
     return render(request, 'core/activity-assign.html', {'clusters': clusters})
+
+
+def edit_submission(request,  id_string, data_id):
+    context = RequestContext(request)
+    xform = get_object_or_404(
+        XForm, id_string__exact=id_string)
+    instance = get_object_or_404(
+        Instance, pk=data_id, xform=xform)
+    form = instance.xform
+    # if not has_change_form_permission(request, form, 'edit'):
+    #     raise PermissionDenied
+
+
+    instance_attachments = image_urls_dict(instance)
+    # check permission
+    # if not has_edit_permission(xform, owner, request, xform.shared):
+    #     return HttpResponseForbidden(_(u'Not shared.'))
+    if not hasattr(settings, 'ENKETO_URL'):
+        response = render_to_response('base.html', {},
+                                      context_instance=RequestContext(request))
+        response.status_code = 500
+        return response
+
+    injected_xml = inject_instanceid(instance.xml, instance.uuid)
+
+    form_url = _get_form_url(request, xform.user.username, settings.ENKETO_PROTOCOL)
+
+    try:
+        url = enketo_url(
+            form_url, xform.id_string, instance_xml=injected_xml,
+            instance_id=instance.uuid, return_url="",
+            instance_attachments=instance_attachments
+        )
+    except Exception as e:
+        context.message = {
+            'type': 'alert-error',
+            'text': u"Enketo error, reason: %s" % e}
+        messages.add_message(
+            request, messages.WARNING,
+            _("Enketo error: enketo replied %s") % e, fail_silently=True)
+    else:
+        if url:
+            context.enketo = url
+            return HttpResponseRedirect(url)
+
+    response = render_to_response('base.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 500
+    return response
