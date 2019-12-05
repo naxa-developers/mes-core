@@ -1304,10 +1304,12 @@ def assign_activity(request, *args, **kwargs):
     activity = Activity.objects.get(pk=kwargs.get('pk'))
     if request.method == 'GET':
         cluster_activity_groups = ClusterAG.objects.filter(activity_group=activity.activity_group)
-        clusters = Cluster.objects.all()
+        clusters = Cluster.objects.filter(~Q(clusterag__in=cluster_activity_groups))
+
     elif request.method == 'POST':
         activity = Activity.objects.get(pk=kwargs.get('pk'))
-        clusters = Cluster.objects.all()
+        cluster_activity_groups = ClusterAG.objects.filter(activity_group=activity.activity_group)
+        clusters = Cluster.objects.filter(~Q(clusterag__in=cluster_activity_groups))
         if 'assign' in request.POST:
             cluster = request.POST.getlist('clusters[]')
             for item in cluster:
@@ -1330,8 +1332,7 @@ def assign_activity(request, *args, **kwargs):
                         ca.location = activity.location
                 ca.time_interval = activity.time_interval
                 ca.save()
-                
-                
+                        
     return render(request, 'core/activity-assign.html', {'clusters': clusters})
 
 
