@@ -123,6 +123,14 @@
                     <font color="crimson">{{ form.weight.errors }}</font>
                     {% endif %}
 
+                    <div class="form-group">
+                        <label>{{ form.order.label }}</label>
+                        {{ form.order }}
+                    </div>
+                    {% if form.order.errors %}
+                    <font color="crimson">{{ form.order.errors }}</font>
+                    {% endif %}
+
 
 
 

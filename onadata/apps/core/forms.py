@@ -185,6 +185,7 @@ class ActivityForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
+            'order': forms.TextInput(attrs={'class': 'form-control'}),
             'activity_group': forms.Select(attrs={'class': "custom-select"}),
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'placeholder': 'Description', 'class': 'form-control'}),
@@ -201,6 +202,12 @@ class ActivityForm(forms.ModelForm):
             raise ValidationError({'weight': ['Please enter a valid weight']})
         else:
             return self.cleaned_data.get('weight')
+    
+    def clean_order(self):
+        if not isinstance(self.cleaned_data.get('order'), int):
+            raise ValidationError({'order': ['Please enter a valid number']})
+        else:
+            return self.cleaned_data.get('order')
 
     # make sure that the weights of the activities combined in an activity group does not exceed the weight of activity group
     def clean(self):

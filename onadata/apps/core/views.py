@@ -958,6 +958,9 @@ class SubmissionListView(LoginRequiredMixin, View):
             submission.status = 'approved'
             submission.save()
 
+            order = submission.cluster_activity.activity.order
+            Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
+
         elif 'reject' in request.POST:
             if ',' in request.POST.get('reject'):
                 sub_id = request.POST.get('reject').replace(',', '')
@@ -991,6 +994,9 @@ class SubmissionListView(LoginRequiredMixin, View):
                     submission = Submission.objects.get(id=int(item))
                     submission.status = 'approved'
                     submission.save()
+
+                    order = submission.cluster_activity.activity.order
+                    Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
 
         cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
         submissions = Submission.objects.filter(cluster_activity=cluster_activity)
@@ -1013,6 +1019,9 @@ class SubNotificationListView(LoginRequiredMixin, View):
             submission.status = 'approved'
             submission.save()
 
+            order = submission.cluster_activity.activity.order
+            Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
+
         elif 'reject' in request.POST:
 
             if ',' in request.POST.get('reject'):
@@ -1046,6 +1055,9 @@ class SubNotificationListView(LoginRequiredMixin, View):
                     submission = Submission.objects.get(id=int(item))
                     submission.status = 'approved'
                     submission.save()
+
+                    order = submission.cluster_activity.activity.order
+                    Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
 
         submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
         return render(request, 'core/submission_notification.html', {'submissions': submissions})

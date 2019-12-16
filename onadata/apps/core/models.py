@@ -114,6 +114,7 @@ class Activity(models.Model):
 
 	time_interval = models.ForeignKey(ProjectTimeInterval, related_name='activity_interval', null=True, blank=True)
 	location = PointField(geography=True, srid=4326, blank=True, null=True)
+	order = models.IntegerField(null=True, blank=True)
 
 	def __str__(self):
 		return self.name
