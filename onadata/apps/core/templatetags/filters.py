@@ -164,7 +164,7 @@ def check_status_change_permission(obj, request):
 
 @register.filter
 def get_activity_count(obj):
-    return Activity.objects.filter(activity_group=obj).count()
+    return Activity.objects.filter(~Q(weight=0), activity_group=obj).count()
 
 
 @register.filter
