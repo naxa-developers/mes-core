@@ -172,9 +172,9 @@ def check_activity_progress(obj, beneficiary=None):
     try:
         higher_activities = Activity.objects.filter(order__gte=obj.order)
         if higher_activities:
-            for obj in higher_activities:
-                cag = ClusterAG.objects.filter(cluster=beneficiary.cluster, activity_group=obj.activity_group)
-                ca = ClusterA.objects.filter(activity=obj, cag__in=cag)
+            for item in higher_activities:
+                cag = ClusterAG.objects.filter(cluster=beneficiary.cluster, activity_group=item.activity_group)
+                ca = ClusterA.objects.filter(activity=item, cag__in=cag)
                 if beneficiary is not None:
                     submissions = Submission.objects.filter(cluster_activity__in=ca, beneficiary=beneficiary)
                     if submissions:
