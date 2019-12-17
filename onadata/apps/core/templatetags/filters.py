@@ -170,6 +170,26 @@ def get_activity_count(obj):
 @register.filter
 def check_activity_progress(obj, beneficiary=None):
     try:
+        higher_activities = Activity.objects.filter(order__gte=obj.order)
+        if higher_activities:
+            for obj in higher_activities:
+                cag = ClusterAG.objects.filter(cluster=beneficiary.cluster, activity_group=obj.activity_group)
+                ca = ClusterA.objects.filter(activity=obj, cag__in=cag)
+                if beneficiary is not None:
+                    submissions = Submission.objects.filter(cluster_activity__in=ca, beneficiary=beneficiary)
+                    if submissions:
+                        for submission in submissions:
+                            if submission.status == 'approved':
+                                return True
+                        return False
+
+                else:
+                    submissions = Submission.objects.filter(cluster_activity__in=ca)
+                    if submissions:
+                        for submission in submissions:
+                            if not submission.status == 'approved':
+                                return False
+                        return True
         cag = ClusterAG.objects.filter(cluster=beneficiary.cluster, activity_group=obj.activity_group)
         ca = ClusterA.objects.filter(activity=obj, cag__in=cag)
         if beneficiary is not None:
