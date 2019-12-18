@@ -129,6 +129,9 @@ class Activity(models.Model):
 		if self.location:
 			return self.location.x
 
+	class Meta:
+		ordering = ['order']
+
 
 PAYMENT_CHOICES = (
 	('single', 'One Time Payment'),
@@ -219,6 +222,9 @@ class ClusterA(models.Model):
 				self.target_unit = self.activity.target_unit
 			self.time_interval = self.activity.time_interval
 		return super(ClusterA, self).save()
+
+	class Meta:
+		order_with_respect_to = 'activity'
 
 
 class ClusterAHistory(models.Model):
