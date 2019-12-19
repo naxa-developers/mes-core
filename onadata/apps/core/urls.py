@@ -117,6 +117,7 @@ urlpatterns = [
     url(r'^get-activities/$', views.get_activity, name="get_activities"),
     # url(r'^get-map-data/$', views.get_map_data, name="get_map_data"),
     url(r'^get-progress-data/$', views.get_progress, name='get_progress_data'),
+    url(r'^get-cluster-phase-data/$', views.get_progress_phase_pie, name='get_cluster_phase_data'),
 
 ]
 

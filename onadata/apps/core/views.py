@@ -311,26 +311,26 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
         #     chart_single = get_cluster_activity_data(request.project)
 
         # get progress overview data on basis of filter used
-        if 'progress' in request.GET:
-            checked = [(name, value) for name, value in request.GET.iteritems()]
-            clusters = []
-            select_districts = []
-            munis = []
-            for item in checked:
-                if item[0].startswith('cl'):
-                    clusters.append(int(item[0].split("_")[1]))
+        # if 'progress' in request.GET:
+        #     checked = [(name, value) for name, value in request.GET.iteritems()]
+        #     clusters = []
+        #     select_districts = []
+        #     munis = []
+        #     for item in checked:
+        #         if item[0].startswith('cl'):
+        #             clusters.append(int(item[0].split("_")[1]))
 
-                if item[0].startswith('mun'):
-                    munis.append(int(item[0].split("_")[1]))
+        #         if item[0].startswith('mun'):
+        #             munis.append(int(item[0].split("_")[1]))
 
-                if item[0].startswith('dist'):
-                    select_districts.append(int(item[0].split("_")[1]))
+        #         if item[0].startswith('dist'):
+        #             select_districts.append(int(item[0].split("_")[1]))
 
-            construction_phases = get_progress_data(
-                request.project, types, clusters, select_districts, munis)
+        #     construction_phases = get_progress_data(
+        #         request.project, types, clusters, select_districts, munis)
 
-        else:
-            construction_phases = get_progress_data(request.project, types)
+        # else:
+        #     construction_phases = get_progress_data(request.project, types)
 
         return render(request, self.template_name, {
             'districts': districts,
@@ -341,7 +341,7 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
             # 'intervals': interval,
             # 'chart_single': chart_single,
             'pie_data': pie_data,
-            'construction_phases': construction_phases
+            # 'construction_phases': construction_phases
         })
 
 
@@ -1519,4 +1519,131 @@ def get_progress(request):
         
         data = {'categories': categories, 'progress_data': progress_data}
         return JsonResponse(data)
+
+
+def get_progress_phase_pie(request):
+    project = request.project
+    types = Beneficiary.objects.values('Type').distinct()
+    construction_phases = {}
+
+    checked = [(name, value) for name, value in request.GET.iteritems()]
+    clusters = []
+    select_districts = []
+    munis = []
+    for item in checked:
+        if item[0].startswith('cl'):
+            clusters.append(int(item[0].split("_")[1]))
+
+        if item[0].startswith('mun'):
+            munis.append(int(item[0].split("_")[1]))
+
+        if item[0].startswith('dist'):
+            select_districts.append(int(item[0].split("_")[1]))
+
+    if clusters:
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
+        construction_phases = {}
+        for ag in activity_groups:
+            beneficiaries = 0
+            phases = []
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__cluster__in=clusters,
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            construction_phases[str(ag.name)] = phases
+
+        data = {'data': construction_phases}
+        return JsonResponse(data)
     
+    elif munis:
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
+        construction_phases = {}
+        for ag in activity_groups:
+            beneficiaries = 0
+            phases = []
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__cluster__in=clusters,
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            construction_phases[str(ag.name)] = phases
+        
+        data = {'data': construction_phases}
+        return JsonResponse(data)
+    
+    elif select_districts:
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
+        construction_phases = {}
+        for ag in activity_groups:
+            beneficiaries = 0
+            phases = []
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__cluster__in=clusters,
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            construction_phases[str(ag.name)] = phases
+        
+        data = {'data': construction_phases}
+        return JsonResponse(data)
+    
+    else:
+        clusters = Cluster.objects.filter(project=request.project).order_by('name')
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
+        construction_phases = {}
+        for ag in activity_groups:
+            beneficiaries = 0
+            phases = []
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__cluster__in=clusters,
+                submissions__cluster_activity__cag__activity_group=ag,
+            )
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            beneficiary = [round((float(beneficiaries) / len(activity_groups)) * 100, 2)]
+            phases.append(beneficiary)
+            construction_phases[str(ag.name)] = phases
+        data = {'data': construction_phases}
+        return JsonResponse(data)
