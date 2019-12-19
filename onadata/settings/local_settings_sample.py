@@ -47,6 +47,9 @@ DATABASES = {
     }
 }
 
+SERIALIZATION_MODULES = {
+    "custom_geojson": "onadata.apps.core.geo_json_serializer",
+}
 
 KPI_URL = 'http://localhost:8000'
 KPI_LOGOUT_URL = KPI_URL + 'accounts/logout/'

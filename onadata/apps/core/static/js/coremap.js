@@ -36,67 +36,67 @@
         map.addLayer(osm);
         var layerswitcher = L.control.layers(baseLayers, {}, {collapsed: true}).addTo(map);
 
-        // var beneficiaries = $.ajax({
-        //     url: '/core/get-map-data/',
-        //     type: 'GET',
-        //     data: {},
-        //     dataType: "json",
+        var beneficiaries = $.ajax({
+            url: '/core/get-map-data/',
+            type: 'GET',
+            data: {},
+            dataType: "json",
 
-        //     success: function(result){
-        //         console.log(result);
-        //         var map_data = result;
-        //     }
-        // });
+            success: function(result){
+                console.log(result);
+                var map_data = result;
+            }
+        });
 
-        // $.when(beneficiaries).done(function(){
-        //     //add geojson file for informal settlements point
-        //         var name = new L.geoJson(beneficiaries.responseJSON, {
-        //         pointToLayer: function(feature,Latlng)
-        //         {
-        //             var icons=L.icon({
-        //               iconSize: [20, 22],
-        //               iconAnchor: [10, 22],
-        //               popupAnchor:  [2, -24],
+        $.when(beneficiaries).done(function(){
+            //add geojson file for informal settlements point
+                var name = new L.geoJson(beneficiaries.responseJSON, {
+                pointToLayer: function(feature,Latlng)
+                {
+                    var icons=L.icon({
+                      iconSize: [20, 22],
+                      iconAnchor: [10, 22],
+                      popupAnchor:  [2, -24],
 
-        //               iconUrl:"https://unpkg.com/leaflet@1.0.3/dist/images/marker-icon.png"
-        //             });
-        //             var marker = L.marker(Latlng,{icon:icons});
-        //             return marker;
-        //         },
-        //         onEachFeature: function (feature, layer) {
-        //             var popUpContent = "";
-        //             popUpContent += '<table style="width:100%;" id="CHAL-popup" class="popuptable">';
-        //             for (var data in layer.feature.properties) {
-        //                 if(data == 'progress'){
-        //                     popUpContent += "<tr>" + "<td>" + data + "</td>" + "<td>" + "  " + layer.feature.properties[data] + '%'  + "</td>" + "</tr>";
-        //                 }
-        //                 else{
-        //                     popUpContent += "<tr>" + "<td>" + data + "</td>" + "<td>" + "  " + layer.feature.properties[data] + "</td>" + "</tr>";
-        //                 }
-        //             }
-        //             popUpContent += '</table>';
+                      iconUrl:"https://unpkg.com/leaflet@1.0.3/dist/images/marker-icon.png"
+                    });
+                    var marker = L.marker(Latlng,{icon:icons});
+                    return marker;
+                },
+                onEachFeature: function (feature, layer) {
+                    var popUpContent = "";
+                    popUpContent += '<table style="width:100%;" id="CHAL-popup" class="popuptable">';
+                    for (var data in layer.feature.properties) {
+                        if(data == 'progress'){
+                            popUpContent += "<tr>" + "<td>" + data + "</td>" + "<td>" + "  " + layer.feature.properties[data] + '%'  + "</td>" + "</tr>";
+                        }
+                        else{
+                            popUpContent += "<tr>" + "<td>" + data + "</td>" + "<td>" + "  " + layer.feature.properties[data] + "</td>" + "</tr>";
+                        }
+                    }
+                    popUpContent += '</table>';
 
-        //             //layer.bindLabel("CHAL");
+                    //layer.bindLabel("CHAL");
 
-        //             layer.bindPopup(L.popup({
-        //                 closeOnClick: true,
-        //                 closeButton: true,
-        //                 keepInView: true,
-        //                 autoPan: true,
-        //                 maxHeight: 200,
-        //                 minWidth: 250
-        //             }).setContent(popUpContent));
-        //         }
-        //     }).addTo(map);
-        // });
+                    layer.bindPopup(L.popup({
+                        closeOnClick: true,
+                        closeButton: true,
+                        keepInView: true,
+                        autoPan: true,
+                        maxHeight: 200,
+                        minWidth: 250
+                    }).setContent(popUpContent));
+                }
+            }).addTo(map);
+        });
 
             
     
-        // L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //   attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-        //   subdomains: 'abcd',
-        //     maxZoom: 19
-        // }).addTo(mymap);
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+          subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
     });
 })(jQuery);
 

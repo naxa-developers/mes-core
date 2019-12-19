@@ -204,14 +204,14 @@
 
                                     {% with beneficiaries.paginator.num_pages|get_range as n %}
 
-                                    {% for number in n %}
-                                        {% if number == beneficiaries.number %}
-                                            <a href="#" class="active">{{ number }}</a>
-                                        {% else %}
-                                            <a href="?{% param_replace page=number %}">{{ number }}</a>
-                                        {% endif %}
+                                        {% for number in n %}
+                                            {% if number == beneficiaries.number %}
+                                                <a href="#" class="active">{{ number }}</a>
+                                            {% else %}
+                                                <a href="?{% param_replace page=number %}">{{ number }}</a>
+                                            {% endif %}
 
-                                    {% endfor %}
+                                        {% endfor %}
                                     {% endwith %}
 
 

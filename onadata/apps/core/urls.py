@@ -115,9 +115,10 @@ urlpatterns = [
     url(r'^get-clusters/$', views.get_clusters, name="get_clusters"),
     url(r'^get-activity-groups/$', views.get_activity_group, name="get_activity_groups"),
     url(r'^get-activities/$', views.get_activity, name="get_activities"),
-    # url(r'^get-map-data/$', views.get_map_data, name="get_map_data"),
+    url(r'^get-map-data/$', views.get_map_data, name="get_map_data"),
     url(r'^get-progress-data/$', views.get_progress, name='get_progress_data'),
     url(r'^get-cluster-phase-data/$', views.get_progress_phase_pie, name='get_cluster_phase_data'),
+    url(r'^map-dashboard/$', views.MapDasboardView.as_view(), name='map-dashboard'),
 
 ]
 

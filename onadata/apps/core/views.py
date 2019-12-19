@@ -354,28 +354,28 @@ def get_answer(json, labels):
 
 
 # for map data in dashboard1
-# def get_map_data(request):
-#     form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
-#     form_json = form.json
-#     labels = get_form_location_label(json.loads(form_json))
+def get_map_data(request):
+    form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
+    form_json = form.json
+    labels = get_form_location_label(json.loads(form_json))
 
-#     instances = Instance.objects.filter(xform_id=form.id)
-#     for instance in instances:
-#         instance_json = instance.json
-#         instance_json = ast.literal_eval(str(instance_json))
-#         answers = get_answer(instance_json, labels)
-#         beneficiary = Beneficiary.objects.filter(submissions__instance=instance)
-#         for item in beneficiary:
-#             if answers:
-#                 if not item.location:
-#                     pnt = Point(float(answers[0]), float(answers[1]))
-#                     item.location = pnt
-#                     item.save()
+    instances = Instance.objects.filter(xform_id=form.id)
+    for instance in instances:
+        instance_json = instance.json
+        instance_json = ast.literal_eval(str(instance_json))
+        answers = get_answer(instance_json, labels)
+        beneficiary = Beneficiary.objects.filter(submissions__instance=instance)
+        for item in beneficiary:
+            if answers:
+                if not item.location:
+                    pnt = Point(float(answers[0]), float(answers[1]))
+                    item.location = pnt
+                    item.save()
 
-#     beneficiaries = Beneficiary.objects.filter(~Q(location=None))
+    beneficiaries = Beneficiary.objects.filter(~Q(location=None))
 
-#     data = serialize('custom_geojson', beneficiaries, fields=('name', 'Type', 'location'))
-#     return HttpResponse(data)
+    data = serialize('custom_geojson', beneficiaries, fields=('name', 'Type', 'location'))
+    return HttpResponse(data)
 
 
 # it contains tabular data of each beneficiary and their progress
@@ -403,11 +403,11 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
 
         beneficiaries = get_beneficiaries(districts, munis, clusters, b_types)
 
-        ag = ActivityGroup.objects.all()
+        ag = ActivityGroup.objects.filter(weight__gte=0)
 
         
         page = request.GET.get('page', 1)
-        paginator = Paginator(beneficiaries, 200)
+        paginator = Paginator(beneficiaries, 100)
         
         try:
             beneficiaries = paginator.page(page)
@@ -1647,3 +1647,7 @@ def get_progress_phase_pie(request):
             construction_phases[str(ag.name)] = phases
         data = {'data': construction_phases}
         return JsonResponse(data)
+    
+
+class MapDasboardView(ManagerMixin, TemplateView):
+    template_name = 'core/map_dashboard.html'

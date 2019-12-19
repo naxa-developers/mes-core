@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load filters %}
+{% block content %}
+<style>
+    .select-list ul{
+        max-height: 200px;
+        overflow: hidden;
+        overflow-y: auto;
+    }
+
+    .leaflet-top.leaflet-left{
+        z-index: 500;
+    }
+</style>
+
+<section class="content">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Map Dashboard</h2>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn btn-primary float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="graph">
+        <div class="graph-column" style="padding:0px;">
+            <div class="container-fluid">
+                <div class="graph-warpper">
+                    <div class="graph-column">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>map</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="map" style="height:320px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/coremap.js' %}"></script>
+{% endblock %}
