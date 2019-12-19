@@ -98,35 +98,36 @@ $(function() {
                 }
             });
         });
-        //cluster
-        $(document).ready(function(){
-            var chart = c3.generate({
-                bindto: '#cluseter_time', // id of chart wrapper
-                data: {
-                    json: cluster_progress_data,
-                    type: 'line', // default type of chart
-                },
-                axis: {
-                    x: {
-                        type: 'category',
-                        // name of each category
-                        categories: intervals
-                    },
-                },
-                legend: {
-                    show: true, //hide legend
-                },
-                padding: {
-                    bottom: 0,
-                    top: 0
-                },
-                color: {
-                    pattern: ["#0d89df", "#00A890", "#e3e3e3", "#193f77", "#f5b2d0"]
-                },
-            });
-        });
-        //chart area
+        //construction phases cluster chart
+        // has been commented out for now to reduce page load 
+        // $(document).ready(function(){
+        //     var chart = c3.generate({
+        //         bindto: '#cluseter_time', // id of chart wrapper
+        //         data: {
+        //             json: cluster_progress_data,
+        //             type: 'line', // default type of chart
+        //         },
+        //         axis: {
+        //             x: {
+        //                 type: 'category',
+        //                 // name of each category
+        //                 categories: intervals
+        //             },
+        //         },
+        //         legend: {
+        //             show: true, //hide legend
+        //         },
+        //         padding: {
+        //             bottom: 0,
+        //             top: 0
+        //         },
+        //         color: {
+        //             pattern: ["#0d89df", "#00A890", "#e3e3e3", "#193f77", "#f5b2d0"]
+        //         },
+        //     });
+        // });
         
+        //chart area
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-area', // id of chart wrapper
@@ -392,41 +393,55 @@ $(function() {
         });
         //double graph for progress overview
         $(document).ready(function(){
-            var chart = c3.generate({
-                bindto: '#chart-bar', // id of chart wrapper
-                data: {
-                    json: progress_data,
-                    type: 'bar', // default type of chart
-                },
-                axis: {
-                    x: {
-                        type: 'category',
-                        // name of each category
-                        categories: categories,
-
-                    },
-                },
-                bar: {
-                    width: 10
-                },
-                legend: {
-                    show: true, //hide legend
-                    position: 'inset',
-                    inset: {
-                            anchor: 'top-right',
-                            x: 50,
-                            y: -30,
-                            step: 1
-                        }
-                },
-                padding: {
-                    bottom: 0,
-                    top: 30
-                },
-                color: {
-                    pattern: ["#0d89df", "#00A890", "red", "#193f77", "#f5b2d0"]
-                },
+            $.ajax({
+                type: "GET",
+                url: '/core/get-progress-data',
+                data: "{}",
+                success: function(result){
+                    OnSuccess(result);
+                },  
             });
+
+            function OnSuccess(response){
+                console.log(response.progress_data);
+                var progress_data = response.progress_data;
+                var categories = response.categories;
+                var chart = c3.generate({
+                    bindto: '#chart-bar', // id of chart wrapper
+                    data: {
+                        json: progress_data,
+                        type: 'bar', // default type of chart
+                    },
+                    axis: {
+                        x: {
+                            type: 'category',
+                            // name of each category
+                            categories: categories,
+
+                        },
+                    },
+                    bar: {
+                        width: 10
+                    },
+                    legend: {
+                        show: true, //hide legend
+                        position: 'inset',
+                        inset: {
+                                anchor: 'top-right',
+                                x: 50,
+                                y: -30,
+                                step: 1
+                            }
+                    },
+                    padding: {
+                        bottom: 0,
+                        top: 30
+                    },
+                    color: {
+                        pattern: ["#0d89df", "#00A890", "red", "#193f77", "#f5b2d0"]
+                    },
+                });
+            }
         });
 
 //        $(document).ready(function(){
@@ -835,43 +850,43 @@ $(function() {
                 },
             });
         });
-        $(document).ready(function(){
-            var chart = c3.generate({
-                bindto: '#chart-single', // id of chart wrapper
-                data: {
-                    json: chart_single,
-                    type: 'bar', // default type of chart,
-                },
-                axis: {
-                    x: {
-                        type: 'category',
-                        // name of each category
-                        categories: intervals,
+        // $(document).ready(function(){
+        //     var chart = c3.generate({
+        //         bindto: '#chart-single', // id of chart wrapper
+        //         data: {
+        //             json: chart_single,
+        //             type: 'bar', // default type of chart,
+        //         },
+        //         axis: {
+        //             x: {
+        //                 type: 'category',
+        //                 // name of each category
+        //                 categories: intervals,
 
-                    },
-                },
-                bar: {
-                    width: 16
-                },
-                legend: {
-                    show: true, //hide legend
-                    position: 'inset',
-                    inset: {
-                            anchor: 'top-right',
-                            x: 50,
-                            y: -30,
-                            step: 1
-                        }
-                },
-                padding: {
-                    bottom: 0,
-                    top: 30
-                },
-                color: {
-                        pattern: ["#0d89df", "#00A890"]
-                },
-            });
-        });
+        //             },
+        //         },
+        //         bar: {
+        //             width: 16
+        //         },
+        //         legend: {
+        //             show: true, //hide legend
+        //             position: 'inset',
+        //             inset: {
+        //                     anchor: 'top-right',
+        //                     x: 50,
+        //                     y: -30,
+        //                     step: 1
+        //                 }
+        //         },
+        //         padding: {
+        //             bottom: 0,
+        //             top: 30
+        //         },
+        //         color: {
+        //                 pattern: ["#0d89df", "#00A890"]
+        //         },
+        //     });
+        // });
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#age-bar', // id of chart wrapper

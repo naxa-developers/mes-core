@@ -284,14 +284,14 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
         select_cluster = Cluster.objects.filter(project=request.project)
 
         types = Beneficiary.objects.values('Type').distinct()
-        intervals = ProjectTimeInterval.objects.values('label').order_by('label')
+        # intervals = ProjectTimeInterval.objects.values('label').order_by('label')
         beneficiary_count = Beneficiary.objects.count()
         activity_count = Activity.objects.count()
         interval = []
 
         # time intervals for activity progress data
-        for item in intervals:
-            interval.append(str(item['label']))
+        # for item in intervals:
+        #     interval.append(str(item['label']))
 
         # for beneficiary type pie data
         pie_data = {}
@@ -300,18 +300,18 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
             pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
 
         # get cluster activity overview data on basis of filter used
-        if 'cluster_activity' in request.GET:
-            checked = [(name, value) for name, value in request.GET.iteritems()]
-            activity = []
-            for item in checked:
-                if item[0].startswith('a'):
-                    activity.append(item[0].split("_")[1])
+        # if 'cluster_activity' in request.GET:
+        #     checked = [(name, value) for name, value in request.GET.iteritems()]
+        #     activity = []
+        #     for item in checked:
+        #         if item[0].startswith('a'):
+        #             activity.append(item[0].split("_")[1])
 
-            chart_single = get_cluster_activity_data(request.project, activity)
+        #     chart_single = get_cluster_activity_data(request.project, activity)
 
         # for no filter used
-        else:
-            chart_single = get_cluster_activity_data(request.project)
+        # else:
+        #     chart_single = get_cluster_activity_data(request.project)
 
         # get progress overview data on basis of filter used
         if 'progress' in request.GET:
@@ -329,11 +329,11 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
                 if item[0].startswith('dist'):
                     select_districts.append(int(item[0].split("_")[1]))
 
-            progress_data, categories, cluster_progress_data, construction_phases = get_progress_data(
+            construction_phases = get_progress_data(
                 request.project, types, clusters, select_districts, munis)
 
         else:
-            progress_data, categories, cluster_progress_data, construction_phases = get_progress_data(request.project, types)
+            construction_phases = get_progress_data(request.project, types)
 
         return render(request, self.template_name, {
             'activity_groups': activity_groups,
@@ -343,12 +343,9 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
             'select_clusters': select_cluster,
             'activity_count': activity_count,
             'beneficiary_count': beneficiary_count,
-            'intervals': interval,
-            'chart_single': chart_single,
-            'progress_data': progress_data,
-            'cluster_progress_data': cluster_progress_data,
+            # 'intervals': interval,
+            # 'chart_single': chart_single,
             'pie_data': pie_data,
-            'categories': categories,
             'construction_phases': construction_phases
         })
 
@@ -362,28 +359,28 @@ def get_answer(json, labels):
 
 
 # for map data in dashboard1
-def get_map_data(request):
-    form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
-    form_json = form.json
-    labels = get_form_location_label(json.loads(form_json))
+# def get_map_data(request):
+#     form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
+#     form_json = form.json
+#     labels = get_form_location_label(json.loads(form_json))
 
-    instances = Instance.objects.filter(xform_id=form.id)
-    for instance in instances:
-        instance_json = instance.json
-        instance_json = ast.literal_eval(str(instance_json))
-        answers = get_answer(instance_json, labels)
-        beneficiary = Beneficiary.objects.filter(submissions__instance=instance)
-        for item in beneficiary:
-            if answers:
-                if not item.location:
-                    pnt = Point(float(answers[0]), float(answers[1]))
-                    item.location = pnt
-                    item.save()
+#     instances = Instance.objects.filter(xform_id=form.id)
+#     for instance in instances:
+#         instance_json = instance.json
+#         instance_json = ast.literal_eval(str(instance_json))
+#         answers = get_answer(instance_json, labels)
+#         beneficiary = Beneficiary.objects.filter(submissions__instance=instance)
+#         for item in beneficiary:
+#             if answers:
+#                 if not item.location:
+#                     pnt = Point(float(answers[0]), float(answers[1]))
+#                     item.location = pnt
+#                     item.save()
 
-    beneficiaries = Beneficiary.objects.filter(~Q(location=None))
+#     beneficiaries = Beneficiary.objects.filter(~Q(location=None))
 
-    data = serialize('custom_geojson', beneficiaries, fields=('name', 'Type', 'location'))
-    return HttpResponse(data)
+#     data = serialize('custom_geojson', beneficiaries, fields=('name', 'Type', 'location'))
+#     return HttpResponse(data)
 
 
 # it contains tabular data of each beneficiary and their progress
@@ -1395,3 +1392,34 @@ def edit_submission(request,  id_string, data_id):
                                   context_instance=RequestContext(request))
     response.status_code = 500
     return response
+
+def get_progress(request):
+    types = Beneficiary.objects.values('Type').distinct()
+    progress_data = {}
+    categories = []
+    
+    selected_districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
+    for item in types:
+        total_list = []
+        for obj in selected_districts:
+            beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
+            beneficiary_progress = 0
+            for obj in beneficiary:
+                if Submission.objects.filter(beneficiary=obj).exists():
+                    submissions = Submission.objects.filter(beneficiary=obj, status='approved').values('beneficiary__Type').\
+                        annotate(progress=Sum('cluster_activity__activity__weight'))
+                    for submission in submissions:
+                        beneficiary_progress += submission['progress']
+                else:
+                    pass
+            try:
+                total_list.append(round(beneficiary_progress / len(beneficiary), 2))
+            except Exception:
+                total_list.append(beneficiary_progress / 1)
+        progress_data[str(item['Type'])] = total_list
+    for item in selected_districts:
+        categories.append(str(item.name))
+    
+    data = {'categories': categories, 'progress_data': progress_data}
+    
+    return JsonResponse(data)
