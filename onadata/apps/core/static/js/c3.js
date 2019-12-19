@@ -391,12 +391,69 @@ $(function() {
                 },
             });
         });
+
         //double graph for progress overview
         $(document).ready(function(){
             $.ajax({
                 type: "GET",
                 url: '/core/get-progress-data',
                 data: "{}",
+                success: function(result){
+                    OnSuccess(result);
+                },  
+            });
+
+            function OnSuccess(response){
+                var progress_data = response.progress_data;
+                var categories = response.categories;
+                var chart = c3.generate({
+                    bindto: '#chart-bar', // id of chart wrapper
+                    data: {
+                        json: progress_data,
+                        type: 'bar', // default type of chart
+                    },
+                    axis: {
+                        x: {
+                            type: 'category',
+                            // name of each category
+                            categories: categories,
+
+                        },
+                    },
+                    bar: {
+                        width: 10
+                    },
+                    legend: {
+                        show: true, //hide legend
+                        position: 'inset',
+                        inset: {
+                                anchor: 'top-right',
+                                x: 50,
+                                y: -30,
+                                step: 1
+                            }
+                    },
+                    padding: {
+                        bottom: 0,
+                        top: 30
+                    },
+                    color: {
+                        pattern: ["#0d89df", "#00A890", "red", "#193f77", "#f5b2d0"]
+                    },
+                });
+            }
+        });
+
+        //filter progress overview double graph
+        $("#progress").on("click", function(){
+            
+            var checked = $('#progress-form').serialize();
+            console.log(checked);
+
+            $.ajax({
+                type: "GET",
+                url: '/core/get-progress-data',
+                data: checked,
                 success: function(result){
                     OnSuccess(result);
                 },  
