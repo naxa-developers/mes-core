@@ -19,6 +19,7 @@ from django.dispatch import receiver
 from .utils import get_interval
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
+from jsonfield import JSONField
 
 
 class Project(models.Model):
@@ -248,6 +249,11 @@ class Config(models.Model):
 	updates = models.CharField(max_length=500)
 	activity_group_updated = models.DateTimeField(default=datetime.now(), blank=True)
 
+
+class ActivityAggregate(models.Model):
+	activity = models.ForeignKey(Activity, related_name="aggregations")
+	aggregation_fields = JSONField(default=list)
+	aggregation_fields_value = JSONField(default={})
 
 @receiver(post_save, sender=Project)
 def save_interval(sender, instance, **kwargs):

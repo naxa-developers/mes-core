@@ -1651,3 +1651,13 @@ def get_progress_phase_pie(request):
 
 class MapDasboardView(ManagerMixin, TemplateView):
     template_name = 'core/map_dashboard.html'
+
+
+from .get_question_answer import get_questions
+
+def aggregation(request, *args, **kwargs):
+    activity = Activity.objects.get(id=kwargs.get('pk'))
+    id_string = activity.form.id_string
+    question_json = XForm.objects.get(id_string=id_string).json
+    questions = get_questions(question_json)
+    return JsonResponse(questions)
