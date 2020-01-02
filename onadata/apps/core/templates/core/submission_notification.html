@@ -57,6 +57,7 @@
                                     <td class="table-action">
                                         {% with submission.instance.xform as xform %}
                                         <a href="{% url 'onadata.apps.viewer.views.instance' xform.user.username xform.id_string %}#/{{ submission.instance.id|stringformat:'d' }}" target="_blank" class="btn"><i class="la la-eye"></i> View</a>
+                                        <a href="{% url 'edit_data' xform.id_string submission.instance.id %}" class="btn" target="_blank">Edit</a>
                                         {% endwith %}
                                         {% if submission|check_status_change_permission:request %}
                                             {% if submission.status == 'pending' %}
