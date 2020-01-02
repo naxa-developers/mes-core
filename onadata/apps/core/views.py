@@ -536,6 +536,14 @@ class ActivityCreateView(ManagerMixin, CreateView):
         kwargs = super(ActivityCreateView, self).get_form_kwargs()
         kwargs['project'] = self.request.project
         return kwargs
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super(ActivityCreateView, self).get_context_data(**kwargs)
+        if ActivityAggregate.objects.filter(activity=self.kwargs.get('pk')).exists():
+            context['aggregations'] = json.dumps(ActivityAggregate.objects.get(activity=self.kwargs.get('pk')).aggregation_fields)
+        else:
+            context['aggregations'] = 0
+        return context
 
 
 class ActivityDetailView(ManagerMixin, DetailView):
@@ -554,7 +562,7 @@ class ActivityUpdateView(ManagerMixin, UpdateView):
         if ActivityAggregate.objects.filter(activity=self.kwargs.get('pk')).exists():
             context['aggregations'] = json.dumps(ActivityAggregate.objects.get(activity=self.kwargs.get('pk')).aggregation_fields)
         else:
-            context['aggregations'] = None
+            context['aggregations'] = 0
         return context
         
 
