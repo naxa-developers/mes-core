@@ -166,8 +166,6 @@ Here is some example JSON, it would replace `[the JSON]` above:
 
     def create(self, request, *args, **kwargs):
         params = self.request.query_params
-        print(params)
-        cluster_activity = int(params['activity'])
         username = self.kwargs.get('username')
         if self.request.user.is_anonymous():
             if username is None:
@@ -198,9 +196,12 @@ Here is some example JSON, it would replace `[the JSON]` above:
 
         if error or not instance:
             return self.error_response(error, is_json_request, request)
-        cluster_activity = ClusterA.objects.get(pk=cluster_activity)
-        s = Submission(cluster_activity = cluster_activity,instance=instance)
-        s.save()
+        
+        if 'activity' in params:
+            cluster_activity = int(params['activity'])
+            cluster_activity = ClusterA.objects.get(pk=cluster_activity)
+            s = Submission(cluster_activity = cluster_activity,instance=instance)
+            s.save()
 
         beneficiaries = params.get('beneficiary', '')
         if not beneficiaries == '':
