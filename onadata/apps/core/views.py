@@ -53,7 +53,7 @@ from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSeri
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
-    Submission, Config, ProjectTimeInterval, ClusterAHistory, District, Municipality
+    Submission, Config, ProjectTimeInterval, ClusterAHistory, District, Municipality, ActivityAggregate
 
 from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, \
     BeneficiaryForm, UserRoleForm, ConfigForm, ChangePasswordform
@@ -547,8 +547,16 @@ class ActivityUpdateView(ManagerMixin, UpdateView):
     model = Activity
     template_name = 'core/activity-form.html'
     form_class = ActivityForm
-    success_url = reverse_lazy('activity_list')
-
+    success_url = reverse_lazy('activity_list')    
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super(ActivityUpdateView, self).get_context_data(**kwargs)
+        if ActivityAggregate.objects.filter(activity=self.kwargs.get('pk')).exists():
+            context['aggregations'] = json.dumps(ActivityAggregate.objects.get(activity=self.kwargs.get('pk')).aggregation_fields)
+        else:
+            context['aggregations'] = None
+        return context
+        
 
 class ActivityDeleteView(ManagerMixin, DeleteView):
     model = Activity
@@ -1655,9 +1663,8 @@ class MapDasboardView(ManagerMixin, TemplateView):
 
 from .get_question_answer import get_questions
 
-def aggregation(request, *args, **kwargs):
-    activity = Activity.objects.get(id=kwargs.get('pk'))
-    id_string = activity.form.id_string
-    question_json = XForm.objects.get(id_string=id_string).json
+def get_aggregation_fields(request, *args, **kwargs):
+    question_json = XForm.objects.get(id=request.GET.get('form_id', 0)).json
+    questions = []
     questions = get_questions(question_json)
-    return JsonResponse(questions)
+    return JsonResponse(questions, safe=False)

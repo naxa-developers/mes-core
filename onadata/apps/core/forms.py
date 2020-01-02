@@ -12,7 +12,8 @@ import re
 from django.contrib.gis.geos import Point
 from onadata.apps.logger.models import XForm
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, \
-    ProjectTimeInterval, Municipality
+    ProjectTimeInterval, Municipality, ActivityAggregate
+import json
 
 
 class LoginForm(forms.Form):
@@ -169,6 +170,7 @@ class ActivityGroupForm(forms.ModelForm):
 class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         project = kwargs.pop('project', None)
+        self.kwargs = kwargs
         super(ActivityForm, self).__init__(*args, **kwargs)
         self.fields['form'].queryset = XForm.objects.all().order_by('title')
         self.fields['form'].label_from_instance = lambda obj: "%s" % (obj.title)
@@ -254,7 +256,7 @@ class ActivityForm(forms.ModelForm):
         p = Point(round(float(lat), 6), round(float(long), 6), srid=4326)
         self.cleaned_data["location"] = p
 
-    def save(self, commit=True):
+    def save(self, commit=True, *args, **kwargs):
         instance = super(ActivityForm, self).save(commit=False)
         if instance.beneficiary_level:
             instance.target_number = None
@@ -266,6 +268,28 @@ class ActivityForm(forms.ModelForm):
             instance.location = self.cleaned_data.get('location')
         if commit:
             instance.save()
+
+        data = self.kwargs.pop('data')
+        aggregation_fields = []
+        for i in range(0, 10):
+            if 'first-field-'+ str(i) in data and 'second-field-' + str(i) in data:
+                first_field_name = 'first-field-' + str(i)
+                second_field_name = 'second-field-' + str(i)
+                first_field = data.get(first_field_name)
+                second_field = data.get(second_field_name)
+                first_field_question, first_field_label = first_field.split('|')
+                second_field_question, second_field_label = second_field.split('|')
+                aggregation_fields.append({first_field_question: first_field_label, second_field_question: second_field_label})
+            else:
+                break
+        if len(aggregation_fields) > 0:
+            aggregation_fields = json.dumps(aggregation_fields)
+            if ActivityAggregate.objects.filter(activity=instance).exists():
+                act_aggregate = ActivityAggregate.objects.get(activity=instance)
+                act_aggregate.aggregation_fields.append(aggregation_fields)
+                act_aggregate.save()
+            else:
+                act_aggregate = ActivityAggregate.objects.create(activity=instance, aggregation_fields=aggregation_fields)
         return instance
 
 

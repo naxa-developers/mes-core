@@ -130,10 +130,19 @@
                     {% if form.order.errors %}
                     <font color="crimson">{{ form.order.errors }}</font>
                     {% endif %}
-
-
-
-
+                    <div class="form-group">
+                        <label>Select two fields to aggregate</label>
+                        <div>
+                            <select class="" id="first-field-0" name="first-field-0">
+                                <option value="">Select a field</option>
+                            </select>
+                            <select class="" id="second-field-0" name="second-field-0">
+                                <option value="">Select a field</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                   
                     <button type="submit" class="btn btn-xs btn-primary">Submit</button>
                 </form>
             </div>
@@ -171,5 +180,84 @@
           }
        });
     });
+
+    $(document).ready(function(){
+        var id = $("option:selected", $("#id_form")).val();
+        var request_url = '{% url "get-aggregation-fields" %}'
+        $.ajax({
+            url: request_url,
+            type: "GET",
+            data: {"form_id": id},
+            dataType: "json",
+
+            success: function(response){
+                $("#first-field-0").empty();
+                $("#first-field-0").append('<option value="">Select a field</option>');
+                $.each(response, function(key, value){
+                    $("#first-field-0").append('<option value="' + value.question + '|' + value.label + '">' + value.label + '</option>');
+                })
+
+                $("#second-field-0").empty();
+                $("#second-field-0").append('<option value="">Select a field</option>');
+                $.each(response, function(key, value){
+                    $("#second-field-0").append('<option value="' + value.question + '|' + value.label + '" >' + value.label + '</option>');
+                })
+
+                var selected_value = {{ aggregations|safe }};
+                var first_field_key = Object.keys(selected_value[0])[0];
+                var first_field_value = selected_value[0][first_field_key];
+                $("#first-field-0").append('<option selected value="' + first_field_key + '|' + first_field_value + '">' + first_field_value + '</option>')
+                    
+                
+                var second_field_key = Object.keys(selected_value[0])[1];
+                var second_field_value = selected_value[0][second_field_key];
+                $("#second-field-0").append('<option selected value="' + second_field_key + '|' + second_field_value + '">' + second_field_value + '</option>')
+            }            
+        });
+        
+
+    });
+    
+    $('#id_form').on('change', function(){
+        var id = $("option:selected", this).val();
+        var request_url = '{% url "get-aggregation-fields" %}'
+        $.ajax({
+            url: request_url,
+            type: "GET",
+            data: {"form_id": id},
+            dataType: "json",
+
+            success: function(response){
+                $("#select-first-1").empty();
+                $("#select-first-1").append('<option value="">Select a field</option>');
+                $.each(response, function(key, value){
+                    $("#select-first-1").append('<option value=' + value.question + '>' + value.label + '</option>');
+                })
+
+                $("#select-first-2").empty();
+                $("#select-first-2").append('<option value="">Select a field</option>');
+                $.each(response, function(key, value){
+                    $("#select-first-2").append('<option value=' + value.question + '>' + value.label + '</option>');
+                })                
+            }
+
+        });
+    });
+
+    // $('#id_form').on('click', function(){
+    //     var id = $("option:selected", this).val();
+    //     var request_url = '{% url "get-aggregation-fields" %}'
+    //     $.ajax({
+    //         url: request_url,
+    //         type: "GET",
+    //         data: {"form_id": id},
+    //         dataType: "json",
+
+    //         success: function(response){
+    //             console.log('adssad');
+    //         }
+
+    //     });
+    // });
 </script>
 {% endblock %}

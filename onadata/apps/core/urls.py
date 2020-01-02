@@ -120,6 +120,8 @@ urlpatterns = [
     url(r'^get-cluster-phase-data/$', views.get_progress_phase_pie, name='get_cluster_phase_data'),
     url(r'^map-dashboard/$', views.MapDasboardView.as_view(), name='map-dashboard'),
 
+    # for data aggregation
+    url(r'^get-aggregation-fields/$', views.get_aggregation_fields, name='get-aggregation-fields'),
 ]
 
 urlpatterns += router.urls
