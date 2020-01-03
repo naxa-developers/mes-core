@@ -68,8 +68,14 @@ class XFormListApi(viewsets.ReadOnlyModelViewSet):
     def filter_queryset(self, queryset):
         # project = self.request.project
         username = self.kwargs.get('username')
+        if username is None:
+            if self.request.user.is_anonymous():
+                self.permission_denied(self.request)
+            else:
+                return super(XFormListApi, self).filter_queryset(queryset)
         # return queryset.filter(actform__activity_group__project=project) # don't use project for now
-        return queryset.filter(user__username=username)
+        else:
+            return queryset.filter(user__username=username)
         # if username is None:
         #     # If no username is specified, the request must be authenticated
         #     if self.request.user.is_anonymous():
