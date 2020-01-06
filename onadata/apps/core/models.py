@@ -318,3 +318,17 @@ def asset_permissions(sender, instance, **kwargs):
 		permissions = Permission.objects.filter(codename__in=codenames)
 		for permission in permissions:
 			instance.user.user_permissions.add(permission)
+
+
+@receiver(post_save, sender=Submission)
+def save_activity_aggregation(sender, instance, **kwargs):
+	aggregations = instance.cluster_activity.activity.aggregations.last()
+	if aggregations:
+		aggregation_questions = aggregations.aggregation_fields
+		answer_dict = {}
+		for item in aggregation_questions:
+			for key, value in item.items():
+				if key in instance.instance.json:
+					answer_dict[value] = instance.instance.json[key]
+		aggregations.aggregation_fields_value = answer_dict
+		aggregations.save()
