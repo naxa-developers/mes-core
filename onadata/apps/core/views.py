@@ -430,6 +430,24 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
         })
 
 
+class BeneficiaryProgressView(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
+    template_name = 'core/beneficiary-progress.html'
+
+    def get(self, request):
+        beneficiaries = Beneficiary.objects.all()
+        page = request.GET.get('page', 1)
+        paginator = Paginator(beneficiaries, 100)
+        
+        try:
+            beneficiaries = paginator.page(page)
+        except PageNotAnInteger:
+            beneficiaries = paginator.page(1)
+        except EmptyPage:
+            beneficiaries = paginator.page(paginator.num_pages)
+
+        return render(request, self.template_name, {'beneficiaries': beneficiaries})
+
+
 class ProjectListView(ListView):
     model = Project
     template_name = 'core/project-list.html'

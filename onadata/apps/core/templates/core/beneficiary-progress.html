@@ -1,0 +1,121 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load filters %}
+{% block content %}
+<!-- Main Content -->
+<style>
+    .table{
+    width:100% !important;}
+
+    .pagination {
+      display: inline-block;
+    }
+
+    .pagination a {
+      color: black;
+      float: left;
+      padding: 8px 16px;
+      text-decoration: none;
+      transition: background-color .3s;
+      border: 1px solid #ddd;
+    }
+
+    .pagination a.active {
+      background-color: #4CAF50;
+      color: white;
+      border: 1px solid #4CAF50;
+    }
+
+    .pagination a:hover:not(.active) {background-color: #ddd;}
+
+    .select-list ul{
+        max-height: 200px;
+        overflow: hidden;
+        overflow-y: auto;
+    }
+</style>
+
+<section class="content">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Dashboard-2</h2>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn btn-primary float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="graph">
+        <div class="graph-column" style="padding:0px;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card" style="background-color: #fff;">
+                            <div class="card-header">
+                                <h5>Beneficiary</h5>
+                            </div>
+                            <div class="card-body">
+                                <table id="dashboard_table" class="table table-bordered ">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Beneficiary name</th>
+                                            <th class="text-center">Type</th>
+                                            <th class="text-center">Work Progress</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for beneficiary in beneficiaries %}
+                                        <tr>
+                                            <td>{{ beneficiary.name }}</td>
+                                            <td>{{ beneficiary.Type }}</td>
+                                            <td>
+                                                <div class="progress">
+                                                    <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" id="p_e_nfunc" aria-valuemax="200" style="width:{{ beneficiary.progress }}%;">
+                                                        <span class="popOver">{{ beneficiary.progress }}%</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="pagination">
+                                <span class="step-links">
+                                    {% if beneficiaries.has_previous %}
+                                        <a class="paginate_button" href="?{% param_replace page=1 %}">&laquo; first</a>
+                                        <!--<a class="paginate_button" href="?{% param_replace page=page_obj.previous_page_number %}">previous</a>-->
+                                    {% endif %}
+
+                                    {% with beneficiaries.paginator.num_pages|get_range as n %}
+
+                                        {% for number in n %}
+                                            {% if number == beneficiaries.number %}
+                                                <a href="#" class="active">{{ number }}</a>
+                                            {% else %}
+                                                <a href="?{% param_replace page=number %}">{{ number }}</a>
+                                            {% endif %}
+
+                                        {% endfor %}
+                                    {% endwith %}
+
+
+                                    {% if beneficiaries.has_next %}
+                                        <!--<a href="?{% param_replace page=beneficiaries.next_page_number %}">next</a>-->
+                                        <a href="?{% param_replace page=beneficiaries.paginator.num_pages %}">last
+                                            &raquo;</a>
+                                    {% endif %}
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
