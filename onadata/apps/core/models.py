@@ -173,9 +173,21 @@ class Beneficiary(models.Model):
 	def progress(self):
 		submissions = Submission.objects.filter(beneficiary=self).distinct('cluster_activity')
 		progress = 0
+		tracked_activity = []
 		for item in submissions:
 			if item.status == 'approved':
-				progress += item.cluster_activity.activity.weight
+				if not item.cluster_activity.activity in tracked_activity:
+					progress += item.cluster_activity.activity.weight
+					tracked_activity.append(item.cluster_activity.activity)
+					activities = Activity.objects.filter(order__lte=item.cluster_activity.activity.order)
+					for item in activities:
+						if item in tracked_activity:
+							continue
+						else:
+							progress += item.weight
+						tracked_activity.append(item)
+				else:
+					continue
 		if progress > 100:
 			return 100
 		return progress
