@@ -1694,3 +1694,16 @@ def get_aggregation_fields(request, *args, **kwargs):
     questions = []
     questions = get_questions(question_json)
     return JsonResponse(questions, safe=False)
+
+
+class ActivityAggregateView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/activity-aggregate.html'
+
+    def get(self, request, *args, **kwargs):
+        activity = Activity.objects.get(id=self.kwargs.get('pk'))
+        try:
+            aggregate = ActivityAggregate.objects.get(activity=activity)
+        except:
+            print('exception occured')
+            aggregate = {}
+        return render(request, self.template_name, {'aggregations': aggregate})

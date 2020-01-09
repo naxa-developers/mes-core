@@ -58,6 +58,7 @@
                                 <td class="table-action">
                                     <a href="{% url 'activity_delete' activity.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
                                     <a href="{% url 'activity_edit' activity.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
+                                    <a href="{% url 'activity_aggregate' activity.pk %}" class="btn"> <i class="la la-edit"></i> Aggregate</a>
                                 </td>
                             </tr>
                             {% endfor %}

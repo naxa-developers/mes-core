@@ -268,3 +268,18 @@ def abbreviate(obj):
         if item not in ['and', 'with', 'of', 'the', 'a', 'for', 'an', 'in', 'as', 'by', 'into']:
             abbr.append(item[0])
     return abbr
+
+@register.filter
+def get_answer(obj, aggregation):
+    if obj in aggregation.aggregation_fields_value:
+        return aggregation.aggregation_fields_value[obj]
+    else:
+        return ''
+
+@register.filter
+def get_sum(obj, aggregation):
+    sum = 0
+    for key, value in obj.items():
+        if value in aggregation.aggregation_fields_value:
+            sum += int(aggregation.aggregation_fields_value[value])
+    return sum

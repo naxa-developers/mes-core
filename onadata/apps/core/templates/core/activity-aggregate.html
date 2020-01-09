@@ -1,0 +1,61 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Activity Aggregate{% endblock %}
+{% load static %}
+{% load filters %}
+{% block content %}
+
+<section class="content">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Activities</h2>
+                <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Project</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'activity_list' %}">Activity list</a></li>
+                        <li class="breadcrumb-item active">Activity Aggregate</li>
+                </ul>
+                <button class="btn btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="banificiary-graph">
+        <div class="container-fluid">
+            <div class="graph-wrapper">
+                <div class="graph-column" style="padding:0px;">
+                    <div class="row">
+                        {% for item in aggregations.aggregation_fields %}
+                        <div class="col-lg-5">
+                            <div class="project-list">
+                                <div class="card" style="min-height:306px;">
+                                    <div class="card-header">
+                                        <h5>Aggregation</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            {% for key, value in item.items %}
+                                                <li><label>{{ value }} :</label><span>{{ value|get_answer:aggregations }}</span></li>
+                                            {% endfor %}
+                                                <li><label>Sum :</label>{{ item|get_sum:aggregations }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/c3.bundle.js' %}"></script>
+<script src="{% static 'js/c3.js' %}"></script>
+<script src="{% static 'js/coremap.js' %}"></script>
+{% endblock %}
