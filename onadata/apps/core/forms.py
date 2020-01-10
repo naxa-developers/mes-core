@@ -202,15 +202,15 @@ class ActivityForm(forms.ModelForm):
     def clean_weight(self):
         if not isinstance(self.cleaned_data.get('weight'), int) and not isinstance(self.cleaned_data.get('weight'),
                                                                                    float):
-            raise ValidationError({'weight': ['Please enter a valid weight']})
+            raise ValidationError('Please enter a valid weight')
         else:
             return self.cleaned_data.get('weight')
     
     def clean_order(self):
         if not 'order' in self.cleaned_data:
-            raise ValidationError({'order': ['Order is required']})
+            raise ValidationError('Order is required')
         if not isinstance(self.cleaned_data.get('order'), int):
-            raise ValidationError({'order': ['Please enter a valid number']})
+            raise ValidationError('Please enter a valid number')
         else:
             return self.cleaned_data.get('order')
 
