@@ -274,22 +274,23 @@ class ActivityForm(forms.ModelForm):
 
         data = self.kwargs.pop('data')
         aggregation_fields = []
-        for i in range(0, 10):
-            if 'first-field-'+ str(i) in data and 'second-field-' + str(i) in data:
-                first_field_name = 'first-field-' + str(i)
-                second_field_name = 'second-field-' + str(i)
-                first_field = data.get(first_field_name)
-                second_field = data.get(second_field_name)
-                first_field_question, first_field_label = first_field.split('|')
-                second_field_question, second_field_label = second_field.split('|')
-                aggregation_fields.append({first_field_question: first_field_label, second_field_question: second_field_label})
+        aggregation_fields_dict = {}
+        for i in range(0, 12):
+            if '0-'+ str(i) in data:
+                field = '0-' + str(i)
+                field_name = data.get(field)
+                if field_name:
+                    print(field_name)
+                    field_question, field_label = field_name.split('|')
+                    aggregation_fields_dict[field_question] = field_label
             else:
                 break
+        aggregation_fields.append(aggregation_fields_dict)
         if len(aggregation_fields) > 0:
             aggregation_fields = json.dumps(aggregation_fields)
             if ActivityAggregate.objects.filter(activity=instance).exists():
                 act_aggregate = ActivityAggregate.objects.get(activity=instance)
-                act_aggregate.aggregation_fields.append(aggregation_fields)
+                act_aggregate.aggregation_fields = aggregation_fields
                 act_aggregate.save()
             else:
                 act_aggregate = ActivityAggregate.objects.create(activity=instance, aggregation_fields=aggregation_fields)

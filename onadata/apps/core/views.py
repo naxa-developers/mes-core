@@ -579,6 +579,7 @@ class ActivityUpdateView(ManagerMixin, UpdateView):
         context = super(ActivityUpdateView, self).get_context_data(**kwargs)
         if ActivityAggregate.objects.filter(activity=self.kwargs.get('pk')).exists():
             context['aggregations'] = json.dumps(ActivityAggregate.objects.get(activity=self.kwargs.get('pk')).aggregation_fields)
+            print(context['aggregations'])
         else:
             context['aggregations'] = 0
         return context
@@ -1703,6 +1704,19 @@ class ActivityAggregateView(LoginRequiredMixin, TemplateView):
         activity = Activity.objects.get(id=self.kwargs.get('pk'))
         try:
             aggregate = ActivityAggregate.objects.get(activity=activity)
+            aggregate_question = aggregate.aggregation_fields
+            aggregate_answers = aggregate.aggregation_fields_value
+            if aggregate_answers == {}:
+                answer_dict = {}
+                submissions = Submission.objects.filter(cluster_activity__activity=activity)
+                for sub in submissions:
+                    for item in aggregate_question:
+                        for key, value in item.items():
+                            if key in sub.instance.json:
+                                answer_dict[value] = sub.instance.json[key]
+                aggregate.aggregation_fields_value = answer_dict
+                aggregate.save()
+
         except:
             print('exception occured')
             aggregate = {}

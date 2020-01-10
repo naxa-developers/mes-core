@@ -3,6 +3,20 @@
 {% block title %}Activity Create{% endblock %}
 
 {% block content %}
+<style>
+    .aggr__select{
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .aggr__select select{
+        width: 45%;
+        margin-left: 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
 
 <section class="content">
     <div class="block-header">
@@ -130,17 +144,10 @@
                     {% if form.order.errors %}
                     <font color="crimson">{{ form.order.errors }}</font>
                     {% endif %}
-                    <div class="form-group">
-                        <label>Select two fields to aggregate</label>
-                        <div>
-                            <select class="" id="first-field-0" name="first-field-0">
-                                <option value="">Select a field</option>
-                            </select>
-                            <select class="" id="second-field-0" name="second-field-0">
-                                <option value="">Select a field</option>
-                            </select>
+                    <div class="form-group" id="aggregation-fields">
+                        <label>Select fields to aggregate</label>
+                        <div id="0__div__aggregation" data-id="0" class="row aggr__select">
                         </div>
-                        
                     </div>
                    
                     <button type="submit" class="btn btn-xs btn-primary">Submit</button>
@@ -151,39 +158,30 @@
 </section>
 {% endblock %}
 {% block scripts %}
-<script type="text/javascript">
+<script>
    $(document).ready(function(){
        if ($('#id_beneficiary_level').is(":checked")){
             $('#target_number').hide();
             $('#target_unit').hide();
-            <!--$('#latitude').hide();-->
-            <!--$('#longitude').hide();-->
        }
         else{
             $('#target_number').show();
             $('#target_unit').show();
-            <!--$('#latitude').show();-->
-            <!--$('#longitude').show();-->
         }
        $('#id_beneficiary_level').change(function(){
           if ($(this).is(":checked")){
             $('#target_number').hide();
             $('#target_unit').hide();
-            <!--$('#latitude').hide();-->
-            <!--$('#longitude').hide();-->
           }
           else{
             $('#target_number').show();
             $('#target_unit').show();
-            <!--$('#latitude').show();-->
-            <!--$('#longitude').show();-->
           }
        });
     });
 
     $(document).ready(function(){
         var id = $("option:selected", $("#id_form")).val();
-        console.log(id);
         if(id > 0){
             var request_url = '{% url "get-aggregation-fields" %}'
             $.ajax({
@@ -193,31 +191,28 @@
                 dataType: "json",
 
                 success: function(response){
-                    $("#first-field-0").empty();
-                    $("#first-field-0").append('<option value="">Select a field</option>');
-                    $.each(response, function(key, value){
-                        $("#first-field-0").append('<option value="' + value.question + '|' + value.label + '">' + value.label + '</option>');
-                    })
-
-                    $("#second-field-0").empty();
-                    $("#second-field-0").append('<option value="">Select a field</option>');
-                    $.each(response, function(key, value){
-                        $("#second-field-0").append('<option value="' + value.question + '|' + value.label + '" >' + value.label + '</option>');
-                    })
+                    var div_id = $("#0__div__aggregation").attr("data-id");
+                    $("#0__div__aggregation").empty();
+                    for (var n = 0; n < Object.keys(response).length; n++){
+                        
+                        $("#0__div__aggregation").append('<select class="form-control" id="' + div_id + "-" + n + '"name="'+ div_id + "-" + n +'"><option value="">Select a field</option></select>');
+                        $("#" + div_id + "-" + n).empty();
+                        $("#" + div_id + "-" + n).append('<option value="">Select a field</option>');
+                        $.each(response, function(key, value){
+                            $("#" + div_id + "-" + n).append('<option value="' + value.question + '|' + value.label + '">' + value.label + '</option>')
+                        });
+                    }
 
                     if("{{aggregations}}" === 0){
                         console.log('asdsad');
                     }
                     else{
                         var selected_value = {{ aggregations|safe }};
-                        var first_field_key = Object.keys(selected_value[0])[0];
-                        var first_field_value = selected_value[0][first_field_key];
-                        $("#first-field-0").append('<option selected value="' + first_field_key + '|' + first_field_value + '">' + first_field_value + '</option>')
-                            
-                        
-                        var second_field_key = Object.keys(selected_value[0])[1];
-                        var second_field_value = selected_value[0][second_field_key];
-                        $("#second-field-0").append('<option selected value="' + second_field_key + '|' + second_field_value + '">' + second_field_value + '</option>')
+                        for (var n=0; n < Object.keys(selected_value[0]).length; n++){
+                            var field_key = Object.keys(selected_value[0])[n];
+                            var field_value = selected_value[0][field_key];
+                            $("#"+ div_id + "-" + n).append('<option selected value="' + field_key + '|' + field_value + '">' + field_value + '</option>')
+                        }
                     }
                 }            
             });
@@ -236,17 +231,17 @@
             dataType: "json",
 
             success: function(response){
-                $("#first-field-0").empty();
-                $("#first-field-0").append('<option value="">Select a field</option>');
-                $.each(response, function(key, value){
-                    $("#first-field-0").append('<option value="' + value.question + '|' + value.label + '">' + value.label + '</option>');
-                })
-
-                $("#second-field-0").empty();
-                $("#second-field-0").append('<option value="">Select a field</option>');
-                $.each(response, function(key, value){
-                    $("#second-field-0").append('<option value="' + value.question + '|' + value.label + '" >' + value.label + '</option>');
-                })              
+                var div_id = $("#0__div__aggregation").attr("data-id");
+                $("#0__div__aggregation").empty();
+                for (var n = 0; n < Object.keys(response).length; n++){
+                    
+                    $("#0__div__aggregation").append('<select class="form-control" id="' + div_id + "-" + n + '"name="'+ div_id + "-" + n +'"><option value="">Select a field</option></select>');
+                    $("#" + div_id + "-" + n).empty();
+                    $("#" + div_id + "-" + n).append('<option value="">Select a field</option>');
+                    $.each(response, function(key, value){
+                        $("#" + div_id + "-" + n).append('<option value="' + value.question + '|' + value.label + '">' + value.label + '</option>')
+                    });
+                }              
             }
 
         });
