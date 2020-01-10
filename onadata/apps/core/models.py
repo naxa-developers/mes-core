@@ -182,7 +182,7 @@ class Beneficiary(models.Model):
 					order = item.cluster_activity.activity.order
 					if not order:
 						order = 0
-					activities = Activity.objects.filter(order__lte=item.cluster_activity.activity.order)
+					activities = Activity.objects.filter(order__lte=order)
 					for item in activities:
 						if item in tracked_activity:
 							continue
