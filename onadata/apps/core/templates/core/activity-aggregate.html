@@ -40,7 +40,7 @@
                                             {% for key, value in item.items %}
                                                 <li><label>{{ value }} :</label><span>{{ value|get_answer:aggregations }}</span></li>
                                             {% endfor %}
-                                                <li><label>Sum :</label>{{ item|get_sum:aggregations }}</li>
+                                            <li><label>Sum :</label>{{ item|get_sum:aggregations }}</li>
                                         </ul>
                                     </div>
                                 </div>

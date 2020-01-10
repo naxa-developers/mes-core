@@ -279,7 +279,10 @@ def get_answer(obj, aggregation):
 @register.filter
 def get_sum(obj, aggregation):
     sum = 0
-    for key, value in obj.items():
-        if value in aggregation.aggregation_fields_value:
-            sum += int(aggregation.aggregation_fields_value[value])
+    if obj == {}:
+        return sum
+    else:
+        for key, value in obj.items():
+            if value in aggregation.aggregation_fields_value:
+                sum += int(aggregation.aggregation_fields_value[value])
     return sum
