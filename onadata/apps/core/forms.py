@@ -174,6 +174,7 @@ class ActivityForm(forms.ModelForm):
         super(ActivityForm, self).__init__(*args, **kwargs)
         self.fields['form'].queryset = XForm.objects.all().order_by('title')
         self.fields['form'].label_from_instance = lambda obj: "%s" % (obj.title)
+        self.fields["order"].required = True
         try:
             self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=self.instance.activity_group.project)
         except:
@@ -206,6 +207,8 @@ class ActivityForm(forms.ModelForm):
             return self.cleaned_data.get('weight')
     
     def clean_order(self):
+        if not 'order' in self.cleaned_data:
+            raise ValidationError({'order': ['Order is required']})
         if not isinstance(self.cleaned_data.get('order'), int):
             raise ValidationError({'order': ['Please enter a valid number']})
         else:
