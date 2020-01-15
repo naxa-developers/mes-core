@@ -26,6 +26,7 @@
     <div class="banificiary-graph">
         <div class="container-fluid">
             <div class="graph-wrapper">
+                <a href="{% url 'activity_aggregate_settings' activity.pk %}" class="btn"><i class="la la-plus"></i> Add More Aggregation Fields</a>
                 <div class="graph-column" style="padding:0px;">
                     <div class="row">
                         {% for item in aggregations.aggregation_fields %}
@@ -33,14 +34,18 @@
                             <div class="project-list">
                                 <div class="card" style="min-height:306px;">
                                     <div class="card-header">
-                                        <h5>Aggregation</h5>
+                                        {% for key, value in item.items %}
+                                        <h5>{{ key }}</h5>
+                                        {% endfor %}
                                     </div>
                                     <div class="card-body">
                                         <ul>
-                                            {% for key, value in item.items %}
-                                                <li><label>{{ value }} :</label><span>{{ value|get_answer:aggregations }}</span></li>
+                                            {% for name, attributes in item.items %}
+                                                {% for key, value in attributes.items %}
+                                                    <li><label>{{ value }} :</label><span>{{ value|get_answer:aggregations }}</span></li>
+                                                {% endfor %}
+                                                <li><label>Sum :</label>{{ attributes|get_sum:aggregations }}</li>
                                             {% endfor %}
-                                            <li><label>Sum :</label>{{ item|get_sum:aggregations }}</li>
                                         </ul>
                                     </div>
                                 </div>

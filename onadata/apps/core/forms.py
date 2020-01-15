@@ -272,28 +272,6 @@ class ActivityForm(forms.ModelForm):
         if commit:
             instance.save()
 
-        data = self.kwargs.pop('data')
-        aggregation_fields = []
-        aggregation_fields_dict = {}
-        for i in range(0, 12):
-            if '0-'+ str(i) in data:
-                field = '0-' + str(i)
-                field_name = data.get(field)
-                if field_name:
-                    print(field_name)
-                    field_question, field_label = field_name.split('|')
-                    aggregation_fields_dict[field_question] = field_label
-            else:
-                break
-        aggregation_fields.append(aggregation_fields_dict)
-        if len(aggregation_fields) > 0:
-            aggregation_fields = json.dumps(aggregation_fields)
-            if ActivityAggregate.objects.filter(activity=instance).exists():
-                act_aggregate = ActivityAggregate.objects.get(activity=instance)
-                act_aggregate.aggregation_fields = aggregation_fields
-                act_aggregate.save()
-            else:
-                act_aggregate = ActivityAggregate.objects.create(activity=instance, aggregation_fields=aggregation_fields)
         return instance
 
 

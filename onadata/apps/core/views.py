@@ -1697,6 +1697,37 @@ def get_aggregation_fields(request, *args, **kwargs):
     return JsonResponse(questions, safe=False)
 
 
+def activity_aggregate_settings(request, *args, **kwargs):
+    if request.method == "GET":
+        activity = Activity.objects.get(id=kwargs.get('pk'))
+        # aggregation = ActivityAggregate.objects.get(activity=activity)
+        forms = XForm.objects.all()
+        return render(request, 'core/aggregate_settings.html', {'forms': forms, 'activity': activity})
+
+    if request.method == "POST":
+        instance = Activity.objects.get(id=kwargs.get('pk'))
+        print(instance)
+        aggregation_fields = []
+        aggregation_field_main_dict = {}
+        aggregation_fields_dict = {}
+        if "fields" in request.POST:
+            for field in request.POST.getlist('fields'):
+                field_question, field_label = field.split('|')
+                aggregation_fields_dict[field_question] = field_label
+        aggregation_field_main_dict[request.POST.get('aggregation_label')] = aggregation_fields_dict
+        aggregation_fields.append(aggregation_field_main_dict)
+        if len(aggregation_fields) > 0:
+            if ActivityAggregate.objects.filter(activity=instance).exists():
+                aggregation_fields = aggregation_fields[0]
+                act_aggregate = ActivityAggregate.objects.get(activity=instance)
+                print(aggregation_fields)
+                act_aggregate.aggregation_fields.append(aggregation_fields)
+                act_aggregate.save()
+            else:
+                aggregation_fields = json.dumps(aggregation_fields)
+                act_aggregate = ActivityAggregate.objects.create(activity=instance, aggregation_fields=aggregation_fields)
+        return HttpResponseRedirect('/core/activity-list')
+
 class ActivityAggregateView(LoginRequiredMixin, TemplateView):
     template_name = 'core/activity-aggregate.html'
 
@@ -1705,19 +1736,22 @@ class ActivityAggregateView(LoginRequiredMixin, TemplateView):
         try:
             aggregate = ActivityAggregate.objects.get(activity=activity)
             aggregate_question = aggregate.aggregation_fields
-            aggregate_answers = aggregate.aggregation_fields_value
-            if aggregate_answers == {}:
+            aggregation_answer = aggregate.aggregation_fields_value
+            if aggregation_answer == {}:
                 answer_dict = {}
                 submissions = Submission.objects.filter(cluster_activity__activity=activity)
                 for sub in submissions:
                     for item in aggregate_question:
-                        for key, value in item.items():
-                            if key in sub.instance.json:
-                                answer_dict[value] = sub.instance.json[key]
+                        for name, attributes in item.items():
+                            for key, value in attributes.items():
+                                if key in sub.instance.json:
+                                    previous_answer = answer_dict.get(value, '0')
+                                    new_answer = int(previous_answer) + int(sub.instance.json[key])
+                                    answer_dict[value] = str(new_answer)
                 aggregate.aggregation_fields_value = answer_dict
                 aggregate.save()
 
-        except:
-            print('exception occured')
+        except Exception as e:
+            print('exception occured', e)
             aggregate = {}
-        return render(request, self.template_name, {'aggregations': aggregate})
+        return render(request, self.template_name, {'aggregations': aggregate, 'activity': activity})
