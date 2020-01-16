@@ -1,0 +1,101 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Aggregation Settings{% endblock %}
+{% block content %}
+<section class="content">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Aggregation Setting</h2>
+                <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Project</a></li>
+                        <li class="breadcrumb-item active">Aggregation Settings</li>
+                </ul>
+                <button class="btn btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="project-form">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Aggregation Name</label>
+                        <input type="text" name="aggregation_label" class="form-control">
+                    </div>
+                    <div id="more_fields">
+                        <div class="form-group">
+                            <label>Form</label>
+                            <select name="1-act-form" id="1-act-form" data-id="1" class="form-control act_form">
+                                {% for item in forms %}
+                                    {% if activity.form == item %}
+                                        <option selected value="{{ item.id }}">{{ item.title }}</option>
+                                    {% else %}
+                                        <option value="{{ item.id }}">{{ item.title }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <label>Select fields to aggregate</label>
+                        <div class="form-group">
+                            <ul id="1-aggregation-fields">
+                                
+                            </ul>
+                        </div>
+                    </div>
+                   
+                    <button type="submit" class="btn btn-xs btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+    // $(document).ready(function(){
+    //     var id = $("option:selected", $("#more_fields .act_form")).val();
+    //     if(id > 0){
+    //         var request_url = '{% url "get-aggregation-fields" %}'
+    //         $.ajax({
+    //             url: request_url,
+    //             type: "GET",
+    //             data: {"form_id": id},
+    //             dataType: "json",
+
+    //             success: function(response){
+    //                 $("#1-aggregation-fields").empty();
+    //                 $.each(response, function(key, value){
+    //                     $("#aggregation-fields").append('<li><label for=""><input name="' + id + '" type="checkbox" value="' + value.question + '|' + value.label + '">' + value.label + '</label></li>')
+    //                 });
+    //             }            
+    //         });
+    //     }
+    // });
+    
+    $('#1-act-form').on('change', function(){
+        console.log('asdasdasdasdas')
+        var id = $("option:selected", this).val();
+        var request_url = '{% url "get-aggregation-fields" %}'
+        $.ajax({
+            url: request_url,
+            type: "GET",
+            data: {"form_id": id},
+            dataType: "json",
+
+            success: function(response){
+                $("#1-aggregation-fields").empty();
+                $.each(response, function(key, value){
+                    $("#1-aggregation-fields").append('<li><label for=""><input name="' + id + '" type="checkbox" value="' + value.question + '|' + value.label + '">' + value.label + '</label></li>')
+                });           
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -266,9 +266,17 @@ class Config(models.Model):
 
 
 class ActivityAggregate(models.Model):
-	activity = models.ForeignKey(Activity, related_name="aggregations")
+	name = models.CharField(max_length=255, default="")
 	aggregation_fields = JSONField(default=list)
 	aggregation_fields_value = JSONField(default={})
+
+	def __str__(self):
+		return self.name
+
+
+class ActivityAggregateHistory(models.Model):
+	aggregation_values = JSONField(default={})
+
 
 @receiver(post_save, sender=Project)
 def save_interval(sender, instance, **kwargs):

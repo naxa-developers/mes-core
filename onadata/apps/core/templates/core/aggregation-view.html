@@ -1,6 +1,6 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Activity Aggregate{% endblock %}
+{% block title %}Aggregation{% endblock %}
 {% load static %}
 {% load filters %}
 {% block content %}
@@ -13,8 +13,7 @@
                 <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'home' %}">Project</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'activity_list' %}">Activity list</a></li>
-                        <li class="breadcrumb-item active">Activity Aggregate</li>
+                        <li class="breadcrumb-item active">Aggregation View</li>
                 </ul>
                 <button class="btn btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
             </div>
@@ -26,25 +25,25 @@
     <div class="banificiary-graph">
         <div class="container-fluid">
             <div class="graph-wrapper">
-                <a href="{% url 'activity_aggregate_settings' activity.pk %}" class="btn"><i class="la la-plus"></i> Add More Aggregation Fields</a>
+                <a href="{% url 'aggregation-settings' %}" class="btn"><i class="la la-plus"></i> Add More Aggregation Fields</a>
                 <div class="graph-column" style="padding:0px;">
                     <div class="row">
-                        {% for item in aggregations.aggregation_fields %}
+                        {% for aggregate in aggregations %}
                         <div class="col-lg-5">
                             <div class="project-list">
                                 <div class="card" style="min-height:306px;">
                                     <div class="card-header">
-                                        {% for key, value in item.items %}
-                                        <h5>{{ key }}</h5>
-                                        {% endfor %}
+                                        <h5>{{ aggregate.name }}</h5>
                                     </div>
                                     <div class="card-body">
                                         <ul>
-                                            {% for name, attributes in item.items %}
-                                                {% for key, value in attributes.items %}
-                                                    <li><label>{{ value }} :</label><span>{{ value|get_answer:aggregations }}</span></li>
+                                            {% for item in aggregate.aggregation_fields %}
+                                                {% for name, attributes in item.items %}
+                                                    {% for key, value in attributes.items %}
+                                                        <li><label>{{ value }} :</label><span>{{ value|get_answer:aggregate }}</span></li>
+                                                    {% endfor %}
+                                                    <li><label>Sum :</label>{{ attributes|get_sum:aggregate }}</li>
                                                 {% endfor %}
-                                                <li><label>Sum :</label>{{ attributes|get_sum:aggregations }}</li>
                                             {% endfor %}
                                         </ul>
                                     </div>
