@@ -39,7 +39,7 @@
                                 <td>{{ item.name }}</td>
                                 <td class="table-action">
                                     <a href="{% url 'aggregation-delete' item.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
-                                    <a href="" class="btn"> <i class="la la-edit"></i> Edit</a>
+                                    <a href="{% url 'aggregation-edit' item.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
                                 </td>
                             </tr>
                             {% endfor %}

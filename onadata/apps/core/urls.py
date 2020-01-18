@@ -127,6 +127,7 @@ urlpatterns = [
     url(r'^aggregation-view/$', views.AggregateView.as_view(), name="aggregation-view"),
     url(r'^aggregation-list/$', views.AggregationListView.as_view(), name="aggregation-list"),
     url(r'^aggregation-delete/(?P<pk>[0-9]+)/$', views.AggregationDeleteView.as_view(), name="aggregation-delete"),
+    url(r'^aggregation-edit/(?P<pk>[0-9]+)/$', views.AggregationEditView.as_view(), name="aggregation-edit"),
 ]
 
 urlpatterns += router.urls

@@ -121,8 +121,32 @@
                     $("#{{ data_id }}-aggregation-fields").empty();
                     $.each(response, function(key, value){
                         $("#" + data_id + "-aggregation-fields").append('<li data-value="' + value.question + '|' + value.label + '"><label for=""><input name="' + id + '" type="checkbox" value="' + value.question + '|' + value.label + '">' + value.label + '</label></li>');
-                    });     
+                    });   
+
+                    if ("{{aggregation}}" === 0){
+                        console.log('asdasdsa');
+                    }
+                    else {
+                        var selected_value = {{aggregation_fields|safe}};
+                        var show_values = selected_value[0];
+                        $.each(show_values, function(key, value){
+                            if (key === id_string){
+                                $.each(value, function(question, answer){
+                                    $("#" + data_id + "-aggregation-fields li").each(function(){
+                                        $(this).attr('data-value');
+                                        if ($(this).attr('data-value') == '' + question + '|' + answer + ''){
+                                            $(this).remove();
+                                        }
+                                    })
+                                    $("#" + data_id + "-aggregation-fields").append('<li data-value="' + question + '|' + answer + '"><label for=""><input checked name="' + id + '" type="checkbox" value="' + question + '|' + answer + '">' + answer + '</label></li>');
+                                })
+                            }
+                        });
+                    }        
                 }
+                
+
+                
             })
         });
     });
@@ -152,6 +176,7 @@
         var new_data_id = parseInt(data_id) + 1;
         $("#more_fields").append('<div class="form-group"><label>Form</label><select name="'+ new_data_id + '-act-form" id="' + new_data_id + '-act-form" data-id="' + new_data_id +'" class="form-control act_form"></select></div><label>Select fields to aggregate</label><div class="form-group"><ul id="'+ new_data_id + '-aggregation-fields"></ul></div>')
         var forms = {{ add_forms|safe }};
+        console.log(forms);
         for (var n=0; n < Object.keys(forms).length; n++){
             $("#"+ new_data_id +"-act-form").append('<option id_string="' + forms[n].id_string + '" value="' + forms[n].id +'">'+ forms[n].title + '</option>')
         }

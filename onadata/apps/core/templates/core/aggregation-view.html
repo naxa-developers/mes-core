@@ -42,8 +42,8 @@
                                                     {% for key, value in attributes.items %}
                                                         <li><label>{{ value }} :</label><span>{{ value|get_answer:aggregate }}</span></li>
                                                     {% endfor %}
-                                                    <li><label>Sum :</label>{{ attributes|get_sum:aggregate }}</li>
                                                 {% endfor %}
+                                                <li><label>Sum :</label>{{ item|get_sum:aggregate }}</li>
                                             {% endfor %}
                                         </ul>
                                     </div>
@@ -57,9 +57,4 @@
         </div>
     </div>
 </section>
-{% endblock %}
-{% block scripts %}
-<script src="{% static 'js/c3.bundle.js' %}"></script>
-<script src="{% static 'js/c3.js' %}"></script>
-<script src="{% static 'js/coremap.js' %}"></script>
 {% endblock %}

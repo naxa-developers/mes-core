@@ -1691,38 +1691,38 @@ def get_aggregation_fields(request, *args, **kwargs):
 def aggregation_settings(request, *args, **kwargs):
     if request.method == 'GET':
         forms = XForm.objects.all()
-        return render(request, 'core/aggregation-settings.html', {'forms': forms})
+        add_forms = list(XForm.objects.all().values('id', 'title'))
+        add_forms = json.dumps(add_forms)
+        return render(request, 'core/aggregation-settings.html', {'forms': forms, 'add_forms': add_forms})
     
     if request.method == "POST":
         aggregation_fields = []
         aggregation_field_main_dict = {}
-        aggregation_fields_dict = {}
-        print(request.POST)
         for i in range(1, 10):
             form_name = str(i) + '-act-form'
             if form_name in request.POST: 
                 form_id = request.POST.get(form_name)
                 if form_id in request.POST:
+                    aggregation_fields_dict = {}
                     for field in request.POST.getlist(form_id):
                         field_question , field_label = field.split('|')
                         aggregation_fields_dict[field_question] = field_label
-                
-                id_string = XForm.objects.get(id=form_id).id_string
-                aggregation_field_main_dict[id_string] = aggregation_fields_dict
+                    id_string = XForm.objects.get(id=form_id).id_string
+                    aggregation_field_main_dict[id_string] = aggregation_fields_dict
             else:
                 break
-            aggregation_fields.append(aggregation_field_main_dict)
+        aggregation_fields.append(aggregation_field_main_dict)
 
-            if len(aggregation_fields) > 0:
-                aggregation_name = request.POST.get('aggregation_label', '')
-                if ActivityAggregate.objects.filter(name=aggregation_name, project=request.project).exists():
-                    act_aggregate = ActivityAggregate.objects.get(name=aggregation_name, project=request.project)
-                    act_aggregate.aggregation_fields = aggregation_fields
-                    act_aggregate.save()
-                else:
-                    ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields, project=request.project)
+        if len(aggregation_fields) > 0:
+            aggregation_name = request.POST.get('aggregation_label', '')
+            if ActivityAggregate.objects.filter(name=aggregation_name, project=request.project).exists():
+                act_aggregate = ActivityAggregate.objects.get(name=aggregation_name, project=request.project)
+                act_aggregate.aggregation_fields = aggregation_fields
+                act_aggregate.save()
+            else:
+                ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields, project=request.project)
             
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/core/aggregation-list')
 
 
 class AggregateView(ManagerMixin, TemplateView):
@@ -1765,3 +1765,43 @@ class AggregationDeleteView(ManagerMixin, DeleteView):
     model = ActivityAggregate
     template_name = 'core/aggregation-delete.html'
     success_url = reverse_lazy('aggregation-list')
+
+
+class AggregationEditView(ManagerMixin, TemplateView):
+    template_name = 'core/aggregation-edit.html'
+
+    def get(self, request, *args, **kwargs):
+        forms = XForm.objects.all()
+        aggregation = ActivityAggregate.objects.get(pk=self.kwargs.get('pk'))
+        aggregation_fields = aggregation.aggregation_fields
+        aggregation_fields = json.dumps(aggregation_fields)
+        add_forms = list(XForm.objects.all().values('id', 'title'))
+        add_forms = json.dumps(add_forms)
+        return render(request, self.template_name, {'forms': forms, 'aggregation': aggregation, 'aggregation_fields': aggregation_fields, 'add_forms': add_forms})
+
+    def post(self, request, *args, **kwargs):
+        aggregation_fields = []
+        aggregation_field_main_dict = {}
+        for i in range(1, 10):
+            form_name = str(i) + '-act-form'
+            if form_name in request.POST: 
+                form_id = request.POST.get(form_name)
+                if form_id in request.POST:
+                    aggregation_fields_dict = {}
+                    for field in request.POST.getlist(form_id):
+                        field_question , field_label = field.split('|')
+                        aggregation_fields_dict[field_question] = field_label
+                    print(aggregation_fields_dict)
+                    id_string = XForm.objects.get(id=form_id).id_string
+                    aggregation_field_main_dict[id_string] = aggregation_fields_dict
+            else:
+                break
+        aggregation_fields.append(aggregation_field_main_dict)
+
+        if len(aggregation_fields) > 0:
+            aggregation_name = request.POST.get('aggregation_label', '')
+            act_aggregate = ActivityAggregate.objects.get(id=self.kwargs.get('pk'))
+            act_aggregate.aggregation_fields = aggregation_fields
+            act_aggregate.name = aggregation_name
+            act_aggregate.save()
+        return HttpResponseRedirect('/core/aggregation-list')

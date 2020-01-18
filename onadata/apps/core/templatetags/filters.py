@@ -283,6 +283,8 @@ def get_sum(obj, aggregation):
         return sum
     else:
         for key, value in obj.items():
-            if value in aggregation.aggregation_fields_value:
-                sum += int(aggregation.aggregation_fields_value[value])
+            for question, answer in value.items():
+                if question in aggregation.aggregation_fields_value:
+                    print('yes')
+                    sum += int(aggregation.aggregation_fields_value[question])
     return sum
