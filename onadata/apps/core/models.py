@@ -266,6 +266,7 @@ class Config(models.Model):
 
 
 class ActivityAggregate(models.Model):
+	project = models.ForeignKey(Project, related_name="aggregations", on_delete=models.CASCADE, null=True, blank=True)
 	name = models.CharField(max_length=255, default="")
 	aggregation_fields = JSONField(default=list)
 	aggregation_fields_value = JSONField(default={})

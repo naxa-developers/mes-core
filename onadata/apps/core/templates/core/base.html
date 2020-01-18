@@ -291,8 +291,9 @@
             {% ifrole 'manager_only' %}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-sellsy"></i><span>Aggregation</span></a>
                 <ul class="ml-menu">
-                    <li><a href="{% url 'aggregation-settings' %}">Aggregation Setting</a></li>
+                    <li><a href="{% url 'aggregation-list' %}">Aggregation List</a></li>
                     <li><a href="{% url 'aggregation-view' %}">Aggregation View</a></li>
+                    <li><a href="{% url 'aggregation-settings' %}">Aggregation Setting</a></li>
                 </ul>
             </li>
             {% end ifrole %}

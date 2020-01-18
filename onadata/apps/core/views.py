@@ -1714,30 +1714,29 @@ def aggregation_settings(request, *args, **kwargs):
             aggregation_fields.append(aggregation_field_main_dict)
 
             if len(aggregation_fields) > 0:
-                print(aggregation_fields)
                 aggregation_name = request.POST.get('aggregation_label', '')
-                if ActivityAggregate.objects.filter(name=aggregation_name).exists():
-                    act_aggregate = ActivityAggregate.objects.get(name=aggregation_name)
+                if ActivityAggregate.objects.filter(name=aggregation_name, project=request.project).exists():
+                    act_aggregate = ActivityAggregate.objects.get(name=aggregation_name, project=request.project)
                     act_aggregate.aggregation_fields = aggregation_fields
                     act_aggregate.save()
                 else:
-                    ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields)
+                    ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields, project=request.project)
             
         return HttpResponseRedirect('/')
 
 
-class AggregateView(LoginRequiredMixin, TemplateView):
+class AggregateView(ManagerMixin, TemplateView):
     template_name = 'core/aggregation-view.html'
 
     def get(self, request, *args, **kwargs):
         try:
-            aggregations = ActivityAggregate.objects.all()
+            aggregations = ActivityAggregate.objects.filter(project=request.project)
             for aggregate in aggregations:
                 aggregate_question = aggregate.aggregation_fields
                 aggregation_answer = aggregate.aggregation_fields_value
                 if aggregation_answer == {}:
                     answer_dict = {}
-                    submissions = Submission.objects.filter(status='approved')
+                    submissions = Submission.objects.filter(status='approved', cluster_activity__activity__activity_group__project=request.project)
                     for sub in submissions:
                         for item in aggregate_question:
                             for name, attributes in item.items():
@@ -1753,3 +1752,16 @@ class AggregateView(LoginRequiredMixin, TemplateView):
             print('exception occured', e)
             aggregations = {}
         return render(request, self.template_name, {'aggregations': aggregations})
+
+class AggregationListView(ManagerMixin, TemplateView):
+    template_name = 'core/aggregation-list.html'
+
+    def get(self, request, *args, **kwargs):
+        aggregations = ActivityAggregate.objects.filter(project=request.project)
+        return render(request, self.template_name, {'aggregations': aggregations})
+
+
+class AggregationDeleteView(ManagerMixin, DeleteView):
+    model = ActivityAggregate
+    template_name = 'core/aggregation-delete.html'
+    success_url = reverse_lazy('aggregation-list')

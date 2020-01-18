@@ -1,0 +1,63 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Activity List{% endblock %}
+
+{% block content %}
+<!-- Main Content -->
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>Aggregation list</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Project</a></li>
+                        <li class="breadcrumb-item active">Aggregation list</li>
+                    </ul>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">                
+                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                    <a href="{% url 'aggregation-settings' %}" ><button class="btn btn-success btn-icon float-right" type="button"><i class="la la-plus"></i></button></a>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="card project_list">
+                <div class="table-responsive">
+                    <table id="Beneficiary_table" class="table table-hover c_table">
+                        <thead>
+                            <tr>                                       
+                                <th>Aggregation Name</th>
+                                <th>Action</th>
+                        </thead>
+                        <tbody>
+                            {% for item in aggregations %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td class="table-action">
+                                    <a href="{% url 'aggregation-delete' item.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
+                                    <a href="" class="btn"> <i class="la la-edit"></i> Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <a class="btn float-right" href="{% url 'aggregation-settings' %}"><i class="la la-plus"></i> Add Aggregation Field</a>
+<!--                     <ul class="pagination pagination-primary">
+                        <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">4</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript:void(0);">5</a></li>
+                    </ul> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
