@@ -43,7 +43,13 @@
                                                         <li><label>{{ value }} :</label><span>{{ value|get_answer:aggregate }}</span></li>
                                                     {% endfor %}
                                                 {% endfor %}
-                                                <li><label>Sum :</label>{{ item|get_sum:aggregate }}</li>
+                                                <li><label>Sum :</label>{{ aggregate|get_sum }}</li>
+                                            {% endfor %}
+                                            {% for history in aggregate.history.all %}
+                                                <p>Previous Values till date: {{ history.date }}</p>
+                                                {% for key, value in history.aggregation_values %}
+                                                    <li><label>{{ key }}: </label><span>{{ value }}</span></li>
+                                                {% endfor %}
                                             {% endfor %}
                                         </ul>
                                     </div>

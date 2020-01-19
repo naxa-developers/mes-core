@@ -53,7 +53,7 @@ from .serializers import ActivityGroupSerializer, ActivitySerializer, OutputSeri
     ClusterSerializer, BeneficiarySerialzier, ConfigSerializer, ClusterActivityGroupSerializer, CASerializer
 
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, ClusterA, ClusterAG, \
-    Submission, Config, ProjectTimeInterval, ClusterAHistory, District, Municipality, ActivityAggregate
+    Submission, Config, ProjectTimeInterval, ClusterAHistory, District, Municipality, ActivityAggregate, ActivityAggregateHistory
 
 from .forms import LoginForm, SignUpForm, ProjectForm, OutputForm, ActivityGroupForm, ActivityForm, ClusterForm, \
     BeneficiaryForm, UserRoleForm, ConfigForm, ChangePasswordform
@@ -1804,4 +1804,6 @@ class AggregationEditView(ManagerMixin, TemplateView):
             act_aggregate.aggregation_fields = aggregation_fields
             act_aggregate.name = aggregation_name
             act_aggregate.save()
+
+            ActivityAggregateHistory.objects.create(aggregation=act_aggregate, aggregation_values=act_aggregate.aggregation_fields_value, date=datetime.now())
         return HttpResponseRedirect('/core/aggregation-list')

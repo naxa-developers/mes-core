@@ -276,7 +276,9 @@ class ActivityAggregate(models.Model):
 
 
 class ActivityAggregateHistory(models.Model):
+	aggregation = models.ForeignKey(ActivityAggregate, related_name="history", null=True, blank=True)
 	aggregation_values = JSONField(default={})
+	date = models.DateTimeField(default=datetime.now())
 
 
 @receiver(post_save, sender=Project)
@@ -351,6 +353,8 @@ def save_activity_aggregation(sender, instance, **kwargs):
 		aggregation_questions = aggregations.aggregation_fields
 		aggregation_answer = aggregations.aggregation_fields_value
 		answer_dict = {}
+		ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+
 		if aggregation_answer == {}:
 			for item in aggregation_questions:
 				for name, attributes in item.items():
