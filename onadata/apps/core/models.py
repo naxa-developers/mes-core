@@ -348,28 +348,29 @@ def asset_permissions(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Submission)
 def save_activity_aggregation(sender, instance, **kwargs):
-	aggregations = instance.cluster_activity.activity.aggregations.last()
-	if aggregations:
-		aggregation_questions = aggregations.aggregation_fields
-		aggregation_answer = aggregations.aggregation_fields_value
-		answer_dict = {}
-		ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+	aggregations_list = ActivityAggregate.objects.all()
+	if aggregations_list:
+		for aggregations in aggregations_list:
+			aggregation_questions = aggregations.aggregation_fields
+			aggregation_answer = aggregations.aggregation_fields_value
+			answer_dict = {}
+			ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
 
-		if aggregation_answer == {}:
-			for item in aggregation_questions:
-				for name, attributes in item.items():
-					for key, value in attributes.items():
-						if key in instance.instance.json:
-							answer_dict[value] = instance.instance.json[key]
-			aggregations.aggregation_fields_value = answer_dict
-			aggregations.save()
-		else:
-			for item in aggregation_questions:
-				for name, attributes in item.items():
-					for key, value in attributes.items():
-						if key in instance.instance.json:
-							if value in aggregation_answer:
-								previous_answer = aggregation_answer.get(value, '0')
-								aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
-			aggregations.aggregation_fields_value = aggregation_answer
-			aggregations.save()
+			if aggregation_answer == {}:
+				for item in aggregation_questions:
+					for name, attributes in item.items():
+						for key, value in attributes.items():
+							if key in instance.instance.json:
+								answer_dict[value] = instance.instance.json[key]
+				aggregations.aggregation_fields_value = answer_dict
+				aggregations.save()
+			else:
+				for item in aggregation_questions:
+					for name, attributes in item.items():
+						for key, value in attributes.items():
+							if key in instance.instance.json:
+								if value in aggregation_answer:
+									previous_answer = aggregation_answer.get(value, '0')
+									aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+				aggregations.aggregation_fields_value = aggregation_answer
+				aggregations.save()
