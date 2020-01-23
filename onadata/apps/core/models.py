@@ -358,19 +358,17 @@ def save_activity_aggregation(sender, instance, **kwargs):
 
 			if aggregation_answer == {}:
 				for item in aggregation_questions:
-					for name, attributes in item.items():
-						for key, value in attributes.items():
-							if key in instance.instance.json:
-								answer_dict[value] = instance.instance.json[key]
+					for key, value in item.items():
+						if key in instance.instance.json:
+							answer_dict[value] = instance.instance.json[key]
 				aggregations.aggregation_fields_value = answer_dict
 				aggregations.save()
 			else:
 				for item in aggregation_questions:
-					for name, attributes in item.items():
-						for key, value in attributes.items():
-							if key in instance.instance.json:
-								if value in aggregation_answer:
-									previous_answer = aggregation_answer.get(value, '0')
-									aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+					for key, value in item.items():
+						if key in instance.instance.json:
+							if value in aggregation_answer:
+								previous_answer = aggregation_answer.get(value, '0')
+								aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
 				aggregations.aggregation_fields_value = aggregation_answer
 				aggregations.save()
