@@ -998,9 +998,11 @@ class SubmissionListView(LoginRequiredMixin, View):
                                 for key, value in attributes.items():
                                     if key in submission.instance.json:
                                         if value in aggregation_answer:
-                                            ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                             previous_answer = aggregation_answer.get(value, '0')
                                             aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
+                                        else:
+                                            aggregation_answer[value] = submission.instance.json[key]
+                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                         aggregations.aggregation_fields_value = aggregation_answer
                         aggregations.save()
 
@@ -1033,9 +1035,11 @@ class SubmissionListView(LoginRequiredMixin, View):
                                         for instance in submissions:
                                             if key in instance.instance.json:
                                                 if value in aggregation_answer:
-                                                    ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                                     previous_answer = aggregation_answer.get(value, '0')
                                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                                else:
+                                                    aggregation_answer[value] = submission.instance.json[key]
+                            ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                             aggregations.aggregation_fields_value = aggregation_answer
                             aggregations.save()
 
@@ -1089,9 +1093,11 @@ class SubmissionListView(LoginRequiredMixin, View):
                                     for instance in submissions:
                                         if key in instance.instance.json:
                                             if value in aggregation_answer:
-                                                ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                                 previous_answer = aggregation_answer.get(value, '0')
                                                 aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                            else:
+                                                aggregation_answer[value] = submission.instance.json[key]
+                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                         aggregations.aggregation_fields_value = aggregation_answer
                         aggregations.save()
         
@@ -1124,9 +1130,11 @@ class SubmissionListView(LoginRequiredMixin, View):
                                         for key, value in attributes.items():
                                             if key in submission.instance.json:
                                                 if value in aggregation_answer:
-                                                    ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                                     previous_answer = aggregation_answer.get(value, '0')
                                                     aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
+                                                else:
+                                                    aggregation_answer[value] = submission.instance.json[key]
+                                ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                 aggregations.aggregation_fields_value = aggregation_answer
                                 aggregations.save()
 
@@ -1157,9 +1165,11 @@ class SubmissionListView(LoginRequiredMixin, View):
                                                 for instance in submissions:
                                                     if key in instance.instance.json:
                                                         if value in aggregation_answer:
-                                                            ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                                             previous_answer = aggregation_answer.get(value, '0')
                                                             aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                                        else:
+                                                            aggregation_answer[value] = submission.instance.json[key]
+                                    ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                     aggregations.aggregation_fields_value = aggregation_answer
                                     aggregations.save()
         cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
@@ -1189,7 +1199,6 @@ class SubNotificationListView(LoginRequiredMixin, View):
                     aggregation_questions = aggregations.aggregation_fields
                     aggregation_answer = aggregations.aggregation_fields_value
                     answer_dict = {}
-                    
 
                     if aggregation_answer == {}:
                         for item in aggregation_questions:
@@ -1205,9 +1214,11 @@ class SubNotificationListView(LoginRequiredMixin, View):
                                 for key, value in attributes.items():
                                     if key in submission.instance.json:
                                         if value in aggregation_answer:
-                                            ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                             previous_answer = aggregation_answer.get(value, '0')
                                             aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
+                                        else:
+                                            aggregation_answer[value] = submission.instance.json[key]
+                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                         aggregations.aggregation_fields_value = aggregation_answer
                         aggregations.save()
 
@@ -1238,9 +1249,11 @@ class SubNotificationListView(LoginRequiredMixin, View):
                                         for instance in submissions:
                                             if key in instance.instance.json:
                                                 if value in aggregation_answer:
-                                                    ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                                     previous_answer = aggregation_answer.get(value, '0')
                                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                                else:
+                                                    aggregation_answer[value] = submission.instance.json[key]
+                            ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                             aggregations.aggregation_fields_value = aggregation_answer
                             aggregations.save()
 
@@ -1293,9 +1306,11 @@ class SubNotificationListView(LoginRequiredMixin, View):
                                     for instance in submissions:
                                         if key in instance.instance.json:
                                             if value in aggregation_answer:
-                                                ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                                 previous_answer = aggregation_answer.get(value, '0')
                                                 aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                            else:
+                                                aggregation_answer[value] = submission.instance.json[key]
+                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                         aggregations.aggregation_fields_value = aggregation_answer
                         aggregations.save()
         
@@ -1326,9 +1341,11 @@ class SubNotificationListView(LoginRequiredMixin, View):
                                         for key, value in attributes.items():
                                             if key in submission.instance.json:
                                                 if value in aggregation_answer:
-                                                    ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                                     previous_answer = aggregation_answer.get(value, '0')
                                                     aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
+                                                else:
+                                                    aggregation_answer[value] = submission.instance.json[key]
+                                ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                 aggregations.aggregation_fields_value = aggregation_answer
                                 aggregations.save()
 
@@ -1359,9 +1376,11 @@ class SubNotificationListView(LoginRequiredMixin, View):
                                                 for instance in submissions:
                                                     if key in instance.instance.json:
                                                         if value in aggregation_answer:
-                                                            ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                                             previous_answer = aggregation_answer.get(value, '0')
                                                             aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                                        else:
+                                                            aggregation_answer[value] = submission.instance.json[key]
+                                    ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                                     aggregations.aggregation_fields_value = aggregation_answer
                                     aggregations.save()
 
