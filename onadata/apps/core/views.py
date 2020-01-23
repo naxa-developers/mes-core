@@ -554,14 +554,6 @@ class ActivityCreateView(ManagerMixin, CreateView):
         kwargs = super(ActivityCreateView, self).get_form_kwargs()
         kwargs['project'] = self.request.project
         return kwargs
-    
-    def get_context_data(self, *args, **kwargs):
-        context = super(ActivityCreateView, self).get_context_data(**kwargs)
-        if ActivityAggregate.objects.filter(activity=self.kwargs.get('pk')).exists():
-            context['aggregations'] = json.dumps(ActivityAggregate.objects.get(activity=self.kwargs.get('pk')).aggregation_fields)
-        else:
-            context['aggregations'] = 0
-        return context
 
 
 class ActivityDetailView(ManagerMixin, DetailView):
@@ -587,6 +579,12 @@ class ClusterListView(ManagerMixin, ListView):
     template_name = 'core/cluster-list.html'
     context_object_name = 'clusters'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(project=self.request.project)
+
 
 class UserClusterListView(LoginRequiredMixin, TemplateView):
     template_name = 'core/cluster-list.html'
@@ -604,6 +602,12 @@ class ClusterCreateView(ManagerMixin, CreateView):
     form_class = ClusterForm
     success_url = reverse_lazy('cluster_list')
 
+    def get_form_kwargs(self):
+        kwargs = super(ClusterCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
+
 
 class ClusterDetailView(LoginRequiredMixin, DetailView):
     model = Cluster
@@ -615,6 +619,12 @@ class ClusterUpdateView(ManagerMixin, UpdateView):
     template_name = 'core/cluster-form.html'
     form_class = ClusterForm
     success_url = reverse_lazy('cluster_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(ClusterUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class ClusterDeleteView(ManagerMixin, DeleteView):
@@ -628,10 +638,10 @@ class ClusterAssignView(ManagerMixin, View):
 
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
-        clusterag = ClusterAG.objects.filter(cluster_id=pk).order_by('id')
-        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag)).order_by('id')
+        clusterag = ClusterAG.objects.filter(cluster_id=pk, cluster__project=self.request.project).order_by('id')
+        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag), project=self.request.project).order_by('id')
         selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group').order_by('id')
-        time_interval = ProjectTimeInterval.objects.filter(project=request.project)
+        time_interval = ProjectTimeInterval.objects.filter(project=self.request.project)
         return render(request, 'core/cluster-assign.html',
                       {
                           'activity_group': activity_group,

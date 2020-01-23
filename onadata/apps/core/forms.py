@@ -279,6 +279,16 @@ class ActivityForm(forms.ModelForm):
 class ClusterForm(forms.ModelForm):
     municipality = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Municipality.objects.all())
 
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        self.kwargs = kwargs
+        super(ClusterForm, self).__init__(*args, **kwargs)
+        if is_super_admin:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.all())
+        else:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.filter(id=project.id))
+    
     class Meta:
         model = Cluster
         fields = ('name', 'municipality', 'ward', 'project')
