@@ -939,6 +939,12 @@ class UserRoleListView(ManagerMixin, ListView):
     model = UserRole
     template_name = 'core/userrole-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(project=self.request.project)
+
 
 # class UserRoleCreateView(ManagerMixin, CreateView):
 #     model = UserRole
@@ -949,11 +955,11 @@ class UserRoleListView(ManagerMixin, ListView):
 
 class UserRoleCreateView(ManagerMixin, View):
     def get(self, request, **kwargs):
-        form = UserRoleForm()
+        form = UserRoleForm(project=self.request.project, is_super_admin=self.request.is_super_admin)
         return render(request, 'core/userrole-form.html', {'form': form})
 
     def post(self, request, **kwargs):
-        form = UserRoleForm(request.POST)
+        form = UserRoleForm(request.POST, project=self.request.project, is_super_admin=self.request.is_super_admin)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.save()
@@ -968,21 +974,21 @@ class UserRoleCreateView(ManagerMixin, View):
                     obj.cluster.add(cluster)
 
             # send email to the user
-            # if obj.user.email:
-            #     clusters = obj.cluster.all()
-            #     to_email = obj.user.email
-            #     mail_subject = 'User role assigned.'
-            #     message = render_to_string('core/user_role_email.html', {
-            #         'userrole': obj,
-            #         'clusters': clusters,
-            #         'domain': settings.SITE_URL,
-            #     })
-            #     email = EmailMessage(
-            #         mail_subject, message, to=[to_email]
-            #     )
-            #     email.send()
-            # else:
-            #     pass
+            if obj.user.email:
+                clusters = obj.cluster.all()
+                to_email = obj.user.email
+                mail_subject = 'User role assigned.'
+                message = render_to_string('core/user_role_email.html', {
+                    'userrole': obj,
+                    'clusters': clusters,
+                    'domain': settings.SITE_URL,
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+            else:
+                pass
             return HttpResponseRedirect(reverse('userrole_list'))
         return render(request, 'core/userrole-form.html', {'form':form})
 
@@ -992,6 +998,12 @@ class UserRoleUpdateView(ManagerMixin, UpdateView):
     template_name = 'core/userrole-form.html'
     form_class = UserRoleForm
     success_url = reverse_lazy('userrole_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(UserRoleUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class UserRoleDetailView(ManagerMixin, DetailView):

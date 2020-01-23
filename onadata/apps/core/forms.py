@@ -14,6 +14,7 @@ from onadata.apps.logger.models import XForm
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, \
     ProjectTimeInterval, Municipality, ActivityAggregate
 import json
+from django.db.models import Q
 
 
 class LoginForm(forms.Form):
@@ -391,6 +392,19 @@ class BeneficiaryForm(forms.ModelForm):
 
 class UserRoleForm(forms.ModelForm):
     cluster = forms.ModelMultipleChoiceField(required=False, queryset=Cluster.objects.all(), widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        super(UserRoleForm, self).__init__(*args, **kwargs)
+        if is_super_admin:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.all())
+            self.fields['cluster'].queryset = Cluster.objects.all()
+            self.fields['user'].choices = ((user.id, user.username) for user in User.objects.all())
+        else:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.filter(id=project.id))
+            self.fields['cluster'].queryset = Cluster.objects.filter(project=project)
+            self.fields['user'].choices = ((user.id, user.username) for user in User.objects.filter(Q(user_roles__isnull=True)|Q(user_roles__project=project)))
 
     class Meta:
         model = UserRole
