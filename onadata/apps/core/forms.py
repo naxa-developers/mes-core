@@ -95,6 +95,17 @@ class ProjectForm(forms.ModelForm):
 
 
 class OutputForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        self.kwargs = kwargs
+        super(OutputForm, self).__init__(*args, **kwargs)
+        if is_super_admin:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.all())
+        else:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.filter(id=project.id))
+    
     class Meta:
         model = Output
         fields = ('name', 'description', 'project')

@@ -483,6 +483,12 @@ class OutputListView(ManagerMixin, ListView):
     model = Output
     template_name = 'core/output-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(project=self.request.project)
+
 
 class OutputDetailView(ManagerMixin, DetailView):
     model = Output
@@ -495,12 +501,24 @@ class OutputCreateView(ManagerMixin, CreateView):
     form_class = OutputForm
     success_url = reverse_lazy('output_list')
 
+    def get_form_kwargs(self):
+        kwargs = super(OutputCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
+
 
 class OutputUpdateView(ManagerMixin, UpdateView):
     model = Output
     template_name = 'core/output-form.html'
     form_class = OutputForm
     success_url = reverse_lazy('output_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(OutputUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class OutputDeleteView(ManagerMixin, DeleteView):
