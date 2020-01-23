@@ -345,7 +345,15 @@ class ClusterForm(forms.ModelForm):
 class BeneficiaryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        project = kwargs.pop('project', None)
         super(BeneficiaryForm, self).__init__(*args, **kwargs)
+
+        if is_super_admin:
+            self.fields['cluster'].choices = ((cluster.id, cluster.name) for cluster in Cluster.objects.all())
+        else:
+            self.fields['cluster'].choices = ((cluster.id, cluster.name) for cluster in Cluster.objects.filter(project=project))
+
         if not self.fields['location'].initial:
             self.fields['location'].initial = Point(0, 0, srid=4326)
 

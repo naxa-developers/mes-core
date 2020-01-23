@@ -864,12 +864,24 @@ class BeneficiaryListView(ManagerMixin, ListView):
     model = Beneficiary
     template_name = 'core/beneficiary-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(cluster__project=self.request.project)
+
 
 class BeneficiaryCreateView(ManagerMixin, CreateView):
     model = Beneficiary
     template_name = 'core/beneficiary-form.html'
     form_class = BeneficiaryForm
     success_url = reverse_lazy('beneficiary_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(BeneficiaryCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class BeneficiaryDetailView(ManagerMixin, DetailView):
@@ -882,6 +894,12 @@ class BeneficiaryUpdateView(ManagerMixin, UpdateView):
     template_name = 'core/beneficiary-form.html'
     form_class = BeneficiaryForm
     success_url = reverse_lazy('beneficiary_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(BeneficiaryUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class BeneficiaryDeleteView(ManagerMixin, DeleteView):
