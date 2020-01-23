@@ -531,6 +531,12 @@ class ActivityGroupListVeiw(ManagerMixin, ListView):
     model = ActivityGroup
     template_name = 'core/activitygroup-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(project=self.request.project)
+
 
 class ActivityGroupDeleteView(ManagerMixin, DeleteView):
     model = ActivityGroup
@@ -544,12 +550,24 @@ class ActivityGroupCreateView(ManagerMixin, CreateView):
     form_class = ActivityGroupForm
     success_url = reverse_lazy('activitygroup_list')
 
+    def get_form_kwargs(self):
+        kwargs = super(ActivityGroupCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
+
 
 class ActivityGroupUpdateView(ManagerMixin, UpdateView):
     model = ActivityGroup
     template_name = 'core/activitygroup-form.html'
     form_class = ActivityGroupForm
     success_url = reverse_lazy('activitygroup_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(ActivityGroupUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class ActivityGroupDetailView(ManagerMixin, DetailView):

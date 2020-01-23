@@ -122,6 +122,18 @@ class OutputForm(forms.ModelForm):
 
 
 class ActivityGroupForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        self.kwargs = kwargs
+        super(ActivityGroupForm, self).__init__(*args, **kwargs)
+        if is_super_admin:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.all())
+            self.fields['output'].choices = ((output.id, output.name) for output in Output.objects.all())
+        else:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.filter(id=project.id))
+            self.fields['output'].choices = ((output.id, output.name) for output in Output.objects.filter(project=project))
+
     class Meta:
         model = ActivityGroup
         fields = ('name', 'description', 'output', 'project', 'weight')
@@ -165,6 +177,10 @@ class ActivityGroupForm(forms.ModelForm):
                     if self.cleaned_data.get('weight') + weight > 100:
                         raise ValidationError({
                             'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+                else:
+                    if self.cleaned_data.get('weight') > 100:
+                        raise ValidationError({
+                            'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
 
             except ActivityGroup.DoesNotExist:
                 other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
@@ -174,6 +190,11 @@ class ActivityGroupForm(forms.ModelForm):
                     if self.cleaned_data.get('weight') + other_activity_groups['weights'] > 100:
                         raise ValidationError({
                             'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+
+                if self.cleaned_data.get('weight') > 100:
+                        raise ValidationError({
+                            'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+
             return self.cleaned_data
         except KeyError:
             raise ValidationError('error occured')
