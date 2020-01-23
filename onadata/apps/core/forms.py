@@ -78,6 +78,7 @@ class SignUpForm(UserCreationForm):
 # )
 
 class ProjectForm(forms.ModelForm):
+
     class Meta:
         model = Project
 
@@ -87,8 +88,8 @@ class ProjectForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'placeholder': 'Description', 'class': 'form-control'}),
             'sector': forms.TextInput(attrs={'placeholder': 'Sector', 'class': 'form-control'}),
-            'start_date': forms.TextInput(attrs={'placeholder': 'Start date', 'class': 'form-control', 'type': 'date'}),
-            'end_date': forms.TextInput(attrs={'placeholder': 'End date', 'class': 'form-control', 'type': 'date'}),
+            'start_date': forms.DateInput(attrs={'placeholder': 'Start date', 'class': 'form-control', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'placeholder': 'End date', 'class': 'form-control', 'type': 'date'}),
             'reporting_period': forms.Select(attrs={'class': "custom-select"}),
         }
 
