@@ -1010,7 +1010,7 @@ class SubmissionListView(LoginRequiredMixin, View):
             order = submission.cluster_activity.activity.order
             if order:
                 Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
-                submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved")
+                submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                 if aggregations_list:
                     for aggregations in aggregations_list:
@@ -1141,7 +1141,7 @@ class SubmissionListView(LoginRequiredMixin, View):
                     order = submission.cluster_activity.activity.order
                     if order:
                         Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
-                        submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved")
+                        submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         if aggregations_list:
                             for aggregations in aggregations_list:
@@ -1225,7 +1225,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
             order = submission.cluster_activity.activity.order
             if order:
                 Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
-                submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved")
+                submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                 if aggregations_list:
                     for aggregations in aggregations_list:
@@ -1352,7 +1352,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
                     order = submission.cluster_activity.activity.order
                     if order:
                         Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
-                        submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved")
+                        submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         if aggregations_list:
                             for aggregations in aggregations_list:
