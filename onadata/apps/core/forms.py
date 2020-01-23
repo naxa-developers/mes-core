@@ -203,13 +203,21 @@ class ActivityGroupForm(forms.ModelForm):
 class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
         self.kwargs = kwargs
         super(ActivityForm, self).__init__(*args, **kwargs)
         self.fields['form'].queryset = XForm.objects.all().order_by('title')
         self.fields['form'].label_from_instance = lambda obj: "%s" % (obj.title)
         self.fields["order"].required = True
+
+        if is_super_admin:
+            self.fields['activity_group'].choices = ((ag.id, ag.name) for ag in ActivityGroup.objects.all())
+        else:
+            self.fields['activity_group'].choices = ((ag.id, ag.name) for ag in ActivityGroup.objects.filter(project=project))
+
         try:
             self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=self.instance.activity_group.project)
+
         except:
             self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=project)
 

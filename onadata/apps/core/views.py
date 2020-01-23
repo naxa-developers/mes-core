@@ -579,6 +579,12 @@ class ActivityListView(ManagerMixin, ListView):
     model = Activity
     template_name = 'core/activity-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(activity_group__project=self.request.project)
+
 
 class ActivityCreateView(ManagerMixin, CreateView):
     model = Activity
@@ -589,6 +595,7 @@ class ActivityCreateView(ManagerMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super(ActivityCreateView, self).get_form_kwargs()
         kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
 
@@ -602,6 +609,12 @@ class ActivityUpdateView(ManagerMixin, UpdateView):
     template_name = 'core/activity-form.html'
     form_class = ActivityForm
     success_url = reverse_lazy('activity_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(ActivityCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
         
 
 class ActivityDeleteView(ManagerMixin, DeleteView):
