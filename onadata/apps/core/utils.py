@@ -64,26 +64,26 @@ def get_clusters(districts=None, munis=None, clusters=None):
 
 
 # get the beneficiary list on the basis of filters applied
-def get_beneficiaries(districts=None, munis=None, clusters=None, b_types=None):
+def get_beneficiaries(districts=None, munis=None, clusters=None, b_types=None, project=None):
     from .models import Cluster, Beneficiary
     if clusters and b_types and munis and districts:
         beneficiaries = Beneficiary.objects.filter(
-            cluster__in=clusters, municipality__in=munis, district__in=districts, Type__in=b_types).order_by('name')
+            cluster__in=clusters, municipality__in=munis, district__in=districts, Type__in=b_types, cluster__project=project).order_by('name')
 
     elif b_types:
-        beneficiaries = Beneficiary.objects.filter(Type__in=b_types).order_by('name')
+        beneficiaries = Beneficiary.objects.filter(Type__in=b_types, cluster__project=project).order_by('name')
 
     elif clusters:
-        beneficiaries = Beneficiary.objects.filter(cluster__in=clusters).order_by('name')
+        beneficiaries = Beneficiary.objects.filter(cluster__in=clusters, cluster__project=project).order_by('name')
 
     elif munis:
-        beneficiaries = Beneficiary.objects.filter(municipality__in=munis).order_by('name')
+        beneficiaries = Beneficiary.objects.filter(municipality__in=munis, cluster__project=project).order_by('name')
 
     elif districts:
-        beneficiaries = Beneficiary.objects.filter(district__in=districts).order_by('name')
+        beneficiaries = Beneficiary.objects.filter(district__in=districts, cluster__project=project).order_by('name')
 
     else:
-        beneficiaries = Beneficiary.objects.order_by('name')
+        beneficiaries = Beneficiary.objects.filter(cluster__project=project).order_by('name')
 
     return beneficiaries
 

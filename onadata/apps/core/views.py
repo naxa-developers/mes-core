@@ -385,6 +385,7 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
     template_name = 'core/dashboard-2.html'
 
     def get(self, request):
+        project = request.project
         checked = [(name, value) for name, value in request.GET.iteritems()]
         clusters = []
         b_types = []
@@ -403,9 +404,9 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
             if item[0].startswith('dist'):
                 districts.append(int(item[0].split("_")[1]))
 
-        beneficiaries = get_beneficiaries(districts, munis, clusters, b_types)
+        beneficiaries = get_beneficiaries(districts, munis, clusters, b_types, project)
 
-        ag = ActivityGroup.objects.filter(weight__gte=0)
+        ag = ActivityGroup.objects.filter(weight__gte=0, project=project)
 
         
         page = request.GET.get('page', 1)
@@ -420,8 +421,8 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
 
         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
-        cluster = Cluster.objects.all()
-        types = Beneficiary.objects.values('Type').distinct('Type')
+        cluster = Cluster.objects.filter(project=project)
+        types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct('Type')
         return render(request, self.template_name, {
             'activity_groups': ag, 
             'beneficiaries': beneficiaries, 
