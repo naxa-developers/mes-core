@@ -356,6 +356,7 @@ def get_answer(json, labels):
 
 # for map data in dashboard1
 def get_map_data(request):
+    project = request.project
     form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
     form_json = form.json
     labels = get_form_location_label(json.loads(form_json))
@@ -365,7 +366,7 @@ def get_map_data(request):
         instance_json = instance.json
         instance_json = ast.literal_eval(str(instance_json))
         answers = get_answer(instance_json, labels)
-        beneficiary = Beneficiary.objects.filter(submissions__instance=instance)
+        beneficiary = Beneficiary.objects.filter(submissions__instance=instance, cluster__project=project)
         for item in beneficiary:
             if answers:
                 if not item.location:
@@ -373,7 +374,7 @@ def get_map_data(request):
                     item.location = pnt
                     item.save()
 
-    beneficiaries = Beneficiary.objects.filter(~Q(location=None))
+    beneficiaries = Beneficiary.objects.filter(~Q(location=None), cluster__project=project)
 
     data = serialize('custom_geojson', beneficiaries, fields=('name', 'Type', 'location'))
     return HttpResponse(data)
