@@ -385,7 +385,7 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
     template_name = 'core/dashboard-2.html'
 
     def get(self, request):
-        project = request.project
+        project = self.request.project
         checked = [(name, value) for name, value in request.GET.iteritems()]
         clusters = []
         b_types = []
@@ -437,7 +437,7 @@ class BeneficiaryProgressView(LoginRequiredMixin, MultipleObjectMixin, TemplateV
     template_name = 'core/beneficiary-progress.html'
 
     def get(self, request):
-        beneficiaries = Beneficiary.objects.all()
+        beneficiaries = Beneficiary.objects.filter(cluster__project=self.request.project)
         page = request.GET.get('page', 1)
         paginator = Paginator(beneficiaries, 100)
         
