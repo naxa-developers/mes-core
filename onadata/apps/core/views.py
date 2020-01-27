@@ -1725,17 +1725,23 @@ class ActivityAssignListView(ManagerMixin, ListView):
     model = Activity
     template_name = 'core/activity-assign-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(activity_group__project=self.request.project)
+
 
 def assign_activity(request, *args, **kwargs):
     activity = Activity.objects.get(pk=kwargs.get('pk'))
     if request.method == 'GET':
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity))
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
 
     elif request.method == 'POST':
         activity = Activity.objects.get(pk=kwargs.get('pk'))
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity))
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
         if 'assign' in request.POST:
             cluster = request.POST.getlist('clusters[]')
             for item in cluster:
@@ -1811,7 +1817,7 @@ def edit_submission(request,  id_string, data_id):
     return response
 
 def get_progress(request):
-    types = Beneficiary.objects.values('Type').distinct()
+    types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').distinct()
     progress_data = {}
     categories = []
 
@@ -1917,7 +1923,7 @@ def get_progress(request):
         return JsonResponse(data)
     
     else:
-        selected_districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
+        selected_districts = District.objects.filter(id__in=Beneficiary.objects.filter(cluster__project=request.project).values('district__id').distinct())
         for item in types:
             total_list = []
             for obj in selected_districts:
@@ -1945,7 +1951,7 @@ def get_progress(request):
 
 def get_progress_phase_pie(request):
     project = request.project
-    types = Beneficiary.objects.values('Type').distinct()
+    types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
     construction_phases = {}
 
     checked = [(name, value) for name, value in request.GET.iteritems()]
