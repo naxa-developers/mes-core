@@ -1671,11 +1671,11 @@ def get_clusters(request):
     if request.is_ajax():
         municipalities = request.GET.getlist('municipalities[]')
         if municipalities:
-            clusters = Cluster.objects.filter(municipality__id__in=municipalities).distinct()
+            clusters = Cluster.objects.filter(municipality__id__in=municipalities, project=request.project).distinct()
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
         else:
-            clusters = Cluster.objects.all()
+            clusters = Cluster.objects.filter(project=request.project)
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
     else:
@@ -1695,11 +1695,11 @@ def get_activity_group(request):
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
             else:
-                activity_groups = ActivityGroup.objects.all()
+                activity_groups = ActivityGroup.objects.filter(project=request.project)
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
         else:
-            activity_groups = ActivityGroup.objects.all()
+            activity_groups = ActivityGroup.objects.filter(project=request.project)
             activity_groups = serialize("json", activity_groups)
             return HttpResponse(activity_groups)
     else:
@@ -1714,7 +1714,7 @@ def get_activity(request):
             activity = serialize("json", activity)
             return HttpResponse(activity)
         else:
-            activity = Activity.objects.all()
+            activity = Activity.objects.filter(activity_group__project=request.project)
             activity = serialize("json", activity)
             return HttpResponse(activity)
     else:
