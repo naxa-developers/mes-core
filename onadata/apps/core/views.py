@@ -275,15 +275,16 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard-1.html'
 
     def get(self, request):
+        project = request.project
         # data required for charts and drop down menus
         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
-        select_cluster = Cluster.objects.filter(project=request.project)
+        select_cluster = Cluster.objects.filter(project=project)
 
-        types = Beneficiary.objects.values('Type').distinct()
+        types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
         # intervals = ProjectTimeInterval.objects.values('label').order_by('label')
-        beneficiary_count = Beneficiary.objects.count()
-        activity_count = Activity.objects.count()
+        beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
+        activity_count = Activity.objects.filter(activity_group__project=project).count()
         interval = []
 
         # time intervals for activity progress data
