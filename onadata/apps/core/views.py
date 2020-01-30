@@ -275,15 +275,16 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard-1.html'
 
     def get(self, request):
+        project = request.project
         # data required for charts and drop down menus
         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
-        select_cluster = Cluster.objects.filter(project=request.project)
+        select_cluster = Cluster.objects.filter(project=project)
 
-        types = Beneficiary.objects.values('Type').distinct()
+        types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
         # intervals = ProjectTimeInterval.objects.values('label').order_by('label')
-        beneficiary_count = Beneficiary.objects.count()
-        activity_count = Activity.objects.count()
+        beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
+        activity_count = Activity.objects.filter(activity_group__project=project).count()
         interval = []
 
         # time intervals for activity progress data
@@ -355,6 +356,7 @@ def get_answer(json, labels):
 
 # for map data in dashboard1
 def get_map_data(request):
+    project = request.project
     form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
     form_json = form.json
     labels = get_form_location_label(json.loads(form_json))
@@ -364,7 +366,7 @@ def get_map_data(request):
         instance_json = instance.json
         instance_json = ast.literal_eval(str(instance_json))
         answers = get_answer(instance_json, labels)
-        beneficiary = Beneficiary.objects.filter(submissions__instance=instance)
+        beneficiary = Beneficiary.objects.filter(submissions__instance=instance, cluster__project=project)
         for item in beneficiary:
             if answers:
                 if not item.location:
@@ -372,7 +374,7 @@ def get_map_data(request):
                     item.location = pnt
                     item.save()
 
-    beneficiaries = Beneficiary.objects.filter(~Q(location=None))
+    beneficiaries = Beneficiary.objects.filter(~Q(location=None), cluster__project=project)
 
     data = serialize('custom_geojson', beneficiaries, fields=('name', 'Type', 'location'))
     return HttpResponse(data)
@@ -383,6 +385,7 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
     template_name = 'core/dashboard-2.html'
 
     def get(self, request):
+        project = self.request.project
         checked = [(name, value) for name, value in request.GET.iteritems()]
         clusters = []
         b_types = []
@@ -401,9 +404,9 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
             if item[0].startswith('dist'):
                 districts.append(int(item[0].split("_")[1]))
 
-        beneficiaries = get_beneficiaries(districts, munis, clusters, b_types)
+        beneficiaries = get_beneficiaries(districts, munis, clusters, b_types, project)
 
-        ag = ActivityGroup.objects.filter(weight__gte=0)
+        ag = ActivityGroup.objects.filter(weight__gte=0, project=project)
 
         
         page = request.GET.get('page', 1)
@@ -418,8 +421,8 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
 
         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
-        cluster = Cluster.objects.all()
-        types = Beneficiary.objects.values('Type').distinct('Type')
+        cluster = Cluster.objects.filter(project=project)
+        types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct('Type')
         return render(request, self.template_name, {
             'activity_groups': ag, 
             'beneficiaries': beneficiaries, 
@@ -434,7 +437,7 @@ class BeneficiaryProgressView(LoginRequiredMixin, MultipleObjectMixin, TemplateV
     template_name = 'core/beneficiary-progress.html'
 
     def get(self, request):
-        beneficiaries = Beneficiary.objects.all()
+        beneficiaries = Beneficiary.objects.filter(cluster__project=self.request.project)
         page = request.GET.get('page', 1)
         paginator = Paginator(beneficiaries, 100)
         
@@ -483,6 +486,12 @@ class OutputListView(ManagerMixin, ListView):
     model = Output
     template_name = 'core/output-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(project=self.request.project)
+
 
 class OutputDetailView(ManagerMixin, DetailView):
     model = Output
@@ -495,12 +504,24 @@ class OutputCreateView(ManagerMixin, CreateView):
     form_class = OutputForm
     success_url = reverse_lazy('output_list')
 
+    def get_form_kwargs(self):
+        kwargs = super(OutputCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
+
 
 class OutputUpdateView(ManagerMixin, UpdateView):
     model = Output
     template_name = 'core/output-form.html'
     form_class = OutputForm
     success_url = reverse_lazy('output_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(OutputUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class OutputDeleteView(ManagerMixin, DeleteView):
@@ -512,6 +533,12 @@ class OutputDeleteView(ManagerMixin, DeleteView):
 class ActivityGroupListVeiw(ManagerMixin, ListView):
     model = ActivityGroup
     template_name = 'core/activitygroup-list.html'
+
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(project=self.request.project)
 
 
 class ActivityGroupDeleteView(ManagerMixin, DeleteView):
@@ -526,12 +553,24 @@ class ActivityGroupCreateView(ManagerMixin, CreateView):
     form_class = ActivityGroupForm
     success_url = reverse_lazy('activitygroup_list')
 
+    def get_form_kwargs(self):
+        kwargs = super(ActivityGroupCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
+
 
 class ActivityGroupUpdateView(ManagerMixin, UpdateView):
     model = ActivityGroup
     template_name = 'core/activitygroup-form.html'
     form_class = ActivityGroupForm
     success_url = reverse_lazy('activitygroup_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(ActivityGroupUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class ActivityGroupDetailView(ManagerMixin, DetailView):
@@ -543,6 +582,12 @@ class ActivityListView(ManagerMixin, ListView):
     model = Activity
     template_name = 'core/activity-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(activity_group__project=self.request.project)
+
 
 class ActivityCreateView(ManagerMixin, CreateView):
     model = Activity
@@ -553,15 +598,8 @@ class ActivityCreateView(ManagerMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super(ActivityCreateView, self).get_form_kwargs()
         kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
-    
-    def get_context_data(self, *args, **kwargs):
-        context = super(ActivityCreateView, self).get_context_data(**kwargs)
-        if ActivityAggregate.objects.filter(activity=self.kwargs.get('pk')).exists():
-            context['aggregations'] = json.dumps(ActivityAggregate.objects.get(activity=self.kwargs.get('pk')).aggregation_fields)
-        else:
-            context['aggregations'] = 0
-        return context
 
 
 class ActivityDetailView(ManagerMixin, DetailView):
@@ -574,6 +612,12 @@ class ActivityUpdateView(ManagerMixin, UpdateView):
     template_name = 'core/activity-form.html'
     form_class = ActivityForm
     success_url = reverse_lazy('activity_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(ActivityCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
         
 
 class ActivityDeleteView(ManagerMixin, DeleteView):
@@ -586,6 +630,12 @@ class ClusterListView(ManagerMixin, ListView):
     model = Cluster
     template_name = 'core/cluster-list.html'
     context_object_name = 'clusters'
+
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(project=self.request.project)
 
 
 class UserClusterListView(LoginRequiredMixin, TemplateView):
@@ -604,6 +654,12 @@ class ClusterCreateView(ManagerMixin, CreateView):
     form_class = ClusterForm
     success_url = reverse_lazy('cluster_list')
 
+    def get_form_kwargs(self):
+        kwargs = super(ClusterCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
+
 
 class ClusterDetailView(LoginRequiredMixin, DetailView):
     model = Cluster
@@ -615,6 +671,12 @@ class ClusterUpdateView(ManagerMixin, UpdateView):
     template_name = 'core/cluster-form.html'
     form_class = ClusterForm
     success_url = reverse_lazy('cluster_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(ClusterUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class ClusterDeleteView(ManagerMixin, DeleteView):
@@ -628,10 +690,10 @@ class ClusterAssignView(ManagerMixin, View):
 
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
-        clusterag = ClusterAG.objects.filter(cluster_id=pk).order_by('id')
-        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag)).order_by('id')
+        clusterag = ClusterAG.objects.filter(cluster_id=pk, cluster__project=self.request.project).order_by('id')
+        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag), project=self.request.project).order_by('id')
         selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group').order_by('id')
-        time_interval = ProjectTimeInterval.objects.filter(project=request.project)
+        time_interval = ProjectTimeInterval.objects.filter(project=self.request.project)
         return render(request, 'core/cluster-assign.html',
                       {
                           'activity_group': activity_group,
@@ -805,12 +867,24 @@ class BeneficiaryListView(ManagerMixin, ListView):
     model = Beneficiary
     template_name = 'core/beneficiary-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(cluster__project=self.request.project)
+
 
 class BeneficiaryCreateView(ManagerMixin, CreateView):
     model = Beneficiary
     template_name = 'core/beneficiary-form.html'
     form_class = BeneficiaryForm
     success_url = reverse_lazy('beneficiary_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(BeneficiaryCreateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class BeneficiaryDetailView(ManagerMixin, DetailView):
@@ -823,6 +897,12 @@ class BeneficiaryUpdateView(ManagerMixin, UpdateView):
     template_name = 'core/beneficiary-form.html'
     form_class = BeneficiaryForm
     success_url = reverse_lazy('beneficiary_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(BeneficiaryUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class BeneficiaryDeleteView(ManagerMixin, DeleteView):
@@ -880,6 +960,12 @@ class UserRoleListView(ManagerMixin, ListView):
     model = UserRole
     template_name = 'core/userrole-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(project=self.request.project)
+
 
 # class UserRoleCreateView(ManagerMixin, CreateView):
 #     model = UserRole
@@ -890,11 +976,11 @@ class UserRoleListView(ManagerMixin, ListView):
 
 class UserRoleCreateView(ManagerMixin, View):
     def get(self, request, **kwargs):
-        form = UserRoleForm()
+        form = UserRoleForm(project=self.request.project, is_super_admin=self.request.is_super_admin)
         return render(request, 'core/userrole-form.html', {'form': form})
 
     def post(self, request, **kwargs):
-        form = UserRoleForm(request.POST)
+        form = UserRoleForm(request.POST, project=self.request.project, is_super_admin=self.request.is_super_admin)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.save()
@@ -909,21 +995,21 @@ class UserRoleCreateView(ManagerMixin, View):
                     obj.cluster.add(cluster)
 
             # send email to the user
-            # if obj.user.email:
-            #     clusters = obj.cluster.all()
-            #     to_email = obj.user.email
-            #     mail_subject = 'User role assigned.'
-            #     message = render_to_string('core/user_role_email.html', {
-            #         'userrole': obj,
-            #         'clusters': clusters,
-            #         'domain': settings.SITE_URL,
-            #     })
-            #     email = EmailMessage(
-            #         mail_subject, message, to=[to_email]
-            #     )
-            #     email.send()
-            # else:
-            #     pass
+            if obj.user.email:
+                clusters = obj.cluster.all()
+                to_email = obj.user.email
+                mail_subject = 'User role assigned.'
+                message = render_to_string('core/user_role_email.html', {
+                    'userrole': obj,
+                    'clusters': clusters,
+                    'domain': settings.SITE_URL,
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+            else:
+                pass
             return HttpResponseRedirect(reverse('userrole_list'))
         return render(request, 'core/userrole-form.html', {'form':form})
 
@@ -933,6 +1019,12 @@ class UserRoleUpdateView(ManagerMixin, UpdateView):
     template_name = 'core/userrole-form.html'
     form_class = UserRoleForm
     success_url = reverse_lazy('userrole_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(UserRoleUpdateView, self).get_form_kwargs()
+        kwargs['project'] = self.request.project
+        kwargs['is_super_admin'] = self.request.is_super_admin
+        return kwargs
 
 
 class UserRoleDetailView(ManagerMixin, DetailView):
@@ -1009,7 +1101,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 
             order = submission.cluster_activity.activity.order
             if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
+                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
                 # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                 # if aggregations_list:
@@ -1140,7 +1232,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
+                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
                         # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         # if aggregations_list:
@@ -1224,7 +1316,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
 
             order = submission.cluster_activity.activity.order
             if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
+                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
                 # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                 # if aggregations_list:
@@ -1351,7 +1443,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
 
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(cluster_activity__activity__order__lte=order).update(status='approved')
+                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
                         # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         # if aggregations_list:
@@ -1582,11 +1674,11 @@ def get_clusters(request):
     if request.is_ajax():
         municipalities = request.GET.getlist('municipalities[]')
         if municipalities:
-            clusters = Cluster.objects.filter(municipality__id__in=municipalities).distinct()
+            clusters = Cluster.objects.filter(municipality__id__in=municipalities, project=request.project).distinct()
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
         else:
-            clusters = Cluster.objects.all()
+            clusters = Cluster.objects.filter(project=request.project)
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
     else:
@@ -1606,11 +1698,11 @@ def get_activity_group(request):
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
             else:
-                activity_groups = ActivityGroup.objects.all()
+                activity_groups = ActivityGroup.objects.filter(project=request.project)
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
         else:
-            activity_groups = ActivityGroup.objects.all()
+            activity_groups = ActivityGroup.objects.filter(project=request.project)
             activity_groups = serialize("json", activity_groups)
             return HttpResponse(activity_groups)
     else:
@@ -1625,7 +1717,7 @@ def get_activity(request):
             activity = serialize("json", activity)
             return HttpResponse(activity)
         else:
-            activity = Activity.objects.all()
+            activity = Activity.objects.filter(activity_group__project=request.project)
             activity = serialize("json", activity)
             return HttpResponse(activity)
     else:
@@ -1636,17 +1728,23 @@ class ActivityAssignListView(ManagerMixin, ListView):
     model = Activity
     template_name = 'core/activity-assign-list.html'
 
+    def get_queryset(self, *args, **kwargs):
+        if self.request.is_super_admin:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.filter(activity_group__project=self.request.project)
+
 
 def assign_activity(request, *args, **kwargs):
     activity = Activity.objects.get(pk=kwargs.get('pk'))
     if request.method == 'GET':
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity))
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
 
     elif request.method == 'POST':
         activity = Activity.objects.get(pk=kwargs.get('pk'))
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity))
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
         if 'assign' in request.POST:
             cluster = request.POST.getlist('clusters[]')
             for item in cluster:
@@ -1722,7 +1820,7 @@ def edit_submission(request,  id_string, data_id):
     return response
 
 def get_progress(request):
-    types = Beneficiary.objects.values('Type').distinct()
+    types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').distinct()
     progress_data = {}
     categories = []
 
@@ -1828,7 +1926,7 @@ def get_progress(request):
         return JsonResponse(data)
     
     else:
-        selected_districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
+        selected_districts = District.objects.filter(id__in=Beneficiary.objects.filter(cluster__project=request.project).values('district__id').distinct())
         for item in types:
             total_list = []
             for obj in selected_districts:
@@ -1856,7 +1954,7 @@ def get_progress(request):
 
 def get_progress_phase_pie(request):
     project = request.project
-    types = Beneficiary.objects.values('Type').distinct()
+    types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
     construction_phases = {}
 
     checked = [(name, value) for name, value in request.GET.iteritems()]

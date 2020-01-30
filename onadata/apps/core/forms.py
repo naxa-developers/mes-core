@@ -14,6 +14,7 @@ from onadata.apps.logger.models import XForm
 from .models import Project, Output, ActivityGroup, Activity, Cluster, Beneficiary, UserRole, Config, \
     ProjectTimeInterval, Municipality, ActivityAggregate
 import json
+from django.db.models import Q
 
 
 class LoginForm(forms.Form):
@@ -78,6 +79,7 @@ class SignUpForm(UserCreationForm):
 # )
 
 class ProjectForm(forms.ModelForm):
+
     class Meta:
         model = Project
 
@@ -87,13 +89,24 @@ class ProjectForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'placeholder': 'Description', 'class': 'form-control'}),
             'sector': forms.TextInput(attrs={'placeholder': 'Sector', 'class': 'form-control'}),
-            'start_date': forms.TextInput(attrs={'placeholder': 'Start date', 'class': 'form-control', 'type': 'date'}),
-            'end_date': forms.TextInput(attrs={'placeholder': 'End date', 'class': 'form-control', 'type': 'date'}),
+            'start_date': forms.DateInput(attrs={'placeholder': 'Start date', 'class': 'form-control', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'placeholder': 'End date', 'class': 'form-control', 'type': 'date'}),
             'reporting_period': forms.Select(attrs={'class': "custom-select"}),
         }
 
 
 class OutputForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        self.kwargs = kwargs
+        super(OutputForm, self).__init__(*args, **kwargs)
+        if is_super_admin:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.all())
+        else:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.filter(id=project.id))
+    
     class Meta:
         model = Output
         fields = ('name', 'description', 'project')
@@ -110,6 +123,18 @@ class OutputForm(forms.ModelForm):
 
 
 class ActivityGroupForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        self.kwargs = kwargs
+        super(ActivityGroupForm, self).__init__(*args, **kwargs)
+        if is_super_admin:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.all())
+            self.fields['output'].choices = ((output.id, output.name) for output in Output.objects.all())
+        else:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.filter(id=project.id))
+            self.fields['output'].choices = ((output.id, output.name) for output in Output.objects.filter(project=project))
+
     class Meta:
         model = ActivityGroup
         fields = ('name', 'description', 'output', 'project', 'weight')
@@ -153,6 +178,10 @@ class ActivityGroupForm(forms.ModelForm):
                     if self.cleaned_data.get('weight') + weight > 100:
                         raise ValidationError({
                             'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+                else:
+                    if self.cleaned_data.get('weight') > 100:
+                        raise ValidationError({
+                            'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
 
             except ActivityGroup.DoesNotExist:
                 other_activity_groups = ActivityGroup.objects.filter(output=self.cleaned_data.get('output')).aggregate(
@@ -162,6 +191,11 @@ class ActivityGroupForm(forms.ModelForm):
                     if self.cleaned_data.get('weight') + other_activity_groups['weights'] > 100:
                         raise ValidationError({
                             'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+
+                if self.cleaned_data.get('weight') > 100:
+                        raise ValidationError({
+                            'weight': ['The combined weight of activity groups in this output should not exceed 100.']})
+
             return self.cleaned_data
         except KeyError:
             raise ValidationError('error occured')
@@ -170,13 +204,21 @@ class ActivityGroupForm(forms.ModelForm):
 class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
         self.kwargs = kwargs
         super(ActivityForm, self).__init__(*args, **kwargs)
         self.fields['form'].queryset = XForm.objects.all().order_by('title')
         self.fields['form'].label_from_instance = lambda obj: "%s" % (obj.title)
         self.fields["order"].required = True
+
+        if is_super_admin:
+            self.fields['activity_group'].choices = ((ag.id, ag.name) for ag in ActivityGroup.objects.all())
+        else:
+            self.fields['activity_group'].choices = ((ag.id, ag.name) for ag in ActivityGroup.objects.filter(project=project))
+
         try:
             self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=self.instance.activity_group.project)
+
         except:
             self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=project)
 
@@ -278,6 +320,16 @@ class ActivityForm(forms.ModelForm):
 class ClusterForm(forms.ModelForm):
     municipality = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Municipality.objects.all())
 
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        self.kwargs = kwargs
+        super(ClusterForm, self).__init__(*args, **kwargs)
+        if is_super_admin:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.all())
+        else:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.filter(id=project.id))
+    
     class Meta:
         model = Cluster
         fields = ('name', 'municipality', 'ward', 'project')
@@ -293,7 +345,15 @@ class ClusterForm(forms.ModelForm):
 class BeneficiaryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        project = kwargs.pop('project', None)
         super(BeneficiaryForm, self).__init__(*args, **kwargs)
+
+        if is_super_admin:
+            self.fields['cluster'].choices = ((cluster.id, cluster.name) for cluster in Cluster.objects.all())
+        else:
+            self.fields['cluster'].choices = ((cluster.id, cluster.name) for cluster in Cluster.objects.filter(project=project))
+
         if not self.fields['location'].initial:
             self.fields['location'].initial = Point(0, 0, srid=4326)
 
@@ -340,6 +400,19 @@ class BeneficiaryForm(forms.ModelForm):
 
 class UserRoleForm(forms.ModelForm):
     cluster = forms.ModelMultipleChoiceField(required=False, queryset=Cluster.objects.all(), widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop('project', None)
+        is_super_admin = kwargs.pop('is_super_admin', False)
+        super(UserRoleForm, self).__init__(*args, **kwargs)
+        if is_super_admin:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.all())
+            self.fields['cluster'].queryset = Cluster.objects.all()
+            self.fields['user'].choices = ((user.id, user.username) for user in User.objects.all())
+        else:
+            self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.filter(id=project.id))
+            self.fields['cluster'].queryset = Cluster.objects.filter(project=project)
+            self.fields['user'].choices = ((user.id, user.username) for user in User.objects.filter(Q(user_roles__isnull=True)|Q(user_roles__project=project)))
 
     class Meta:
         model = UserRole
