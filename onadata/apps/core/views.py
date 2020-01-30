@@ -420,7 +420,7 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
 
         beneficiaries = get_beneficiaries(districts, munis, clusters, b_types, project)
 
-        ag = ActivityGroup.objects.filter(weight__gt=0, project=project).prefetch_related('activity')
+        ag = ActivityGroup.objects.filter(project=project).prefetch_related('activity')
 
 
         
