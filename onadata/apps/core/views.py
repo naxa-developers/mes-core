@@ -1286,7 +1286,16 @@ class SubmissionListView(LoginRequiredMixin, View):
 class SubNotificationListView(LoginRequiredMixin, View):
 
     def get(self, request, **kwargs):
-        submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
+        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=self.request.project).order_by('instance__date_created')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(submissions, 200)
+        
+        try:
+            submissions = paginator.page(page)
+        except PageNotAnInteger:
+            submissions = paginator.page(1)
+        except EmptyPage:
+            submissions = paginator.page(paginator.num_pages)
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
     def post(self, request, **kwargs):
