@@ -420,7 +420,8 @@ class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
 
         beneficiaries = get_beneficiaries(districts, munis, clusters, b_types, project)
 
-        ag = ActivityGroup.objects.filter(weight__gte=0, project=project)
+        ag = ActivityGroup.objects.filter(weight__gt=0, project=project).prefetch_related('activity')
+
 
         
         page = request.GET.get('page', 1)
@@ -1115,7 +1116,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 
             order = submission.cluster_activity.activity.order
             if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
+                Submission.objects.filter(cluster_activity__activity__order__lte=order, beneficiary__cluster__project=self.request.project).update(status='approved')
                 # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                 # if aggregations_list:
@@ -1173,8 +1174,8 @@ class SubmissionListView(LoginRequiredMixin, View):
                 email.send()
 
         elif 'approve-all' in request.POST:
-            Submission.objects.filter(project=self.request.project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(project=self.request.project, status="approved")
+            Submission.objects.filter(beneficiary__cluster__project=self.request.project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=self.request.project, status="approved")
 
             if aggregations_list:
                 for aggregations in aggregations_list:
@@ -1246,7 +1247,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
+                        Submission.objects.filter(beneficiary__cluster__project=self.request.project, cluster_activity__activity__order__lte=order).update(status='approved')
                         # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         # if aggregations_list:
@@ -1286,7 +1287,16 @@ class SubmissionListView(LoginRequiredMixin, View):
 class SubNotificationListView(LoginRequiredMixin, View):
 
     def get(self, request, **kwargs):
-        submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
+        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=self.request.project).order_by('instance__date_created')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(submissions, 200)
+        
+        try:
+            submissions = paginator.page(page)
+        except PageNotAnInteger:
+            submissions = paginator.page(1)
+        except EmptyPage:
+            submissions = paginator.page(paginator.num_pages)
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
     def post(self, request, **kwargs):
@@ -1387,8 +1397,8 @@ class SubNotificationListView(LoginRequiredMixin, View):
                 )
                 email.send()
         elif 'approve-all' in request.POST:
-            Submission.objects.filter(status='pending').update(status='approved')
-            submissions = Submission.objects.filter(project=self.request.project, status="approved")
+            Submission.objects.filter(beneficiary__cluster__project=self.request.project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=self.request.project, status="approved")
 
             if aggregations_list:
                 for aggregations in aggregations_list:
@@ -1491,6 +1501,15 @@ class SubNotificationListView(LoginRequiredMixin, View):
                         #             aggregations.save()
 
         submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
+        page = request.GET.get('page', 1)
+        paginator = Paginator(submissions, 200)
+        
+        try:
+            submissions = paginator.page(page)
+        except PageNotAnInteger:
+            submissions = paginator.page(1)
+        except EmptyPage:
+            submissions = paginator.page(paginator.num_pages)
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
 class ConfigUpdateView(UpdateView):

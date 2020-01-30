@@ -13,7 +13,7 @@ $(function(){
 //		"scrollX": "1000px",
 		"scrollCollapse": true,
 		'iDisplayLength': 25,
-		
+		'bPaginate': false,
 	});
 });
 

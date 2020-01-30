@@ -170,7 +170,7 @@ def get_activity_count(obj):
 @register.filter
 def check_activity_progress(obj, beneficiary=None):
     try:
-        higher_activities = Activity.objects.filter(order__gte=obj.order, project=obj.activity_group.project)
+        higher_activities = Activity.objects.filter(order__gte=obj.order, activity_group__project=obj.activity_group.project)
         if higher_activities:
             for item in higher_activities:
                 cag = ClusterAG.objects.filter(cluster=beneficiary.cluster, activity_group=item.activity_group)
