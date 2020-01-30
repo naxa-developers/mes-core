@@ -79,8 +79,22 @@ class HomeView(LoginRequiredMixin, TemplateView):
     def get(self, request):
         if self.request.group.name in ['project-coordinator', 'social-mobilizer']:
             return HttpResponseRedirect(reverse('user_cluster_list', kwargs={'pk': self.request.user.pk}))
-        elif self.request.group.name in ['project-manager', 'super-admin', 'project-management-unit']:
+        elif self.request.group.name in ['project-manager', 'project-management-unit']:
             
+            output_count = Output.objects.filter(project=self.request.project).count()
+            activity_count = Activity.objects.filter(activity_group__project=self.request.project).count()
+            ag_count = ActivityGroup.objects.filter(project=self.request.project).count()     
+            cluster = Cluster.objects.filter(project=self.request.project).count()    
+            beneficiary = Beneficiary.objects.filter(cluster__project=self.request.project).count()   
+            context = {
+                'output_count': output_count,
+                'activity_count': activity_count,
+                'ag_count': ag_count,
+                'cluster': cluster,
+                'beneficiary': beneficiary
+            }
+            return render(request, self.template_name, context)
+        elif self.request.group.name in ['super-admin', ]:
             output_count = Output.objects.all().count()
             activity_count = Activity.objects.all().count()
             ag_count = ActivityGroup.objects.all().count()     
