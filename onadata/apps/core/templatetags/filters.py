@@ -170,43 +170,37 @@ def get_activity_count(obj):
 @register.filter
 def check_activity_progress(obj, beneficiary=None):
     try:
-        higher_activities = Activity.objects.filter(order__gte=obj.order)
+        higher_activities = Activity.objects.filter(order__gte=obj.order, activity_group__project=obj.activity_group.project)
         if higher_activities:
             for item in higher_activities:
                 cag = ClusterAG.objects.filter(cluster=beneficiary.cluster, activity_group=item.activity_group)
                 ca = ClusterA.objects.filter(activity=item, cag__in=cag)
                 if beneficiary is not None:
-                    submissions = Submission.objects.filter(cluster_activity__in=ca, beneficiary=beneficiary)
-                    if submissions:
-                        for submission in submissions:
-                            if submission.status == 'approved':
-                                return True
+                    if Submission.objects.filter(cluster_activity__in=ca, beneficiary=beneficiary, status="approved").exists():
+                        return True
+                    else:
                         return False
 
                 else:
                     submissions = Submission.objects.filter(cluster_activity__in=ca)
-                    if submissions:
-                        for submission in submissions:
-                            if not submission.status == 'approved':
-                                return False
+                    if Submission.objects.filter(cluster_activity__in=ca, status="approved").exists():
                         return True
+                    else:
+                        return False
+
         cag = ClusterAG.objects.filter(cluster=beneficiary.cluster, activity_group=obj.activity_group)
         ca = ClusterA.objects.filter(activity=obj, cag__in=cag)
         if beneficiary is not None:
-            submissions = Submission.objects.filter(cluster_activity__in=ca, beneficiary=beneficiary)
-            if submissions:
-                for submission in submissions:
-                    if submission.status == 'approved':
-                        return True
+            if Submission.objects.filter(cluster_activity__in=ca, beneficiary=beneficiary, status="approved").exists():
+                return True
+            else:
                 return False
 
         else:
-            submissions = Submission.objects.filter(cluster_activity__in=ca)
-            if submissions:
-                for submission in submissions:
-                    if not submission.status == 'approved':
-                       return False
+            if Submission.objects.filter(cluster_activity__in=ca, status="approved").exists():
                 return True
+            else:
+                return False
     except:
         return False
 
