@@ -6,6 +6,8 @@ from django.core.files.storage import get_storage_class
 from onadata.apps.logger.xform_instance_parser import get_uuid_from_xml, clean_and_parse_xml
 from xml.dom import Node
 
+from django.db import transaction, connection
+import psycopg2
 
 # divide a datetime range into intervals
 def get_interval(start, end, interval):
@@ -527,3 +529,11 @@ def inject_instanceid(xml_str, uuid):
         uuid_tag.appendChild(text_node)
         return xml.toxml()
     return xml_str
+
+
+def create_db_table(table_name, args):    
+    with connection.cursor() as cursor:
+        command = "CREATE TABLE {} (id SERIAL PRIMARY KEY)".format(table_name)
+        cursor.execute(command)
+        for key, value in args.items():
+            command = "ALTER TABLE {0} ADD COLUMN {1} {2}".format(table_name, key, value)
