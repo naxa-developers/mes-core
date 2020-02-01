@@ -144,7 +144,33 @@
                     {% if form.order.errors %}
                     <font color="crimson">{{ form.order.errors }}</font>
                     {% endif %}
-                   
+
+                    <div class="form-group">
+                        <label>Is beneficiary registration activity?</label>
+                        {{ form.is_registration }}
+                    </div>
+                    {% if form.is_registration.errors %}
+                    <font color="crimson">{{ form.is_registration.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>Is beneficiary entry activity?</label>
+                        {{ form.is_entry }}
+                    </div>
+                    {% if form.is_entry.errors %}
+                    <font color="crimson">{{ form.is_entry.errors }}</font>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>Select a registration activity(select only if "Is beneficiary entry activity?" is ticked)</label>
+                        <div class="select-option">
+                            {{ form.entry_form }}
+                        </div>
+                    </div>
+                    {% if form.entry_form.errors %}
+                    <font color="crimson">{{ form.entry_form.errors }}</font>
+                    {% endif %}
+
                     <button type="submit" class="btn btn-xs btn-primary">Submit</button>
                 </form>
             </div>
