@@ -629,7 +629,7 @@ class ActivityUpdateView(ManagerMixin, UpdateView):
     success_url = reverse_lazy('activity_list')
 
     def get_form_kwargs(self):
-        kwargs = super(ActivityCreateView, self).get_form_kwargs()
+        kwargs = super(ActivityUpdateView, self).get_form_kwargs()
         kwargs['project'] = self.request.project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
