@@ -169,6 +169,16 @@
                     </div>
                     {% if form.entry_form.errors %}
                     <font color="crimson">{{ form.entry_form.errors }}</font>
+                    {% endif %}x
+
+                    <div class="form-group" id="beneficiary_group">
+                        <label>Select a Beneficiary group type</label>
+                        <div class="select-option">
+                            {{ form.entry_form }}
+                        </div>
+                    </div>
+                    {% if form.entry_form.errors %}
+                    <font color="crimson">{{ form.entry_form.errors }}</font>
                     {% endif %}
 
                     <button type="submit" class="btn btn-xs btn-primary">Submit</button>
@@ -184,19 +194,24 @@
        if ($('#id_beneficiary_level').is(":checked")){
             $('#target_number').hide();
             $('#target_unit').hide();
+            $("#beneficiary_group").show();
+
        }
         else{
             $('#target_number').show();
             $('#target_unit').show();
+            $("#beneficiary_group").hide();
         }
        $('#id_beneficiary_level').change(function(){
           if ($(this).is(":checked")){
             $('#target_number').hide();
             $('#target_unit').hide();
+            $("#beneficiary_group").show();
           }
           else{
             $('#target_number').show();
             $('#target_unit').show();
+            $("#beneficiary_group").hide();
           }
        });
     });
