@@ -559,7 +559,7 @@ def parse_repeat(prev_groupname, g_object):
             question = g_question + '/' + first_children['name']
             group_questions.append({'question': question, "label": first_children.get("label", question), "type":first_children.get("type", '')})
 
-    return group_questions
+    return group_questions, g_question
 
 
 def parse_question(ques_json):
@@ -572,25 +572,49 @@ def parse_question(ques_json):
         if question['type'] == 'group':
             pass
         if question['type'] == 'repeat':
-            repeat_questions = parse_repeat("", question)
+            repeat_questions, group_label = parse_repeat("", question)
             for item in repeat_questions:
                 questions.append(item)
-    return questions
+    return questions, group_label
         
 
-def get_arguments(submission):
+def get_question_answer(submission):
     form = XForm.objects.get(id=submission.cluster_activity.activity.form.id)
     activity_group = submission.cluster_activity.cag.activity_group
-    questions = parse_question(form.json)
-    for question in questions:
-        if question['question'] in submission.instance.json:
-            print(submission.instance.json[question['question']])
-    return activity_group
+    questions, group_label = parse_question(form.json)
+    data = []
+    if group_label in submission.instance.json:
+        for item in submission.instance.json[group_label]:
+            ques_ans = []
+            for question in questions:  
+                if question['question'] in  item:
+                    row = {'question': question['label'], 'answer': item[question['question']]}
+                    ques_ans.append(row)
+            data.append(ques_ans)
+            
+    return data
+
+
+def get_arguments(question_answer):
+    arg = {}
+    for single in question_answer:
+        for item in single:
+            if item['answer'] == "text":
+                column_type = "varchar(255)"
+            elif item['answer'] == "select":
+                column_type = "boolean"
+            elif item['answer'] == "number":
+                column_type = 'int'
+            else:
+                column_name = item['answer']
+        arg[column_name] = column_type
+    return arg
 
 
 def create_db_table(submission): 
     if check_registration_submission(submission):
-        args = get_arguments(submission)
+        data = get_question_answer(submission)
+        args = get_arguments(data)
         table_name = submission.cluster_activity.cag.activity_group.name
         with connection.cursor() as cursor:
             command = "CREATE TABLE {} (id SERIAL PRIMARY KEY)".format(table_name)
