@@ -9,6 +9,9 @@ from xml.dom import Node
 from django.db import transaction, connection
 import psycopg2
 
+from onadata.apps.logger.models import XForm
+import json
+
 # divide a datetime range into intervals
 def get_interval(start, end, interval):
     start = str(start).split('+')[0]
@@ -531,9 +534,68 @@ def inject_instanceid(xml_str, uuid):
     return xml_str
 
 
-def create_db_table(table_name, args):    
-    with connection.cursor() as cursor:
-        command = "CREATE TABLE {} (id SERIAL PRIMARY KEY)".format(table_name)
-        cursor.execute(command)
-        for key, value in args.items():
-            command = "ALTER TABLE {0} ADD COLUMN {1} {2}".format(table_name, key, value)
+def check_registration_submission(submission):
+    if submission.cluster_activity.activity.is_registration == True:
+        return True
+    else:
+        return False
+
+
+def check_beneficiary_entry_submission(submission):
+    if submission.cluster_activity.activity.is_entry:
+        return True
+    else:
+        return False
+
+
+def parse_repeat(prev_groupname, g_object):
+    group_questions = []
+    g_question = prev_groupname + g_object['name']
+
+    for first_children in g_object['children']:
+        question_type = first_children['type']
+
+        if question_type == "text":
+            question = g_question + '/' + first_children['name']
+            group_questions.append({'question': question, "label": first_children.get("label", question), "type":first_children.get("type", '')})
+
+    return group_questions
+
+
+def parse_question(ques_json):
+    questions = []
+    question_json = json.loads(ques_json)
+
+    for question in question_json['children']:
+        if question['name'] == 'meta':
+            pass
+        if question['type'] == 'group':
+            pass
+        if question['type'] == 'repeat':
+            repeat_questions = parse_repeat("", question)
+            for item in repeat_questions:
+                questions.append(item)
+    return questions
+        
+
+def get_arguments(submission):
+    form = XForm.objects.get(id=submission.cluster_activity.activity.form.id)
+    activity_group = submission.cluster_activity.cag.activity_group
+    questions = parse_question(form.json)
+    for question in questions:
+        if question['question'] in submission.instance.json:
+            print(submission.instance.json[question['question']])
+    return activity_group
+
+
+def create_db_table(submission): 
+    if check_registration_submission(submission):
+        args = get_arguments(submission)
+        table_name = submission.cluster_activity.cag.activity_group.name
+        with connection.cursor() as cursor:
+            command = "CREATE TABLE {} (id SERIAL PRIMARY KEY)".format(table_name)
+            cursor.execute(command)
+            for key, value in args.items():
+                command = "ALTER TABLE {0} ADD COLUMN {1} {2}".format(table_name, key, value)
+                cursor.execute(command)
+        
