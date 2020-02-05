@@ -179,10 +179,82 @@ section.content {
     background: $color-bg;
     position: relative;
     margin: 20px 70px 20px 260px;
-    box-shadow: 0 0 16px rgba(41, 42, 51, 0.06), 0 6px 20px rgba(41, 42, 51, 0.02)
+    box-shadow: 0 0 16px rgba(41, 42, 51, 0.06), 0 6px 20px rgba(41, 42, 51, 0.02);
 }
 
 
+//new dashboard css for heading and text
+//sidebarg
+.sidebar-title{
+    font-size: .938rem;
+    font-weight: 700;
+    color: $color-black;
+    line-height: 1.5rem;
+    font-family: $opensans;
+}
+.sidebar-link{
+    font-size: .938rem;
+    font-weight: 400;
+    color: $color-black;
+    line-height: 1.5rem;
+}
+.body-span{
+    font-size: .75rem;
+    font-weight: 600;
+    color: $color-bodyspan;
+    line-height: .938rem;
+}
+.body-span-reg{
+    font-size: .75rem !important;
+    font-weight: 400 !important;
+    color: $color-bodyspan;
+    line-height: 1.813rem;
+}
+.body-span1{
+    font-size: .75rem !important;
+    font-weight: 600 !important;
+    color: $color-bodyspan1;
+    line-height: 1.813rem;
+}
+.body-span2{
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    line-height: 1.25rem;
+}
+.body-smspan{
+    font-size: .625rem;
+    font-weight: 400;
+    color: $color-smspan;
+    line-height: .938rem;
+}
+.body_subtitle{
+    font-size: .875rem;
+    font-weight: 400;
+    color: $color-spantitle;
+    line-height: 2.125rem;
+    text-transform: capitalize;
+}
+.body_title{
+    font-size: 1rem;
+    font-weight: 700;
+    color: $color-bodyspan;
+    line-height: .625rem;
+}
+.h2-title{
+    font-size: 1.313rem;
+    font-weight: 400;
+    color: $color-spantitle;
+    line-height: 1.875rem;
+    font-family: $opensans;
+    text-transform: capitalize;
+}
+.span-numdata{
+    font-size: .75rem;
+    line-height: .813rem;
+    font-weight: 700;
+    font-family: $opensans;
+    color: $color-numdata;
+}
 
 
 

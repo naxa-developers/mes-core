@@ -21,12 +21,12 @@
                     justify-content: center;
                     align-items: center;
                     margin:0 auto;
-                    background-color: rgba($color-orange, 0.7);
+                    background-color: $color-blue;
                     @include radius50;
-                    -ms-box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
-                    -moz-box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
-                    -webkit-box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
-                    box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
+                    -ms-box-shadow: 0 1px 6px 0 rgba($color-blue, 0.4);
+                    -moz-box-shadow: 0 1px 6px 0 rgba($color-blue, 0.4);
+                    -webkit-box-shadow: 0 1px 6px 0 rgba($color-blue, 0.4);
+                    box-shadow: 0 1px 6px 0 rgba($color-blue, 0.4);
                     @include anim05;
                     i{
                         font-size:2.5rem;
@@ -71,14 +71,17 @@
                 }
             }
         }
-        
     }
     
 }
 
 .project-section{
     margin-bottom: 2rem;
+    &.project-section-mod{
+        margin-bottom: 0;
+    }
     .card{
+        @include radius5;
         background-color: $color-light;
         .card-header{
             border-bottom: 1px solid rgba($color-primary, 0.2);
@@ -106,8 +109,137 @@
             }
         }
     }
+    &.project-section-mod{
+        .project-list{
+            .card-body{
+                ul.card-body-right{
+                    li{
+                        @include display-flex(flex);
+                        @include justify-content-end;
+                    }
+                }
+            }
+        }
+    }
 }
 .map-view{
+    &.map-view-mod{
+        margin-top: 1.375rem;
+        .card{
+            background-color: rgba($color-light, 0);
+            .card-body{
+                padding: 0;
+            }
+        }
+        .card.card-widget{
+            .body{
+                background-color: $color-light;
+                .card-content{
+                    .card-icon{
+                        @include animate;
+                        @include radius50;
+                        background-color: rgba($color-light, 0);
+                        @include boxshadow_all(0 0 0 0 rgba($color-light, 0));
+                        i{
+                            @include animate;
+                            font-size: 1.25rem;
+                            font-weight: 400;
+                            color: $color-black;
+                        }
+                    }
+                    .card-text{
+                        span{
+                            display: block;
+                        }
+                    }
+                    &.card-content-blue{
+                        .card-icon{
+                            border: 1px solid $color-bluelght;
+                        }
+                        .card-text{
+                            .body-span2{
+                                color: $color-bluelght;
+                            }
+                        }
+                    }
+                    &.card-content-green{
+                        .card-icon{
+                            border: 1px solid $color-greenlght;
+                        }
+                        .card-text{
+                            .body-span2{
+                                color: $color-greenlght;
+                            }
+                        }
+                    }
+                    &.card-content-purple{
+                        .card-icon{
+                            border: 1px solid $color-purple;
+                        }
+                        .card-text{
+                            .body-span2{
+                                color: $color-purple;
+                            }
+                        }
+                    }
+                    &.card-content-yellow{
+                        .card-icon{
+                            border: 1px solid $color-yellowlght;
+                        }
+                        .card-text{
+                            .body-span2{
+                                color: $color-yellowlght;
+                            }
+                        }
+                    }
+                }
+            }
+            &:hover{
+                .body{
+                    .card-content{
+                        background-color: rgba($color-light, 0) !important;
+                        &.card-content-blue{
+                            .card-icon{
+                                i{
+                                    color: $color-bluelght;
+                                }
+                                background-color: lighten($color-bluelght, 30%);
+                                @include boxshadow_all(0 1px 13px 0 rgba($color-bluelght, 0.4));
+                            }
+                        }
+                        &.card-content-green{
+                            .card-icon{
+                                i{
+                                    color: $color-greenlght;
+                                }
+                                background-color: lighten($color-greenlght, 40%);
+                                @include boxshadow_all(0 1px 13px 0 rgba($color-greenlght, 0.4));
+                            }
+                        }
+                        &.card-content-purple{
+                            .card-icon{
+                                i{
+                                    color: $color-purple;
+                                }
+                                background-color: lighten($color-purple, 16%);
+                                @include boxshadow_all(0 1px 13px 0 rgba($color-purple, 0.4));
+                            }
+                        }
+                        &.card-content-yellow{
+                            i{
+                                color: $color-yellowlght;
+                            }
+                            .card-icon{
+                                background-color: lighten($color-yellowlght, 20%);
+                                @include boxshadow_all(0 1px 13px 0 rgba($color-yellowlght, 0.4));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+       
+    }
     .card.card-widget{
         @include anim05;
         transform: translateZ(0);
@@ -127,12 +259,12 @@
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
-                    background-color: rgba($color-orange, 0.7);
+                    background-color: $color-blue;
                     @include radius50;
-                    -ms-box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
-                    -moz-box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
-                    -webkit-box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
-                    box-shadow: 0 1px 6px 0 rgba($color-orange, 0.4);
+                    -ms-box-shadow: 0 1px 6px 0 rgba($color-blue, 0.4);
+                    -moz-box-shadow: 0 1px 6px 0 rgba($color-blue, 0.4);
+                    -webkit-box-shadow: 0 1px 6px 0 rgba($color-blue, 0.4);
+                    box-shadow: 0 1px 6px 0 rgba($color-blue, 0.4);
                     @include anim05;
                     margin-right: 1rem;
                     i{
@@ -167,7 +299,7 @@
                         -moz-box-shadow: 0 1px 13px 0 rgba($color-secondary, 0.4);
                         -webkit-box-shadow: 0 1px 13px 0 rgba($color-secondary, 0.4);
                         box-shadow: 0 1px 13px 0 rgba($color-secondary, 0.4);
-                        background-color: $color-secondary;
+                        background-color: $color-pink;
                     }
                     .card-text{
                         h5{
@@ -179,8 +311,9 @@
         }
         
     }
+    
 }
-.graph{
+.graph, .info-graph-section{
     .graph-warpper{
         background-color:$color-white;
     }

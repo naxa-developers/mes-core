@@ -73,6 +73,10 @@ def logout_view(request):
     return HttpResponseRedirect('/core/sign-in/')
 
 
+class DashboardNewView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/dashboard-1new.html'
+
+
 class HomeView(LoginRequiredMixin, TemplateView):    
     template_name = 'core/index.html'
 
@@ -1409,7 +1413,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
                     submission.status = 'approved'
                     submission.save()
                     created = create_db_table(submission)
-                    
+
                     if aggregations_list:
                         for aggregations in aggregations_list:
                             aggregation_questions = aggregations.aggregation_fields
