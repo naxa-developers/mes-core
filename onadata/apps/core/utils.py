@@ -559,6 +559,10 @@ def parse_repeat(prev_groupname, g_object):
             question = g_question + '/' + first_children['name']
             group_questions.append({'question': question, "label": first_children.get("label", question), "type":first_children.get("type", '')})
 
+        elif question_type == "select one":
+            question = g_question + '/' + first_children['name']
+            group_questions.append({'question': question, "label": first_children.get("label", question), "type":first_children.get("type", '')})
+
     return group_questions, g_question
 
 
@@ -602,7 +606,7 @@ def get_arguments(question_answer):
             if item['answer'] == "text":
                 column_type = "varchar(255)"
             elif item['answer'] == "select":
-                column_type = "boolean"
+                column_type = "bool"
             elif item['answer'] == "number":
                 column_type = 'int'
             else:
