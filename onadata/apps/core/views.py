@@ -62,7 +62,7 @@ from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, Proje
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
 from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, get_progress_data, \
-    get_form_location_label, image_urls_dict, inject_instanceid
+    get_form_location_label, image_urls_dict, inject_instanceid, create_db_table
 
 from onadata.libs.utils.viewer_tools import _get_form_url
 
@@ -1084,7 +1084,7 @@ class SubmissionListView(LoginRequiredMixin, View):
             submission.status = 'approved'
             submission.save()
             
-
+            created = create_db_table(submission)
             if aggregations_list:
                 for aggregations in aggregations_list:
                     aggregation_questions = aggregations.aggregation_fields
@@ -1184,6 +1184,7 @@ class SubmissionListView(LoginRequiredMixin, View):
                     submission = Submission.objects.get(id=int(item))
                     submission.status = 'approved'
                     submission.save()
+                    created = create_db_table(submission)
                     
                     if aggregations_list:
                         for aggregations in aggregations_list:
@@ -1278,6 +1279,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
             submission = Submission.objects.get(pk=sub_id)
             submission.status = 'approved'
             submission.save()
+            created = create_db_table(submission)
 
             if aggregations_list:
                 for aggregations in aggregations_list:
@@ -1406,6 +1408,8 @@ class SubNotificationListView(LoginRequiredMixin, View):
                     submission = Submission.objects.get(id=int(item))
                     submission.status = 'approved'
                     submission.save()
+                    created = create_db_table(submission)
+                    
                     if aggregations_list:
                         for aggregations in aggregations_list:
                             aggregation_questions = aggregations.aggregation_fields

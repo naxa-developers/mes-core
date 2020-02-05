@@ -584,7 +584,6 @@ def parse_question(ques_json):
 
 def get_question_answer(submission):
     form = XForm.objects.get(id=submission.cluster_activity.activity.form.id)
-    activity_group = submission.cluster_activity.cag.activity_group
     questions, group_label = parse_question(form.json)
     data = []
     if group_label in submission.instance.json:
@@ -594,8 +593,7 @@ def get_question_answer(submission):
                 if question['question'] in  item:
                     row = {'question': question['label'], 'answer': item[question['question']]}
                     ques_ans.append(row)
-            data.append(ques_ans)
-            
+            data.append(ques_ans) 
     return data
 
 
@@ -626,4 +624,7 @@ def create_db_table(submission):
             for key, value in args.items():
                 command = "ALTER TABLE {0} ADD COLUMN {1} {2}".format(table_name, key, value)
                 cursor.execute(command)
+        return True
+    else:
+        return False
         
