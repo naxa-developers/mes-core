@@ -103,7 +103,7 @@ Highcharts.chart('radial-chart', {
             color: Highcharts.getOptions().colors[0],
             radius: '112%',
             innerRadius: '98%',
-            y: 65
+            y: 10
         }]
     }, {
         name: 'Physical Construction Stage',
@@ -111,7 +111,7 @@ Highcharts.chart('radial-chart', {
             color: Highcharts.getOptions().colors[1],
             radius: '87%',
             innerRadius: '73%',
-            y: 55
+            y: 25
         }]
     }, {
         name: 'Pre-Construction Stage',
@@ -119,7 +119,7 @@ Highcharts.chart('radial-chart', {
             color: Highcharts.getOptions().colors[2],
             radius: '62%',
             innerRadius: '48%',
-            y: 30
+            y: 65
         }]
     }]
 });

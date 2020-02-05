@@ -1,7 +1,9 @@
 {% extends 'core/base.html' %}
 {% block content %}
+{% load static %}
+{% load filters %}
 
-<div class="page-header">
+<!-- <div class="page-header">
     <div class="page-header-wrap">
         <div class="right-nav">
             <div class="dropdown">
@@ -26,7 +28,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Main Content -->
 
@@ -43,16 +45,16 @@
                     <div class="row">
                         <div class="col-md-6">
                             <ul class="card-body-left">
-                                <li><label class="body-span1">Name :</label><span class="body-span-reg">Practical Action - Monitoring and Evaluation</span></li>
-                                <li><label class="body-span1">Project Manager :</label><span class="body-span-reg">Manish</span></li>
-                                <li><label class="body-span1">reporting period :</label><span class="body-span-reg">Quarterly</span></li>
+                                <li><label class="body-span1">Name :</label><span class="body-span-reg">{{ request.project.name }}</span></li>
+                                <li><label class="body-span1">Project Manager :</label><span class="body-span-reg">{{ request.project|get_project_manager|title }}</span></li>
+                                <li><label class="body-span1">reporting Period :</label><span class="body-span-reg">{{ request.project.get_reporting_period_display }}</span></li>
                             </ul>
                         </div>
 
                         <div class="col-md-6">
                             <ul class="card-body-right">
-                                <li><label class="body-span1">End date :</label><span class="body-span-reg">Feb 28,2019</span></li>
-                                <li><label class="body-span1">reporting period :</label><span class="body-span-reg">Nov 29,2021</span></li>
+                                <li><label class="body-span1">Start Date :</label><span class="body-span-reg">{{ request.project.start_date|date }}</span></li>
+                                <li><label class="body-span1">End Date :</label><span class="body-span-reg">{{ request.project.end_date|date }}</span></li>
                             </ul> 
                         </div>
                     </div>
@@ -68,13 +70,13 @@
                         <div class="col-md-3">
                             <div class="card card-widget">
                                 <div class="body">
-                                    <a href="output-form.html">
+                                    <a href="{% url 'output_list' %}">
                                         <div class="card-content card-content-blue">
                                             <div class="card-icon">
                                                 <i class="la la-signal"></i>
                                             </div>
                                             <div class="card-text">
-                                                <span class="body-span2">4</span>
+                                                <span class="body-span2">{{ request.project.output.count }}</span>
                                                 <span class="body-span-reg">Output</span>
                                             </div>
                                         </div>
@@ -86,13 +88,13 @@
                         <div class="col-md-3">
                             <div class="card card-widget ">
                                 <div class="body">
-                                    <a href="#">
+                                    <a href="{% url 'activity_list' %}">
                                         <div class="card-content card-content-purple">
                                             <div class="card-icon">
                                                 <i class="la la-line-chart"></i>
                                             </div>
                                             <div class="card-text">
-                                                <span class="body-span2">29</span>
+                                                <span class="body-span2">{{ activity_count }}</span>
                                                 <span class="body-span-reg">Actvities</span>
                                             </div>
                                         </div>
@@ -104,13 +106,13 @@
                         <div class="col-md-3 ">
                             <div class="card card-widget">
                                 <div class="body">
-                                    <a href="#">
+                                    <a href="{% url 'cluster_list' %}">
                                         <div class="card-content card-content-green">
                                             <div class="card-icon">
                                                 <i class="la la-transgender-alt"></i>
                                             </div>
                                             <div class="card-text">
-                                                <span class="body-span2">37</span>
+                                                <span class="body-span2">{{ request.project.cluster.count }}</span>
                                                 <span class="body-span-reg">Cluster</span>
                                             </div>
                                         </div>
@@ -122,13 +124,13 @@
                         <div class="col-lg-3">
                             <div class="card card-widget">
                                 <div class="body">
-                                    <a href="#">
+                                    <a href="{% url 'beneficiary_list' %}">
                                         <div class="card-content card-content-yellow">
                                             <div class="card-icon">
                                                 <i class="la la-sellsy"></i>
                                             </div>
                                             <div class="card-text">
-                                                <span class="body-span2">1517</span>
+                                                <span class="body-span2">{{ beneficiary_count }}</span>
                                                 <span class="body-span-reg">Benificiaries</span>
                                             </div>
                                         </div>
@@ -372,4 +374,8 @@
        
     </div>
 </section>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/c3.bundle.js' %}"></script>
+<script src="{% static 'js/c3.js' %}"></script>
 {% endblock %}

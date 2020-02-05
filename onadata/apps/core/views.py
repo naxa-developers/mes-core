@@ -73,10 +73,6 @@ def logout_view(request):
     return HttpResponseRedirect('/core/sign-in/')
 
 
-class DashboardNewView(LoginRequiredMixin, TemplateView):
-    template_name = 'core/dashboard-1new.html'
-
-
 class HomeView(LoginRequiredMixin, TemplateView):    
     template_name = 'core/index.html'
 
@@ -287,6 +283,18 @@ class ForgotView(TemplateView):
 
 class ErrorView(TemplateView):
     template_name = 'core/404.html'
+
+
+class DashboardNewView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/dashboard-1new.html'
+
+    def get(self, request):
+        project = request.project
+        beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
+        activity_count = Activity.objects.filter(activity_group__project=project).count()
+
+        return render(request, self.template_name, {'activity_count': activity_count, 'beneficiary_count': beneficiary_count})
+
 
 
 class Dashboard1View(LoginRequiredMixin, TemplateView):
@@ -1831,135 +1839,146 @@ def edit_submission(request,  id_string, data_id):
 
 def get_progress(request):
     types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').distinct()
-    progress_data = {}
+    progress_data = []
     categories = []
-
-    checked = [(name, value) for name, value in request.GET.iteritems()]
-    clusters = []
-    select_districts = []
-    munis = []
-    for item in checked:
-        if item[0].startswith('cl'):
-            clusters.append(int(item[0].split("_")[1]))
-
-        if item[0].startswith('mun'):
-            munis.append(int(item[0].split("_")[1]))
-
-        if item[0].startswith('dist'):
-            select_districts.append(int(item[0].split("_")[1]))
+    project=request.project
     
-    if clusters:
-        # for cluster progress bar data
-        # gives the data of the volume of beneficiaries that have completed all the activities as per the type of beneficiaries
-        # increase by 1 if all the activities have been completed(all submissions are approved)
-        
-        selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
-        for item in types:
-            total_list = []
-            for obj in selected_clusters:
-                beneficiary = Beneficiary.objects.filter(cluster=obj, Type=item['Type'])
-                beneficiary_progress = 0
-                for obj in beneficiary:
-                    if Submission.objects.filter(beneficiary=obj).exists():
-                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-                            'beneficiary__Type'). \
-                            annotate(progress=Sum('cluster_activity__activity__weight'))
-                        for submission in submissions:
-                            beneficiary_progress += submission['progress']
-                    else:
-                        pass
-                try:
-                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-                except Exception:
-                    total_list.append(beneficiary_progress/1)
-            progress_data[str(item['Type'])] = total_list
-        for item in selected_clusters:
-            categories.append(str(item.name))
-        
-        data = {'categories': categories, 'progress_data': progress_data}
-        return JsonResponse(data)
+    for item in types:
+        total_list = []
+        beneficiary = Beneficiary.objects.filter(Type=item['Type'], cluster__project=project)
+        beneficiary_progress = 0
+        for obj in beneficiary:
+            if Submission.objects.filter(beneficiary=obj).exists():
+                submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
+                    'beneficiary__Type'). \
+                    annotate(progress=Sum('cluster_activity__activity__weight'))
+                for submission in submissions:
+                    beneficiary_progress += submission['progress']
+            else:
+                pass
+        try:
+            total_list.append(round(beneficiary_progress / len(beneficiary), 2))
+        except Exception:
+            total_list.append(beneficiary_progress/1)
+        if not total_list == [0.0]:
+            progress_data.append(total_list)
+            categories.append(item['Type'])
     
-    elif munis:
-        selected_munis = Municipality.objects.filter(id__in=munis).order_by('name')
-        clusters = Cluster.objects.filter(municipality__in=selected_munis)
-        for item in types:
-            total_list = []
-            for obj in selected_munis:
-                beneficiary = Beneficiary.objects.filter(municipality=obj, Type=item['Type'])
-                beneficiary_progress = 0
-                for obj in beneficiary:
-                    if Submission.objects.filter(beneficiary=obj).exists():
-                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-                            'beneficiary__Type'). \
-                            annotate(progress=Sum('cluster_activity__activity__weight'))
-                        for submission in submissions:
-                            beneficiary_progress += submission['progress']
-                    else:
-                        pass
-                try:
-                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-                except Exception:
-                    total_list.append(beneficiary_progress / 1)
-            progress_data[str(item['Type'])] = total_list
-        for item in selected_munis:
-            categories.append(str(item.name))
+    data = {'categories': categories, 'progress_data': progress_data}
+    return JsonResponse(data)
+    # progress_data = {}
+    # if clusters:
+    #     # for cluster progress bar data
+    #     # gives the data of the volume of beneficiaries that have completed all the activities as per the type of beneficiaries
+    #     # increase by 1 if all the activities have been completed(all submissions are approved)
         
-        data = {'categories': categories, 'progress_data': progress_data}
-        return JsonResponse(data)
+    #     selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
+    #     for item in types:
+    #         total_list = []
+    #         for obj in selected_clusters:
+    #             beneficiary = Beneficiary.objects.filter(cluster=obj, Type=item['Type'])
+    #             beneficiary_progress = 0
+    #             for obj in beneficiary:
+    #                 if Submission.objects.filter(beneficiary=obj).exists():
+    #                     submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
+    #                         'beneficiary__Type'). \
+    #                         annotate(progress=Sum('cluster_activity__activity__weight'))
+    #                     for submission in submissions:
+    #                         beneficiary_progress += submission['progress']
+    #                 else:
+    #                     pass
+    #             try:
+    #                 total_list.append(round(beneficiary_progress / len(beneficiary), 2))
+    #             except Exception:
+    #                 total_list.append(beneficiary_progress/1)
+    #         progress_data[str(item['Type'])] = total_list
+    #     for item in selected_clusters:
+    #         categories.append(str(item.name))
+        
+    #     data = {'categories': categories, 'progress_data': progress_data}
+    #     return JsonResponse(data)
     
-    elif select_districts:
-        selected_districts = District.objects.filter(id__in=districts).order_by('name')
-        clusters = Cluster.objects.filter(municipality__district__in=selected_districts)
-        for item in types:
-            total_list = []
-            for obj in selected_districts:
-                beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
-                beneficiary_progress = 0
-                for obj in beneficiary:
-                    if Submission.objects.filter(beneficiary=obj).exists():
-                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-                            'beneficiary__Type'). \
-                            annotate(progress=Sum('cluster_activity__activity__weight'))
-                        for submission in submissions:
-                            beneficiary_progress += submission['progress']
-                    else:
-                        pass
-                try:
-                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-                except Exception:
-                    total_list.append(beneficiary_progress / 1)
-            progress_data[str(item['Type'])] = total_list
-        for item in selected_districts:
-            categories.append(str(item.name))
+    # elif munis:
+    #     selected_munis = Municipality.objects.filter(id__in=munis).order_by('name')
+    #     clusters = Cluster.objects.filter(municipality__in=selected_munis)
+    #     for item in types:
+    #         total_list = []
+    #         for obj in selected_munis:
+    #             beneficiary = Beneficiary.objects.filter(municipality=obj, Type=item['Type'])
+    #             beneficiary_progress = 0
+    #             for obj in beneficiary:
+    #                 if Submission.objects.filter(beneficiary=obj).exists():
+    #                     submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
+    #                         'beneficiary__Type'). \
+    #                         annotate(progress=Sum('cluster_activity__activity__weight'))
+    #                     for submission in submissions:
+    #                         beneficiary_progress += submission['progress']
+    #                 else:
+    #                     pass
+    #             try:
+    #                 total_list.append(round(beneficiary_progress / len(beneficiary), 2))
+    #             except Exception:
+    #                 total_list.append(beneficiary_progress / 1)
+    #         progress_data[str(item['Type'])] = total_list
+    #     for item in selected_munis:
+    #         categories.append(str(item.name))
         
-        data = {'categories': categories, 'progress_data': progress_data}
-        return JsonResponse(data)
+    #     data = {'categories': categories, 'progress_data': progress_data}
+    #     return JsonResponse(data)
     
-    else:
-        selected_districts = District.objects.filter(id__in=Beneficiary.objects.filter(cluster__project=request.project).values('district__id').distinct())
-        for item in types:
-            total_list = []
-            for obj in selected_districts:
-                beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
-                beneficiary_progress = 0
-                for obj in beneficiary:
-                    if Submission.objects.filter(beneficiary=obj).exists():
-                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values('beneficiary__Type').\
-                            annotate(progress=Sum('cluster_activity__activity__weight'))
-                        for submission in submissions:
-                            beneficiary_progress += submission['progress']
-                    else:
-                        pass
-                try:
-                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-                except Exception:
-                    total_list.append(beneficiary_progress / 1)
-            progress_data[str(item['Type'])] = total_list
-        for item in selected_districts:
-            categories.append(str(item.name))
+    # elif select_districts:
+    #     selected_districts = District.objects.filter(id__in=districts).order_by('name')
+    #     clusters = Cluster.objects.filter(municipality__district__in=selected_districts)
+    #     for item in types:
+    #         total_list = []
+    #         for obj in selected_districts:
+    #             beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
+    #             beneficiary_progress = 0
+    #             for obj in beneficiary:
+    #                 if Submission.objects.filter(beneficiary=obj).exists():
+    #                     submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
+    #                         'beneficiary__Type'). \
+    #                         annotate(progress=Sum('cluster_activity__activity__weight'))
+    #                     for submission in submissions:
+    #                         beneficiary_progress += submission['progress']
+    #                 else:
+    #                     pass
+    #             try:
+    #                 total_list.append(round(beneficiary_progress / len(beneficiary), 2))
+    #             except Exception:
+    #                 total_list.append(beneficiary_progress / 1)
+    #         progress_data[str(item['Type'])] = total_list
+    #     for item in selected_districts:
+    #         categories.append(str(item.name))
         
-        data = {'categories': categories, 'progress_data': progress_data}
-        return JsonResponse(data)
+    #     data = {'categories': categories, 'progress_data': progress_data}
+    #     return JsonResponse(data)
+    
+    # else:
+    #     selected_districts = District.objects.filter(id__in=Beneficiary.objects.filter(cluster__project=request.project).values('district__id').distinct())
+    #     for item in types:
+    #         total_list = []
+    #         for obj in selected_districts:
+    #             beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
+    #             beneficiary_progress = 0
+    #             for obj in beneficiary:
+    #                 if Submission.objects.filter(beneficiary=obj).exists():
+    #                     submissions = Submission.objects.filter(beneficiary=obj, status='approved').values('beneficiary__Type').\
+    #                         annotate(progress=Sum('cluster_activity__activity__weight'))
+    #                     for submission in submissions:
+    #                         beneficiary_progress += submission['progress']
+    #                 else:
+    #                     pass
+    #             try:
+    #                 total_list.append(round(beneficiary_progress / len(beneficiary), 2))
+    #             except Exception:
+    #                 total_list.append(beneficiary_progress / 1)
+    #         progress_data[str(item['Type'])] = total_list
+    #     for item in selected_districts:
+    #         categories.append(str(item.name))
+        
+    #     data = {'categories': categories, 'progress_data': progress_data}
+    #     return JsonResponse(data)
 
 
 def get_progress_phase_pie(request):

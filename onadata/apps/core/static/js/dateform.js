@@ -117,7 +117,7 @@
       var now=$(this).attr('aria-valuenow')
       var max=$(this).attr('aria-valuemax')
       var $percent = (now / max) * 100;
-      each_bar_width = $(this).attr('aria-valuenow');
+      var each_bar_width = $(this).attr('aria-valuenow');
       $(this).width(Math.round($percent) + '%');
       $(this).find('.popOver').html(Math.round($percent) + '%');
       $(this).parent().find('.progress-value').html(" " + now);
