@@ -195,11 +195,12 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
+                    {% for district in districts %}
                     <div class="col-md-6">
                         <div class="card content-card">
                             <div class="card-header">
                                 <div class="card-header-left">
-                                    <span class="body_title">Lamjung</span>
+                                    <span class="body_title">{{ district.name }}</span>
                                     <span class="body_subtitle">Construction phases</span>
                                 </div>
                                 <div class="card-header-right">
@@ -209,29 +210,26 @@
                                                 <span>select Municipality</span>
                                                 <div class="select-list">
                                                     <ul>
+                                                        {% for municipality in district.municipality.all %}
                                                         <li>
                                                             <div class="checkbox">
-                                                                <input id="mun_graphI" type="checkbox" name="mun_graphI">
-                                                                <label for="mun_graphI">Thaha</label>
+                                                                <input id="mun_{{ municipality.id }}" class="{{ district.id }}" type="checkbox" name="{{ municipality.id }}" value="{{ municipality.id }}" district_id="{{ district.id }}">
+                                                                <label for="mun_{{ municipality.id }}">{{ municipality.name }}</label>
                                                             </div>
                                                         </li>
-                                                        <li>
-                                                            <div class="checkbox">
-                                                                <input id="mun_graphII" type="checkbox" name="mun_graphII">
-                                                                <label for="mun_graphII">Dhordi</label>
-                                                            </div>
-                                                        </li>
+                                                        {% endfor %}
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
+                                        <button type="button" district_id="{{ district.id }}" class="btn filter-btn {{ district.id }}">Filter</button>
                                     </form>
                                 </div>
                             </div>  
                             <div class="card-body card-body-graph">
                                 <div class="row no-gutters">
                                     <div class="col-md-6">
-                                        <div id="radial-chart-infoleft"></div>
+                                        <div id="radial-chart-infoleft" class="radial-chart"></div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="legend-wrap">
@@ -249,125 +247,12 @@
                             <div class="card-header">
                                 <span class="body_subtitle">Progress overview</span>
                             </div>  
-                            <div class="card-body card-body-graph">
-                                <div class="progress_bar_info">
-                                    <div class="status_info"><span>NRA</span><span>350 (80% of 100)</span></div>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <div class="progress_bar_info">
-                                    <div class="status_info"><span>NRA Vulnerable</span><span>3100 (30% of 100)</span></div>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <div class="progress_bar_info">
-                                    <div class="status_info"><span>Marginalised</span><span>300 (75% of 100)</span></div>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>  
-                                </div>  
-
-                                <div class="progress_bar_info">
-                                    <div class="status_info"><span>Vulnerable</span><span>400 (90% of 100)</span></div>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
+                            <div class="card-body card-body-graph" id="{{ district.id }}">
 
                             </div>
                         </div>
                     </div>
-        
-                    <div class="col-md-6">
-                        <div class="card content-card">
-                            <div class="card-header">
-                                <div class="card-header-left">
-                                    <span class="body_title">Makwanpur</span>
-                                    <span class="body_subtitle">Construction phases</span>
-                                </div>
-                                <div class="card-header-right">
-                                    <form>
-                                        <div class="form-group">
-                                            <div class="select-option">
-                                                <span>select Municipality</span>
-                                                <div class="select-list">
-                                                    <ul>
-                                                        <li>
-                                                            <div class="checkbox">
-                                                                <input id="mun_graph1" type="checkbox" name="mun_graph1">
-                                                                <label for="mun_graph1">Thaha</label>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="checkbox">
-                                                                <input id="mun_graph2" type="checkbox" name="mun_graph2">
-                                                                <label for="mun_graph2">Dhordi</label>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div> 
-                            <div class="card-body card-body-graph">
-                                <div class="row no-gutters">
-                                    <div class="col-md-6">
-                                        <div id="radial-chart-inforight"></div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="legend-wrap">
-                                            <ul class="legend">
-                                                <li class="legend-data"><label class="body-span-reg">Pre-Construction stage</label><span class="span-numdata">650 (65%)</span></li>
-                                                <li class="legend-data"><label class="body-span-reg">Physical construction stage</label><span class="span-numdata">250 (25%)</span></li>
-                                                <li class="legend-data"><label class="body-span-reg">Post construction stage</label><span class="span-numdata">100 (10%)</span></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card content-card">
-                            <div class="card-header">
-                                <span class="body_subtitle">Progress overview</span>
-                            </div>  
-                            <div class="card-body card-body-graph">
-                                <div class="progress_bar_info">
-                                    <div class="status_info"><span>NRA</span><span>350 (80% of 100)</span></div>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <div class="progress_bar_info">
-                                    <div class="status_info"><span>NRA Vulnerable</span><span>3100 (30% of 100)</span></div>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                                <div class="progress_bar_info">
-                                    <div class="status_info"><span>Marginalised</span><span>300 (75% of 100)</span></div>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>  
-                                </div>  
-
-                                <div class="progress_bar_info">
-                                    <div class="status_info"><span>Vulnerable</span><span>400 (90% of 100)</span></div>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -378,4 +263,47 @@
 {% block scripts %}
 <script src="{% static 'js/c3.bundle.js' %}"></script>
 <script src="{% static 'js/c3.js' %}"></script>
+<script>
+    var district = {{ script_district|safe}};
+    district.forEach(function(request){
+        $.ajax({
+            url: '/core/get-district-progress/',
+            type: 'GET',
+            data: {'id': request.id},
+            dataType: "json",
+            
+            success: function(result){
+                $.each(result, function(key, value){
+                    var percent = (value.sum / value.total);
+                    $("#" + request.id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span>'+ value.sum +' ('+ percent +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ percent +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
+                })
+            }
+        })
+    });
+    $(".filter-btn").click(function(){
+        var request_data = []
+        district_id = $(this).attr('district_id');
+        $.each($("input[class='"+ district_id +"']:checked"), function(){
+            request_data.push(this.value);
+        });
+        console.log(request_data);
+        $.ajax({
+            url: '/core/get-district-progress',
+            type: 'GET',
+            data: {'id': district_id, 'request_data': request_data},
+            dataType: "json",
+
+            success: function(result){
+                $("#" + district_id).empty();
+                $.each(result, function(key, value){
+                    var percent = (value.sum / value.total);
+                    $("#" + district_id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span>'+ value.sum +' ('+ percent +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ percent +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
+                })
+            }
+        });
+
+    });
+    
+</script>
+
 {% endblock %}

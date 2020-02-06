@@ -292,9 +292,53 @@ class DashboardNewView(LoginRequiredMixin, TemplateView):
         project = request.project
         beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
         activity_count = Activity.objects.filter(activity_group__project=project).count()
+        districts = District.objects.filter(beneficiary__isnull=False).distinct()
 
-        return render(request, self.template_name, {'activity_count': activity_count, 'beneficiary_count': beneficiary_count})
+        script_district_queryset = District.objects.filter(beneficiary__isnull=False).distinct().values('id', 'name')
+        script_district = json.dumps(list(script_district_queryset))
+        print(districts)
+        return render(request, self.template_name, {
+            'activity_count': activity_count, 
+            'beneficiary_count': beneficiary_count,
+            'districts': districts,
+            'script_district': script_district})
 
+
+def get_district_progress(request):
+    district = District.objects.get(pk=request.GET.get('id'))
+    types = Beneficiary.objects.filter(district=district, cluster__project=request.project).values('Type').distinct()
+    progress_data = {}
+    categories = []
+
+    project=request.project
+    
+    for item in types:
+        beneficiary_progress = 0
+        total_dict = {}
+        if 'request_data[]' in request.GET:
+            print(request.GET.getlist('request_data[]'))
+            municipalities = request.GET.getlist('request_data[]')
+            for municipality in municipalities:
+                beneficiary = Beneficiary.objects.filter(municipality__id=int(municipality), Type=item['Type'], cluster__project=project)
+                for obj in beneficiary:
+                    try:
+                        beneficiary_progress += obj.progress
+                    except:
+                        beneficiary_progress += 1
+                total_dict['sum'] = beneficiary_progress
+                total_dict['total'] = len(beneficiary)
+                progress_data[item['Type']] = total_dict
+        else:
+            beneficiary = Beneficiary.objects.filter(district=district, Type=item['Type'], cluster__project=project)
+            for obj in beneficiary:
+                try:
+                    beneficiary_progress += obj.progress
+                except:
+                    beneficiary_progress += 1
+            total_dict['sum'] = beneficiary_progress
+            total_dict['total'] = len(beneficiary)
+            progress_data[item['Type']] = total_dict
+    return JsonResponse(progress_data)
 
 
 class Dashboard1View(LoginRequiredMixin, TemplateView):
@@ -1848,14 +1892,7 @@ def get_progress(request):
         beneficiary = Beneficiary.objects.filter(Type=item['Type'], cluster__project=project)
         beneficiary_progress = 0
         for obj in beneficiary:
-            if Submission.objects.filter(beneficiary=obj).exists():
-                submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-                    'beneficiary__Type'). \
-                    annotate(progress=Sum('cluster_activity__activity__weight'))
-                for submission in submissions:
-                    beneficiary_progress += submission['progress']
-            else:
-                pass
+            beneficiary_progress += obj.progress
         try:
             total_list.append(round(beneficiary_progress / len(beneficiary), 2))
         except Exception:

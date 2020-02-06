@@ -801,78 +801,78 @@ $(function() {
         });
 
         //cluster-pie-chart
-        $(document).ready(function(){
-            $.ajax({
-                type: "GET",
-                url: '/core/get-cluster-phase-data',
-                data: "{}",
-                success: function(result){
-                    OnSuccess(result);
-                },  
-            });
+        // $(document).ready(function(){
+        //     $.ajax({
+        //         type: "GET",
+        //         url: '/core/get-cluster-phase-data',
+        //         data: "{}",
+        //         success: function(result){
+        //             OnSuccess(result);
+        //         },  
+        //     });
 
-            function OnSuccess(response){
-                console.log(response);
-                var cluster_phase_data = response.data;
-                var chart = c3.generate({
-                    bindto: '#cluster_pie', // id of chart wrapper
-                    data: {
-                        json: cluster_phase_data,
-                        type: 'pie', // default type of chart,
-                    },
-                    axis: {
-                    },
-                    legend: {
-                        show: true, //hide legend
-                    },
-                    padding: {
-                        bottom: 0,
-                        top: 0
-                    },
-                    color: {
-                            pattern: ["#f5b2d0", "#00A890", "#0d89df"]
-                    }
-                });
-            }
-        });
+        //     function OnSuccess(response){
+        //         console.log(response);
+        //         var cluster_phase_data = response.data;
+        //         var chart = c3.generate({
+        //             bindto: '#cluster_pie', // id of chart wrapper
+        //             data: {
+        //                 json: cluster_phase_data,
+        //                 type: 'pie', // default type of chart,
+        //             },
+        //             axis: {
+        //             },
+        //             legend: {
+        //                 show: true, //hide legend
+        //             },
+        //             padding: {
+        //                 bottom: 0,
+        //                 top: 0
+        //             },
+        //             color: {
+        //                     pattern: ["#f5b2d0", "#00A890", "#0d89df"]
+        //             }
+        //         });
+        //     }
+        // });
 
-        $("#progress").on("click", function(){
-            var checked = $('#progress-form').serialize();
-            console.log(checked);
+        // $("#progress").on("click", function(){
+        //     var checked = $('#progress-form').serialize();
+        //     console.log(checked);
 
-            $.ajax({
-                type: "GET",
-                url: '/core/get-cluster-phase-data',
-                data: checked,
-                success: function(result){
-                    OnSuccess(result);
-                },  
-            });
+        //     $.ajax({
+        //         type: "GET",
+        //         url: '/core/get-cluster-phase-data',
+        //         data: checked,
+        //         success: function(result){
+        //             OnSuccess(result);
+        //         },  
+        //     });
 
-            function OnSuccess(response){
-                console.log(response);
-                var cluster_phase_data = response.data;
-                var chart = c3.generate({
-                    bindto: '#cluster_pie', // id of chart wrapper
-                    data: {
-                        json: cluster_phase_data,
-                        type: 'pie', // default type of chart,
-                    },
-                    axis: {
-                    },
-                    legend: {
-                        show: true, //hide legend
-                    },
-                    padding: {
-                        bottom: 0,
-                        top: 0
-                    },
-                    color: {
-                            pattern: ["#f5b2d0", "#00A890", "#0d89df"]
-                    }
-                });
-            }
-        });
+        //     function OnSuccess(response){
+        //         console.log(response);
+        //         var cluster_phase_data = response.data;
+        //         var chart = c3.generate({
+        //             bindto: '#cluster_pie', // id of chart wrapper
+        //             data: {
+        //                 json: cluster_phase_data,
+        //                 type: 'pie', // default type of chart,
+        //             },
+        //             axis: {
+        //             },
+        //             legend: {
+        //                 show: true, //hide legend
+        //             },
+        //             padding: {
+        //                 bottom: 0,
+        //                 top: 0
+        //             },
+        //             color: {
+        //                     pattern: ["#f5b2d0", "#00A890", "#0d89df"]
+        //             }
+        //         });
+        //     }
+        // });
 
         //gender donut
         $(document).ready(function(){
