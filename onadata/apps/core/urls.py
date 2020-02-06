@@ -25,7 +25,6 @@ urlpatterns = [
     url(r'logout', views.logout_view, name='logout'),
     url(r'forgot-password', views.ForgotView.as_view(), name='forgot_password'),
     url(r'404 error', views.ErrorView.as_view(), name='404_error'),
-    url(r'dashboard/new', views.DashboardNewView.as_view(), name="dashboard-new"),
     url(r'dashboard-1', views.Dashboard1View.as_view(), name='dashboard-1'),
     url(r'dashboard-2', views.Dashboard2View.as_view(), name='dashboard-2'),
     url(r'project-dashboard', views.ProjectDashboardView.as_view(), name='project-dashboard'),

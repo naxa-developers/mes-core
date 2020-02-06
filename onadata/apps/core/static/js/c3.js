@@ -778,27 +778,27 @@ $(function() {
             });
         });
         //pie-chart
-        $(document).ready(function(){
-            var chart = c3.generate({
-                bindto: '#chart-pie', // id of chart wrapper
-                data: {
-                    json: pie_data,
-                    type: 'pie', // default type of chart,
-                },
-                axis: {
-                },
-                legend: {
-                    show: true, //hide legend
-                },
-                padding: {
-                    bottom: 0,
-                    top: 0
-                },
-                color: {
-                        pattern: ["#e3e3e3", "#00A890", "#0d89df", "#193f77", "#f5b2d0"]
-                }
-            });
-        });
+        // $(document).ready(function(){
+        //     var chart = c3.generate({
+        //         bindto: '#chart-pie', // id of chart wrapper
+        //         data: {
+        //             json: pie_data,
+        //             type: 'pie', // default type of chart,
+        //         },
+        //         axis: {
+        //         },
+        //         legend: {
+        //             show: true, //hide legend
+        //         },
+        //         padding: {
+        //             bottom: 0,
+        //             top: 0
+        //         },
+        //         color: {
+        //                 pattern: ["#e3e3e3", "#00A890", "#0d89df", "#193f77", "#f5b2d0"]
+        //         }
+        //     });
+        // });
 
         //cluster-pie-chart
         // $(document).ready(function(){

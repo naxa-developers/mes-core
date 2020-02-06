@@ -285,7 +285,7 @@ class ErrorView(TemplateView):
     template_name = 'core/404.html'
 
 
-class DashboardNewView(LoginRequiredMixin, TemplateView):
+class Dashboard1View(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard-1new.html'
 
     def get(self, request):
@@ -346,7 +346,6 @@ def get_phase_data(request, *args, **kwargs):
     if 'district' in request.GET:
         district = District.objects.get(id=int(request.GET.get('district')))
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', clusterag__cluster__municipality__district=district).distinct()
-        print(activity_groups)
         for ag in activity_groups:
             total_dict = {}
             beneficiaries = 0
@@ -360,7 +359,10 @@ def get_phase_data(request, *args, **kwargs):
                         completed = False
                 if completed:
                     beneficiaries += 1
-            ben = round((float(beneficiaries) / len(beneficiary) * 100), 2)
+            try:
+                ben = round((float(beneficiaries) / len(beneficiary) * 100), 2)
+            except:
+                ben = 0
             total_dict['sum'] = ben
             total_dict['number'] = beneficiaries
             total_dict['total'] = round((float(beneficiaries) / len(types)) * 100, 2)
@@ -388,79 +390,79 @@ def get_phase_data(request, *args, **kwargs):
     return JsonResponse(construction_phases)
 
 
-class Dashboard1View(LoginRequiredMixin, TemplateView):
-    template_name = 'core/dashboard-1.html'
+# class Dashboard1View(LoginRequiredMixin, TemplateView):
+#     template_name = 'core/dashboard-1.html'
 
-    def get(self, request):
-        project = request.project
-        # data required for charts and drop down menus
-        districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
-        municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
-        select_cluster = Cluster.objects.filter(project=project)
+#     def get(self, request):
+#         project = request.project
+#         # data required for charts and drop down menus
+#         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
+#         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
+#         select_cluster = Cluster.objects.filter(project=project)
 
-        types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
-        # intervals = ProjectTimeInterval.objects.values('label').order_by('label')
-        beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
-        activity_count = Activity.objects.filter(activity_group__project=project).count()
-        interval = []
+#         types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
+#         # intervals = ProjectTimeInterval.objects.values('label').order_by('label')
+#         beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
+#         activity_count = Activity.objects.filter(activity_group__project=project).count()
+#         interval = []
 
-        # time intervals for activity progress data
-        # for item in intervals:
-        #     interval.append(str(item['label']))
+#         # time intervals for activity progress data
+#         # for item in intervals:
+#         #     interval.append(str(item['label']))
 
-        # for beneficiary type pie data
-        pie_data = {}
-        beneficiary_types = types.annotate(total=Count('Type'))
-        for item in beneficiary_types:
-            pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
+#         # for beneficiary type pie data
+#         pie_data = {}
+#         beneficiary_types = types.annotate(total=Count('Type'))
+#         for item in beneficiary_types:
+#             pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
 
-        # get cluster activity overview data on basis of filter used
-        # if 'cluster_activity' in request.GET:
-        #     checked = [(name, value) for name, value in request.GET.iteritems()]
-        #     activity = []
-        #     for item in checked:
-        #         if item[0].startswith('a'):
-        #             activity.append(item[0].split("_")[1])
+#         # get cluster activity overview data on basis of filter used
+#         # if 'cluster_activity' in request.GET:
+#         #     checked = [(name, value) for name, value in request.GET.iteritems()]
+#         #     activity = []
+#         #     for item in checked:
+#         #         if item[0].startswith('a'):
+#         #             activity.append(item[0].split("_")[1])
 
-        #     chart_single = get_cluster_activity_data(request.project, activity)
+#         #     chart_single = get_cluster_activity_data(request.project, activity)
 
-        # for no filter used
-        # else:
-        #     chart_single = get_cluster_activity_data(request.project)
+#         # for no filter used
+#         # else:
+#         #     chart_single = get_cluster_activity_data(request.project)
 
-        # get progress overview data on basis of filter used
-        # if 'progress' in request.GET:
-        #     checked = [(name, value) for name, value in request.GET.iteritems()]
-        #     clusters = []
-        #     select_districts = []
-        #     munis = []
-        #     for item in checked:
-        #         if item[0].startswith('cl'):
-        #             clusters.append(int(item[0].split("_")[1]))
+#         # get progress overview data on basis of filter used
+#         # if 'progress' in request.GET:
+#         #     checked = [(name, value) for name, value in request.GET.iteritems()]
+#         #     clusters = []
+#         #     select_districts = []
+#         #     munis = []
+#         #     for item in checked:
+#         #         if item[0].startswith('cl'):
+#         #             clusters.append(int(item[0].split("_")[1]))
 
-        #         if item[0].startswith('mun'):
-        #             munis.append(int(item[0].split("_")[1]))
+#         #         if item[0].startswith('mun'):
+#         #             munis.append(int(item[0].split("_")[1]))
 
-        #         if item[0].startswith('dist'):
-        #             select_districts.append(int(item[0].split("_")[1]))
+#         #         if item[0].startswith('dist'):
+#         #             select_districts.append(int(item[0].split("_")[1]))
 
-        #     construction_phases = get_progress_data(
-        #         request.project, types, clusters, select_districts, munis)
+#         #     construction_phases = get_progress_data(
+#         #         request.project, types, clusters, select_districts, munis)
 
-        # else:
-        #     construction_phases = get_progress_data(request.project, types)
+#         # else:
+#         #     construction_phases = get_progress_data(request.project, types)
 
-        return render(request, self.template_name, {
-            'districts': districts,
-            'municipalities': municipalities,
-            'select_clusters': select_cluster,
-            'activity_count': activity_count,
-            'beneficiary_count': beneficiary_count,
-            # 'intervals': interval,
-            # 'chart_single': chart_single,
-            'pie_data': pie_data,
-            # 'construction_phases': construction_phases
-        })
+#         return render(request, self.template_name, {
+#             'districts': districts,
+#             'municipalities': municipalities,
+#             'select_clusters': select_cluster,
+#             'activity_count': activity_count,
+#             'beneficiary_count': beneficiary_count,
+#             # 'intervals': interval,
+#             # 'chart_single': chart_single,
+#             'pie_data': pie_data,
+#             # 'construction_phases': construction_phases
+#         })
 
 
 def get_answer(json, labels):
