@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'dashboard-3', views.BeneficiaryProgressView.as_view(), name="beneficiary-progress"),
 
     url(r'get-district-progress', views.get_district_progress, name='get-district-progress'),
+    url(r'get-phase-data', views.get_phase_data, name="get-phase-data"),
 
     url(r'project-list', views.ProjectListView.as_view(), name='project_list'),
     url(r'project-add', views.ProjectCreateView.as_view(), name='project_add'),

@@ -162,10 +162,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="legend-wrap">
-                                            <ul class="legend">
-                                                <li class="legend-data"><label class="body-span-reg">Pre-Construction stage</label><span class="span-numdata">650 (65%)</span></li>
-                                                <li class="legend-data"><label class="body-span-reg">Physical construction stage</label><span class="span-numdata">250 (25%)</span></li>
-                                                <li class="legend-data"><label class="body-span-reg">Post construction stage</label><span class="span-numdata">100 (10%)</span></li>
+                                            <ul class="legend" id="phases-legend">
                                             </ul>
                                         </div>
                                     </div>
@@ -261,6 +258,13 @@
 </section>
 {% endblock %}
 {% block scripts %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="{% static 'js/pieradial.js' %}"></script>
 <script src="{% static 'js/c3.bundle.js' %}"></script>
 <script src="{% static 'js/c3.js' %}"></script>
 <script>
@@ -286,7 +290,6 @@
         $.each($("input[class='"+ district_id +"']:checked"), function(){
             request_data.push(this.value);
         });
-        console.log(request_data);
         $.ajax({
             url: '/core/get-district-progress',
             type: 'GET',
