@@ -295,7 +295,7 @@
                     <li><a href="{% url 'aggregation-view' %}">Aggregation View</a></li>
                     <li><a href="{% url 'aggregation-settings' %}">Aggregation Setting</a></li>
                 </ul>
-            </li>
+            </li>   
             {% end ifrole %}
             <!--<li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-asterisk"></i><span>Config</span></a>-->
                 <!--<ul class="ml-menu">-->
@@ -342,9 +342,8 @@
 
 <!-- Custom Data tables -->
 <script src="{% static 'plugins/datatable/custom/custom-datatables.js' %}"></script>
+<script src="{% static 'js/mainscripts.bundle.js' %}"></script>
 {% block scripts %}
 {% endblock %}
 </body>
-
-
 </html>

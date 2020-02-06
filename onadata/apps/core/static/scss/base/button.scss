@@ -13,6 +13,7 @@
     color: $color-white;
     @include anim05;
     font-family: $muli;
+    text-transform: capitalize;
 }
 
 

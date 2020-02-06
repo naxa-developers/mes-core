@@ -1,5 +1,6 @@
 .ls-toggle-menu{
     .navbar-brand{
+        margin-left: 15px;
         a{
             display: none
         }
@@ -17,6 +18,13 @@
         
     }
     .sidebar{
+        &.sidebar-mod{
+            @include animate;
+            .navbar-brand{
+                padding-left: 15px;
+                @include animate;
+            }
+        }
         width: 50px;
         .user-info{
             .image{
@@ -125,6 +133,10 @@
         margin-left: 60px;
         margin-right: 40px
     }
+    section.content-mod {
+        margin-left: 60px;
+        margin-right: 20px;
+    }
     .navbar-right{
         .navbar-nav {
             width: 30px;
@@ -177,15 +189,17 @@
         }
         section.content {
             margin-left: 60px;
-            margin-right: 40px
+            margin-right: 40px;
         }
+
+       
         .navbar-right{
             .navbar-nav {
                 width: 30px;
                 margin: 0 5px;
                 li{
                     a{
-                        width: 30px
+                        width: 30px;        
                     }
                 }
             }

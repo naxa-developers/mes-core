@@ -89,27 +89,40 @@
        
      }
      checkList();
+
+     function checkList_graph(){
+      $('.info-graph-section .select-option span').on('click', function(){
+       var $optList = $(this).closest('.select-option').find('.select-list');
+       $("body").mouseup(function(e) {
+         e.preventDefault();
+           if (!$optList.is(e.target) && $optList.has(e.target).length === 0) {
+             $optList.removeClass('select-open');
+           }
+       });
+       $(this).closest('.select-option').find('.select-list').toggleClass('select-open');
+      });
+      
+    }
+    checkList_graph();
+    
      
      $('.add-unit').on('click',function(){
-       console.log('add div');
       var newTarget = $('<div class="target flex"><div class="target-unit flex"><label>Target unit</label><input type="text" class="form-control" placeholder="1"></div><div class="target-number flex"><label>Target number</label><input type="text" class="form-control" placeholder="1"></div></div>');
      
       $('.target-group').append(newTarget);
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
-    $('[data-toggle="popover"]').popover();
+    
     $(".progress-bar").each(function () {
       var now=$(this).attr('aria-valuenow')
       var max=$(this).attr('aria-valuemax')
       var $percent = (now / max) * 100;
-      each_bar_width = $(this).attr('aria-valuenow');
+      var each_bar_width = $(this).attr('aria-valuenow');
       $(this).width(Math.round($percent) + '%');
       $(this).find('.popOver').html(Math.round($percent) + '%');
       $(this).parent().find('.progress-value').html(" " + now);
   });
     $('.select2').select2();
-
     
   })(jQuery);
 

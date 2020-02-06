@@ -117,6 +117,11 @@ class Activity(models.Model):
 	location = PointField(geography=True, srid=4326, blank=True, null=True)
 	order = models.IntegerField(null=True, blank=True)
 
+	is_registration = models.BooleanField(default=False)
+	is_entry = models.BooleanField(default=False)
+	entry_form = models.ForeignKey('Activity', related_name='entry_forms', null=True, blank=True)
+	beneficiary_group = models.ForeignKey('ActivityGroup', related_name="beneficiary_activity", null=True, blank=True)
+
 	def __str__(self):
 		return self.name
 

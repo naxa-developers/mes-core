@@ -213,9 +213,13 @@ class ActivityForm(forms.ModelForm):
 
         if is_super_admin:
             self.fields['activity_group'].choices = ((ag.id, ag.name) for ag in ActivityGroup.objects.all())
+            self.fields['entry_form'].choices = ((a.id, a.name) for a in Activity.objects.filter(is_registration=True))
+            self.fields['beneficiary_group'].choices = ((ag.id, ag.name) for ag in ActivityGroup.objects.filter(activity__is_registration=True))
         else:
             self.fields['activity_group'].choices = ((ag.id, ag.name) for ag in ActivityGroup.objects.filter(project=project))
-
+            self.fields['entry_form'].choices = ((a.id, a.name) for a in Activity.objects.filter(is_registration=True, activity_group__project=project))
+            self.fields['beneficiary_group'].choices = ((ag.id, ag.name) for ag in ActivityGroup.objects.filter(activity__is_registration=True, project=project))
+        
         try:
             self.fields['time_interval'].queryset = ProjectTimeInterval.objects.filter(project=self.instance.activity_group.project)
 
@@ -239,6 +243,8 @@ class ActivityForm(forms.ModelForm):
             'time_interval': forms.Select(attrs={'class': "custom-select"}),
             'form': forms.Select(attrs={'class': "custom-select"}),
             'weight': forms.TextInput(attrs={'placeholder': 'Weight', 'class': 'form-control'}),
+            'entry_form': forms.Select(attrs={'class': "custom-select"}),
+            'beneficiary_group': forms.Select(attrs={'class': "custom-select"}),
         }
 
     def clean_weight(self):

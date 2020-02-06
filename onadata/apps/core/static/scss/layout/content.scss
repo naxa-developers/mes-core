@@ -1,0 +1,412 @@
+section.content {
+    &.content-mod{
+        margin: 50px 70px 20px 260px;
+        .h2-common{
+            margin-bottom: 1.75rem;
+        }
+        .sub-section{
+            padding-top: 2.125rem;
+        }
+        @include boxshadow_all(none);
+        padding: 0 2rem;
+       
+        .graph-section, .info-graph-section{
+            .card{
+                @include radius5;
+                background-color: $color-light;
+                .card-body{
+                    .content-card{
+                        .card-header{
+                            @include display-flex(flex);
+                            @include justify-content-between;
+                            padding: 0 0 .75rem 0;
+                            .card-header-left{
+                                span{
+                                    display: block;  
+                                }
+                                .body-title{
+                                    padding-bottom: 1rem;
+                                }
+                            }
+                            .card-header-right{
+                                form{
+
+                                }
+                            }
+                        }
+                        .card-body-graph{
+                            padding: 0;
+                           
+                            #radial-chart, #radial-chart-infoleft, #radial-chart-inforight{
+                                .highcharts-title{
+                                    display: none;
+                                } 
+                                .highcharts-button{
+                                    display: none;
+                                } 
+                                .highcharts-credits{
+                                    display: none;
+                                }
+                                .highcharts-pane{
+                                    background: red;
+                                }
+                            }
+                            .legend-wrap{
+                                @include display-flex(flex);
+                                align-items: center;
+                                min-height: 100%;
+                                .legend{
+                                    li{
+                                        &:not(:last-child){
+                                            label{
+                                                &::before{
+                                                    content: "\f111";
+                                                    font-family: 'FontAwesome';
+                                                    position: relative;
+                                                    right: 5px;
+                                                    color: $color-bluelght;
+                                                }
+                                            }
+                                        }
+                                        &:nth-child(2){
+                                            label{
+                                                &::before{
+                                                    content: "\f111";
+                                                    font-family: 'FontAwesome';
+                                                    position: relative;
+                                                    right: 5px;
+                                                    color: $color-orange;
+                                                }
+                                            }
+                                        }
+                                        &:last-child{
+                                            label{
+                                                &::before{
+                                                    content: "\f111";
+                                                    font-family: 'FontAwesome';
+                                                    position: relative;
+                                                    right: 5px;
+                                                    color: $color-yellowlght;
+                                                }
+                                            }
+                                        }
+
+                                        label{
+                                            font-size: .688rem !important;
+                                            min-width: 165px;
+                                            margin-bottom: 0;
+                                        }
+                                        span{
+                                            font-size: .688rem;
+                                            opacity: .5;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .info-graph-section{
+            .card{
+                .card-body{
+                    .content-card{
+                        &:last-child{
+                            padding-top: 30px;
+                        }
+                        .card-body-graph{
+                            padding-bottom: 1rem;
+                            border-bottom: 1px solid rgba($color-black, .125);
+                            margin-top: 1.25rem;
+                            .progress_bar_info{
+                                .status_info{
+                                    @include display-flex(flex);
+                                    @include justify-content-between;
+                                    margin-bottom: 3px;
+                                    span{
+                                        font-weight: 600;
+                                        font-size: .75rem;
+                                        line-height: 1.125rem;
+                                        color: rgba($color-bodyspan1, .5);
+                                        &:last-child{
+                                            font-family: $opensans;
+                                        }
+                                    }
+                                }
+                                .progress{
+                                    height: 5px;
+                                }
+                                &:not(:last-child){
+                                    margin-bottom: 1rem;
+                                }
+                                &:first-child{
+                                    .progress{
+                                        .progress-bar{
+                                            background-color: $color-purple;
+                                        }
+                                    }
+                                }
+                                &:nth-child(2){
+                                    .progress{
+                                        .progress-bar{
+                                            background-color: $color-greenlght;
+                                        }
+                                    }
+                                }
+                                &:nth-child(3){
+                                    .progress{
+                                        .progress-bar{
+                                            background-color: $color-orange;
+                                        }
+                                    }
+                                }
+                                
+                                &:nth-child(4){
+                                    .progress{
+                                        .progress-bar{
+                                            background-color: $color-orange;
+                                        }
+                                    }
+                                }
+
+                                &:last-child{
+                                    .progress{
+                                        .progress-bar{
+                                            background-color: $color-orangelght;
+                                        }
+                                    }
+                                }
+
+                               
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .content-wrapper{
+            padding: 2rem 3.75rem 2rem;
+            .proj-overview{
+                margin-top: 1.688rem;
+                h2{
+                    margin-bottom: 0;
+                }
+                .block-section{
+                    padding: .938rem;
+                    margin-top: 1.375rem;
+                    background: $color-white;
+                    @include radius(5px);
+                    &.summary-row{
+                        .pie-chart-section, .bar-chart-section{
+                            h2{
+                                padding-bottom: 15px;
+                                border-bottom: 1px solid $color-hrborder;
+                            }
+                        }
+                        .pie-chart-section{
+                            #radial-chart{
+                                .highcharts-title{
+                                    display: none;
+                                } 
+                                .highcharts-button{
+                                    display: none;
+                                } 
+                                .highcharts-credits{
+                                    display: none;
+                                }
+                                .highcharts-pane{
+                                    background: red;
+                                }
+                            }
+                            .legend-wrap{
+                                @include display-flex(flex);
+                                align-items: center;
+                                min-height: 100%;
+                                .legend{
+                                    li{
+                                        &:not(:last-child){
+                                            label{
+                                                &::before{
+                                                    content: "\f111";
+                                                    font-family: 'FontAwesome';
+                                                    position: relative;
+                                                    right: 5px;
+                                                    color: $color-bluelght;
+                                                }
+                                            }
+                                        }
+                                        &:nth-child(2){
+                                            label{
+                                                &::before{
+                                                    content: "\f111";
+                                                    font-family: 'FontAwesome';
+                                                    position: relative;
+                                                    right: 5px;
+                                                    color: $color-orange;
+                                                }
+                                            }
+                                        }
+                                        &:last-child{
+                                            label{
+                                                &::before{
+                                                    content: "\f111";
+                                                    font-family: 'FontAwesome';
+                                                    position: relative;
+                                                    right: 5px;
+                                                    color: $color-yellowlght;
+                                                }
+                                            }
+                                        }
+
+                                        label{
+                                            font-size: .688rem;
+                                            min-width: 150px;
+                                            margin-bottom: 0;
+                                        }
+                                        span{
+                                            font-size: .688rem;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.page-header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: $color-white;
+    box-shadow: 0 2px 6px $pgheader-bxshadow;
+    z-index: 1;
+    padding: 10px 0;
+    .page-header-wrap{
+        @include display-flex(flex);
+        @include justify-content-end;
+        @include align-items-center;
+        .right-nav{
+            @include display-flex(flex);
+            @include justify-content-end;
+            @include align-items-center;
+            .dropdown{
+                &:not(:last-child){
+                    //is equivalent to &:first-child{
+                    flex: 0 0 34%;
+                    max-width: 34%;
+                        &::after{
+                            color: $color-borderright;
+                            content: '|';
+                            display: inline-flex;
+                            margin-left: .625rem;
+                            margin-right: .875rem;
+                        }
+                    button{
+                        img{
+                            width: 12px;
+                            height: 12px;
+                        }
+                    }
+                }
+                &:last-child{
+                    flex: 0 0 100%;
+                    max-width: 100%;
+                    button{
+                        width: 100%;
+                    }
+                }
+                button{
+                        padding: 0;
+                    
+                    &.dropdown-toggle{
+                        @include display-flex(flex);
+                        @include justify-content-start;
+                        @include align-items-center;
+                        &:after{
+                            width: .5em;
+                            height: .5em;
+                            margin: 0;
+                            vertical-align: .255em;
+                            border: .1em solid;
+                            border-width: 0 .1em .1em 0em;
+                            transform: rotate(45deg);
+                            color: $color-icons;
+                            position: relative;
+                            right: 18px;
+                        }
+                        .title-head{
+                            span{
+                                display: block;
+                                text-align: start;
+                            }
+                        }
+                        img{
+                            position: relative;
+                            left: 20px;
+                            @include flex-base(0 0 20px);
+                            max-width: 20px;
+                            width: 100%;
+                            height: 20px;
+                            @include radius(50%);
+                            margin-left: 10px;
+                        }
+
+                    }
+                }
+            }
+        }
+        .icon-wrap{
+            @include flex;
+            align-items: center;
+            figure{
+                margin: 0 !important;
+                border-right: 1px solid $color-borderright;
+                img{
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+        }
+        .title-wrap{
+            display: flex;
+            .name-content{
+                display: flex;
+                .title{
+                    span{
+                        display: block;
+                    }
+                }
+                .icon{
+                    a{
+                        &:before{
+                            content: "\f107";
+                            font-family: 'FontAwesome';
+                            color: $color-icons;
+                        }
+                    }
+                }
+            }
+            .pic-content{
+                figure{
+                    margin: 0 !important;
+                    img{
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 50%;
+                        background: $color-smspan;
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+}

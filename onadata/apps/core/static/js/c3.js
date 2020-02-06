@@ -2,6 +2,7 @@ $(function() {
     "use strict";
     setTimeout(function(){ 
         // type bar
+        
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#type-bar', // id of chart wrapper   
@@ -392,6 +393,46 @@ $(function() {
             });
         });
 
+        // $(document).ready(function(){
+        //     var chart = c3.generate({
+        //         bindto: '#designerChart',
+        //         data: {
+        //           x: 'x',
+        //           columns: [
+        //             ['x','NRA', 'NRA Vulnerable', 'Marginalised', 'Promoted Vulnerable', 'Vulnerable'],
+        //             ['label', 6, 8, 6, 5, 4 ],
+        //           ],
+        //           color: function(inColor, data) {
+        //             var colors = ['#A3A0FB', '#5EE2A0','#FF6565','F2E5D2','#FFA177'];
+        //             if(data.index !== undefined) {
+        //                 return colors[data.index];
+        //             }
+        //             return inColor;
+                    
+        //         },
+        //           type: 'bar',
+        //         },
+        //         bar: {
+        //             width: 15
+        //         },
+        //         axis: {
+        //             x: {
+        //                 type: 'category'
+        //             },
+        //             y: {
+        //                 label: {
+        //                     text: 'In Percentage (%)', 
+        //                     position: 'outer-middle'
+        //                 },
+        //                 max: 10,
+        //                 min: 0,
+        //                 padding: { top: 0, bottom: 0 }
+        //             }
+        //         },
+                
+        //     })
+        // });
+
         //double graph for progress overview
         $(document).ready(function(){
             $.ajax({
@@ -410,7 +451,7 @@ $(function() {
                     bindto: '#chart-bar', // id of chart wrapper
                     data: {
                         json: progress_data,
-                        type: 'bar', // default type of chart
+                        type: 'bar',
                     },
                     axis: {
                         x: {
@@ -421,7 +462,7 @@ $(function() {
                         },
                     },
                     bar: {
-                        width: 10
+                        width: 15
                     },
                     legend: {
                         show: true, //hide legend
@@ -438,11 +479,95 @@ $(function() {
                         top: 30
                     },
                     color: {
-                        pattern: ["#0d89df", "#00A890", "red", "#193f77", "#f5b2d0"]
+                        pattern: ['#A3A0FB', '#5EE2A0','#FF6565','F2E5D2','#FFA177']
                     },
+                    
                 });
             }
         });
+        //double graph for progress overview
+        $(document).ready(function(){
+            $.ajax({
+                type: "GET",
+                url: '/core/get-progress-data',
+                data: "{}",
+                success: function(result){
+                    OnSuccess(result);
+                },  
+            });
+
+            function OnSuccess(response){
+                var progress_data = response.progress_data;
+                var categories = response.categories;
+                var column_data = ['x'];
+                categories.forEach(function(data){
+                    column_data.push(data);
+                });
+
+                var progress = ['percentage'];
+                progress_data.forEach(function(data){
+                    progress.push(data);
+                });
+                var chart = c3.generate({
+                    bindto: '#designerChart', // id of chart wrapper
+                    data: {
+                        x: 'x',
+                        columns: [
+                            column_data,
+                            progress,
+                        ],
+                        color: function(inColor, data) {
+                            var colors = ['#A3A0FB', '#5EE2A0','#FF6565','F2E5D2','#FFA177'];
+                            if(data.index !== undefined) {
+                                return colors[data.index];
+                            }
+                            return inColor;
+                            
+                        },
+                        type: 'bar',
+                    },
+                    axis: {
+                        x: {
+                            type: 'category',
+                            // name of each category
+                            categories: categories,
+
+                        },
+                        y: {
+                            label: {
+                                text: 'In Percentage (%)', 
+                                position: 'outer-middle'
+                            },
+                            max: 60,
+                            min: 0,
+                            padding: { top: 0, bottom: 0 }
+                        }
+                    },
+                    bar: {
+                        width: 15
+                    },
+                    legend: {
+                        show: true, //hide legend
+                        position: 'inset',
+                        inset: {
+                                anchor: 'top-right',
+                                x: 50,
+                                y: -30,
+                                step: 1
+                            }
+                    },
+                    padding: {
+                        bottom: 0,
+                        top: 30
+                    },
+                    color: {
+                        pattern: ['#A3A0FB', '#5EE2A0','#FF6565','F2E5D2','#FFA177']
+                    },
+                    
+                });
+            }
+        });
+
 
         //filter progress overview double graph
         $("#progress").on("click", function(){
@@ -653,101 +778,101 @@ $(function() {
             });
         });
         //pie-chart
-        $(document).ready(function(){
-            var chart = c3.generate({
-                bindto: '#chart-pie', // id of chart wrapper
-                data: {
-                    json: pie_data,
-                    type: 'pie', // default type of chart,
-                },
-                axis: {
-                },
-                legend: {
-                    show: true, //hide legend
-                },
-                padding: {
-                    bottom: 0,
-                    top: 0
-                },
-                color: {
-                        pattern: ["#e3e3e3", "#00A890", "#0d89df", "#193f77", "#f5b2d0"]
-                }
-            });
-        });
+        // $(document).ready(function(){
+        //     var chart = c3.generate({
+        //         bindto: '#chart-pie', // id of chart wrapper
+        //         data: {
+        //             json: pie_data,
+        //             type: 'pie', // default type of chart,
+        //         },
+        //         axis: {
+        //         },
+        //         legend: {
+        //             show: true, //hide legend
+        //         },
+        //         padding: {
+        //             bottom: 0,
+        //             top: 0
+        //         },
+        //         color: {
+        //                 pattern: ["#e3e3e3", "#00A890", "#0d89df", "#193f77", "#f5b2d0"]
+        //         }
+        //     });
+        // });
 
         //cluster-pie-chart
-        $(document).ready(function(){
-            $.ajax({
-                type: "GET",
-                url: '/core/get-cluster-phase-data',
-                data: "{}",
-                success: function(result){
-                    OnSuccess(result);
-                },  
-            });
+        // $(document).ready(function(){
+        //     $.ajax({
+        //         type: "GET",
+        //         url: '/core/get-cluster-phase-data',
+        //         data: "{}",
+        //         success: function(result){
+        //             OnSuccess(result);
+        //         },  
+        //     });
 
-            function OnSuccess(response){
-                console.log(response);
-                var cluster_phase_data = response.data;
-                var chart = c3.generate({
-                    bindto: '#cluster_pie', // id of chart wrapper
-                    data: {
-                        json: cluster_phase_data,
-                        type: 'pie', // default type of chart,
-                    },
-                    axis: {
-                    },
-                    legend: {
-                        show: true, //hide legend
-                    },
-                    padding: {
-                        bottom: 0,
-                        top: 0
-                    },
-                    color: {
-                            pattern: ["#f5b2d0", "#00A890", "#0d89df"]
-                    }
-                });
-            }
-        });
+        //     function OnSuccess(response){
+        //         console.log(response);
+        //         var cluster_phase_data = response.data;
+        //         var chart = c3.generate({
+        //             bindto: '#cluster_pie', // id of chart wrapper
+        //             data: {
+        //                 json: cluster_phase_data,
+        //                 type: 'pie', // default type of chart,
+        //             },
+        //             axis: {
+        //             },
+        //             legend: {
+        //                 show: true, //hide legend
+        //             },
+        //             padding: {
+        //                 bottom: 0,
+        //                 top: 0
+        //             },
+        //             color: {
+        //                     pattern: ["#f5b2d0", "#00A890", "#0d89df"]
+        //             }
+        //         });
+        //     }
+        // });
 
-        $("#progress").on("click", function(){
-            var checked = $('#progress-form').serialize();
-            console.log(checked);
+        // $("#progress").on("click", function(){
+        //     var checked = $('#progress-form').serialize();
+        //     console.log(checked);
 
-            $.ajax({
-                type: "GET",
-                url: '/core/get-cluster-phase-data',
-                data: checked,
-                success: function(result){
-                    OnSuccess(result);
-                },  
-            });
+        //     $.ajax({
+        //         type: "GET",
+        //         url: '/core/get-cluster-phase-data',
+        //         data: checked,
+        //         success: function(result){
+        //             OnSuccess(result);
+        //         },  
+        //     });
 
-            function OnSuccess(response){
-                console.log(response);
-                var cluster_phase_data = response.data;
-                var chart = c3.generate({
-                    bindto: '#cluster_pie', // id of chart wrapper
-                    data: {
-                        json: cluster_phase_data,
-                        type: 'pie', // default type of chart,
-                    },
-                    axis: {
-                    },
-                    legend: {
-                        show: true, //hide legend
-                    },
-                    padding: {
-                        bottom: 0,
-                        top: 0
-                    },
-                    color: {
-                            pattern: ["#f5b2d0", "#00A890", "#0d89df"]
-                    }
-                });
-            }
-        });
+        //     function OnSuccess(response){
+        //         console.log(response);
+        //         var cluster_phase_data = response.data;
+        //         var chart = c3.generate({
+        //             bindto: '#cluster_pie', // id of chart wrapper
+        //             data: {
+        //                 json: cluster_phase_data,
+        //                 type: 'pie', // default type of chart,
+        //             },
+        //             axis: {
+        //             },
+        //             legend: {
+        //                 show: true, //hide legend
+        //             },
+        //             padding: {
+        //                 bottom: 0,
+        //                 top: 0
+        //             },
+        //             color: {
+        //                     pattern: ["#f5b2d0", "#00A890", "#0d89df"]
+        //             }
+        //         });
+        //     }
+        // });
 
         //gender donut
         $(document).ready(function(){
@@ -1045,5 +1170,6 @@ $(function() {
                 },
             });
         });
+        
     }, 500);
 });
