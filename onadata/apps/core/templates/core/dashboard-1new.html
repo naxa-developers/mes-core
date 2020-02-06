@@ -226,14 +226,12 @@
                             <div class="card-body card-body-graph">
                                 <div class="row no-gutters">
                                     <div class="col-md-6">
-                                        <div id="radial-chart-infoleft" class="radial-chart"></div>
+                                        <div id="district-{{ district.id }}-radial-chart" class="radial-chart"></div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="legend-wrap">
-                                            <ul class="legend">
-                                                <li class="legend-data"><label class="body-span-reg">Pre-Construction stage</label><span class="span-numdata">650 (65%)</span></li>
-                                                <li class="legend-data"><label class="body-span-reg">Physical construction stage</label><span class="span-numdata">250 (25%)</span></li>
-                                                <li class="legend-data"><label class="body-span-reg">Post construction stage</label><span class="span-numdata">100 (10%)</span></li>
+                                            <ul class="legend" id="district_{{ district.id }}_legend">
+
                                             </ul>
                                         </div>
                                     </div>
@@ -258,6 +256,9 @@
 </section>
 {% endblock %}
 {% block scripts %}
+<script>
+    var district = {{ script_district|safe }};
+</script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
