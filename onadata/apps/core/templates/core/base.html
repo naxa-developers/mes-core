@@ -209,7 +209,8 @@
     </ul>
 </div>
 <!-- Left Sidebar -->
-<aside id="leftsidebar" class="sidebar">
+
+<aside id="leftsidebar" class="sidebar sidebar-mod">
     <div class="navbar-brand">
         <button class="btn-menu ls-toggle-btn" type="button"><i class="la la-navicon"></i></button>
         <a href="{% url 'home' %}">Practical Action</a>
@@ -342,7 +343,6 @@
 
 <!-- Custom Data tables -->
 <script src="{% static 'plugins/datatable/custom/custom-datatables.js' %}"></script>
-<script src="{% static 'js/mainscripts.bundle.js' %}"></script>
 {% block scripts %}
 {% endblock %}
 </body>
