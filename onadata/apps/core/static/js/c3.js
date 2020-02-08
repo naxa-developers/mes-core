@@ -490,8 +490,8 @@ $(function() {
             $.ajax({
                 type: "GET",
                 url: '/core/get-progress-data',
-                data: "{}",
                 success: function(result){
+                    $('#progressloader').css("display", "none");
                     OnSuccess(result);
                 },  
             });
