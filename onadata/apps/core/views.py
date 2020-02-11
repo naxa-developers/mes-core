@@ -338,54 +338,63 @@ def get_district_progress(request):
             progress_data[item['Type']] = total_dict
     return JsonResponse(progress_data)
 
+
+
 def get_phase_data(request, *args, **kwargs):
     project = request.project
     types = Beneficiary.objects.filter(cluster__project=project)
     construction_phases = {}
     data = []
+        
     if 'district' in request.GET:
+        clusters = Cluster.objects.filter(project=request.project).order_by('name')
         district = District.objects.get(id=int(request.GET.get('district')))
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', clusterag__cluster__municipality__district=district).distinct()
+
         for ag in activity_groups:
             total_dict = {}
             beneficiaries = 0
+            total = 0
             phases = []
             activities = Activity.objects.filter(activity_group=ag)
-            beneficiary = Beneficiary.objects.filter(district=district, submissions__cluster_activity__cag__activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                district=district, 
+                submissions__cluster_activity__cag__activity_group=ag,
+                submissions__cluster_activity__cag__cluster__in=clusters)
             for item in beneficiary:
                 completed = True
                 for activity in activities:
-                    if Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity, status="pending").exists():
-                        completed = False
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
                 if completed:
                     beneficiaries += 1
-            try:
-                ben = round((float(beneficiaries) / len(beneficiary) * 100), 2)
-            except:
-                ben = 0
-            total_dict['sum'] = ben
             total_dict['number'] = beneficiaries
-            total_dict['total'] = round((float(beneficiaries) / len(types)) * 100, 2)
+            total_dict['percentage'] = round((float(beneficiaries) / len(activity_groups)) * 100, 2)
             construction_phases[ag.name] = total_dict
     else:
+        clusters = Cluster.objects.filter(project=request.project).order_by('name')
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         for ag in activity_groups:
             total_dict = {}
             beneficiaries = 0
             phases = []
             activities = Activity.objects.filter(activity_group=ag)
-            beneficiary = Beneficiary.objects.filter(submissions__cluster_activity__cag__activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__activity_group=ag, 
+                submissions__cluster_activity__cag__cluster__in=clusters)
             for item in beneficiary:
                 completed = True
                 for activity in activities:
-                    if Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity, status="pending").exists():
-                        completed = False
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
                 if completed:
                     beneficiaries += 1
-            ben = round((float(beneficiaries) / len(beneficiary) * 100), 2)
-            total_dict['sum'] = ben
             total_dict['number'] = beneficiaries
-            total_dict['total'] = round((float(beneficiaries) / len(types)) * 100, 2)
+            total_dict['percentage'] = round((float(beneficiaries) / len(activity_groups)) * 100, 2)
             construction_phases[ag.name] = total_dict
     return JsonResponse(construction_phases)
 

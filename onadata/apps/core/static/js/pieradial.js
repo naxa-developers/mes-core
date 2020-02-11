@@ -39,18 +39,23 @@ $(document).ready(function(){
             var inner_radius = ["90%", "60%", "30%"];
             i = 0;
             $("#phases-legend").empty();
+            var total = 0;
             $.each (result, function(key, value){
+                total = total + value.percentage;
+            })
+            $.each (result, function(key, value){
+                var percentage_value = (value.percentage / total) * 100;
                 myseries.push({
                     name: key,
                     data: [{
                         color: Highcharts.getOptions().colors[i],
                         radius: radius[i],
                         innerRadius: inner_radius[i],
-                        y: value.sum,
+                        y: percentage_value,
                     }]
                 })
                 i += 1;
-                $("#phases-legend").append('<li class="legend-data"><label class="body-span-reg">'+ key +'</label><span class="span-numdata">'+ value.number +' ('+ value.sum +'%)</span></li>')
+                $("#phases-legend").append('<li class="legend-data"><label class="body-span-reg">'+ key +'</label><span class="span-numdata"> ('+ percentage_value +'%)</span></li>')
             });   
             act_group_chart = Highcharts.chart('radial-chart', {
 
@@ -140,18 +145,24 @@ $(document).ready(function(){
                         $("#district-"+request.id+"-loader").css("display", "none");
                         i = 0;
                         $("#district_"+ request.id +"_legend").empty();
+                        var total = 0;
                         $.each (result, function(key, value){
+                            total = total + value.percentage;
+                        })
+                        
+                        $.each (result, function(key, value){
+                            var percentage_value = (value.percentage / total) * 100;
                             myseries.push({
                                 name: key,
                                 data: [{
                                     color: Highcharts.getOptions().colors[i],
                                     radius: radius[i],
                                     innerRadius: inner_radius[i],
-                                    y: value.sum,
+                                    y: percentage_value,
                                 }]
                             })
                             i += 1;
-                            $("#district_"+ request.id +"_legend").append('<li class="legend-data"><label class="body-span-reg">'+ key +'</label><span class="span-numdata">'+ value.number +' ('+ value.sum +'%)</span></li>')
+                            $("#district_"+ request.id +"_legend").append('<li class="legend-data"><label class="body-span-reg">'+ key +'</label><span class="span-numdata"> ('+ percentage_value +'%)</span></li>')
                         });   
                         chart_div = 'district-'+ request.id +'-radial-chart'
                         Highcharts.chart(chart_div, {

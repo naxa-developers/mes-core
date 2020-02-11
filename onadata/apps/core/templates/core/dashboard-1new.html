@@ -392,7 +392,8 @@
 
                 $.each(result, function(key, value){
                     var percent = (value.sum / value.total);
-                    $("#" + request.id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span>'+ value.sum +' ('+ percent +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ percent +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
+                    percent = percent.toFixed(2);
+                    $("#" + request.id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span> ('+ percent +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ percent +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
                 })
             }
         })
@@ -414,7 +415,8 @@
                 $("#" + district_id).empty();
                 $.each(result, function(key, value){
                     var percent = (value.sum / value.total);
-                    $("#" + district_id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span>'+ value.sum +' ('+ percent +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ percent +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
+                    percent = percent.toFixed(2);
+                    $("#" + district_id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span> ('+ percent +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ percent +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
                 })
             }
         });

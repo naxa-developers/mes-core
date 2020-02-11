@@ -538,7 +538,7 @@ $(function() {
                                 text: 'In Percentage (%)', 
                                 position: 'outer-middle'
                             },
-                            max: 60,
+                            max: 100,
                             min: 0,
                             padding: { top: 0, bottom: 0 }
                         }
