@@ -508,65 +508,15 @@ def get_map_data(request):
     return HttpResponse(data)
 
 
-# it contains tabular data of each beneficiary and their progress
-class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
-    template_name = 'core/dashboard-2.html'
-
-    def get(self, request):
-        project = self.request.project
-        checked = [(name, value) for name, value in request.GET.iteritems()]
-        clusters = []
-        b_types = []
-        districts = []
-        munis = []
-        for item in checked:
-            if item[0].startswith('cl'):
-                clusters.append(int(item[0].split("_")[1]))
-
-            if item[0].startswith('tp'):
-                b_types.append(item[0].split("_")[1])
-
-            if item[0].startswith('mun'):
-                munis.append(int(item[0].split("_")[1]))
-
-            if item[0].startswith('dist'):
-                districts.append(int(item[0].split("_")[1]))
-
-        beneficiaries = get_beneficiaries(districts, munis, clusters, b_types, project)
-
-        ag = ActivityGroup.objects.filter(project=project).prefetch_related('activity')
-
-
-        
-        page = request.GET.get('page', 1)
-        paginator = Paginator(beneficiaries, 100)
-        
-        try:
-            beneficiaries = paginator.page(page)
-        except PageNotAnInteger:
-            beneficiaries = paginator.page(1)
-        except EmptyPage:
-            beneficiaries = paginator.page(paginator.num_pages)
-
-        districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
-        municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
-        cluster = Cluster.objects.filter(project=project)
-        types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct('Type')
-        return render(request, self.template_name, {
-            'activity_groups': ag, 
-            'beneficiaries': beneficiaries, 
-            'districts': districts, 
-            'municipalities': municipalities,
-            'clusters': cluster,
-            'types': types
-        })
-
-
 class BeneficiaryProgressView(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
     template_name = 'core/beneficiary-progress.html'
 
     def get(self, request):
-        beneficiaries = Beneficiary.objects.filter(cluster__project=self.request.project)
+        if 'search' in request.GET:
+            key = request.GET.get('search')
+            beneficiaries = Beneficiary.objects.filter(name__icontains=key)
+        else:
+            beneficiaries = Beneficiary.objects.filter(cluster__project=self.request.project)
         page = request.GET.get('page', 1)
         paginator = Paginator(beneficiaries, 100)
         

@@ -26,9 +26,8 @@ urlpatterns = [
     url(r'forgot-password', views.ForgotView.as_view(), name='forgot_password'),
     url(r'404 error', views.ErrorView.as_view(), name='404_error'),
     url(r'dashboard-1', views.Dashboard1View.as_view(), name='dashboard-1'),
-    url(r'dashboard-2', views.Dashboard2View.as_view(), name='dashboard-2'),
     url(r'project-dashboard', views.ProjectDashboardView.as_view(), name='project-dashboard'),
-    url(r'dashboard-3', views.BeneficiaryProgressView.as_view(), name="beneficiary-progress"),
+    url(r'dashboard-2', views.BeneficiaryProgressView.as_view(), name="beneficiary-progress"),
 
     url(r'get-district-progress', views.get_district_progress, name='get-district-progress'),
     url(r'get-phase-data', views.get_phase_data, name="get-phase-data"),

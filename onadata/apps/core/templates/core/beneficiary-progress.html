@@ -56,7 +56,14 @@
                             <div class="card-header">
                                 <h5>Beneficiary</h5>
                             </div>
+                            
                             <div class="card-body">
+                                <form method="GET" action="{% url 'beneficiary-progress' %}">
+                                    <div class="form-group">
+                                        <input type="search" class="form-control" placeholder="Search a beneficiary" name="search">
+                                        <button type="submit" class="btn">Search</button>
+                                    </div>
+                                </form>
                                 <table id="dashboard_table" class="table table-bordered ">
                                     <thead>
                                         <tr>
