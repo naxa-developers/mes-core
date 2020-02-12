@@ -63,6 +63,7 @@
                                             <th class="text-center">Beneficiary name</th>
                                             <th class="text-center">Type</th>
                                             <th class="text-center">Work Progress</th>
+                                            <th class="text-center">Current Activity</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -77,6 +78,7 @@
                                                     </div>
                                                 </div>
                                             </td>
+                                            <td>{{ beneficiary.submissions.last.cluster_activity.activity.name }}</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
