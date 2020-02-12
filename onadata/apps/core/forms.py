@@ -474,6 +474,8 @@ class UserRoleForm(forms.ModelForm):
                         'cluster': [
                             'This user has already been assigned to another cluster.']})
             else:
+                if cleaned_data.get('group').name in ['donor']:
+                    return cleaned_data
                 raise ValidationError({
                     'cluster': [
                         'This field is required.']})

@@ -11,7 +11,9 @@ class Command(BaseCommand):
                       'project-management-unit',
                       'project-coordinator',
                       'social-mobilizer',
-                      'community-social-mobilizer']
+                      'community-social-mobilizer',
+                      'donor',
+                      'pamne-team',]
         for group in group_list:
             new_group, created = Group.objects.get_or_create(name=group)
             self.stdout.write('Successfully created group .. "%s"' % group)

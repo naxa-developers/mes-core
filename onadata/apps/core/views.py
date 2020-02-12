@@ -108,6 +108,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
                 'beneficiary': beneficiary
             }
             return render(request, self.template_name, context)
+        elif self.request.group.name in ['donor']:
+            return HttpResponseRedirect(reverse('dashboard-1'))
         else:
             return HttpResponseRedirect(reverse('404_error'))
             # raise PermissionDenied()

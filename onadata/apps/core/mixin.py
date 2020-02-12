@@ -86,7 +86,8 @@ USER_PERMS = {
     'manager_only': ['project-manager', 'project-management-unit'],
     'manager': ['project-manager', 'super-admin', 'project-management-unit'],
     'admin': ['super-admin'],
-    'normal': ['social-mobilizer', 'project-coordinator']
+    'normal': ['social-mobilizer', 'project-coordinator'],
+    'donor': ['donor']
 }
 
 class ProjectMixin(object):
