@@ -391,8 +391,7 @@
                 $("#district-"+request.id+"-progressloader").css("display", "none");
 
                 $.each(result, function(key, value){
-                    var percent = (value.sum / value.total);
-                    $("#" + request.id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span>'+ value.sum +' ('+ percent +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ percent +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
+                    $("#" + request.id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span> ('+ value.sum +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ value.sum +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
                 })
             }
         })
@@ -413,8 +412,7 @@
             success: function(result){
                 $("#" + district_id).empty();
                 $.each(result, function(key, value){
-                    var percent = (value.sum / value.total);
-                    $("#" + district_id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span>'+ value.sum +' ('+ percent +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ percent +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
+                    $("#" + district_id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span> ('+ value.sum +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ value.sum +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
                 })
             }
         });
