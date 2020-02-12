@@ -46,11 +46,11 @@ $(document).ready(function(){
                         color: Highcharts.getOptions().colors[i],
                         radius: radius[i],
                         innerRadius: inner_radius[i],
-                        y: value.sum,
+                        y: value.percentage,
                     }]
                 })
                 i += 1;
-                $("#phases-legend").append('<li class="legend-data"><label class="body-span-reg">'+ key +'</label><span class="span-numdata">'+ value.number +' ('+ value.sum +'%)</span></li>')
+                $("#phases-legend").append('<li class="legend-data"><label class="body-span-reg">'+ key +'</label><span class="span-numdata"> ('+ value.percentage +'%)</span></li>')
             });   
             act_group_chart = Highcharts.chart('radial-chart', {
 
@@ -140,6 +140,7 @@ $(document).ready(function(){
                         $("#district-"+request.id+"-loader").css("display", "none");
                         i = 0;
                         $("#district_"+ request.id +"_legend").empty();
+                        
                         $.each (result, function(key, value){
                             myseries.push({
                                 name: key,
@@ -147,11 +148,11 @@ $(document).ready(function(){
                                     color: Highcharts.getOptions().colors[i],
                                     radius: radius[i],
                                     innerRadius: inner_radius[i],
-                                    y: value.sum,
+                                    y: value.percentage,
                                 }]
                             })
                             i += 1;
-                            $("#district_"+ request.id +"_legend").append('<li class="legend-data"><label class="body-span-reg">'+ key +'</label><span class="span-numdata">'+ value.number +' ('+ value.sum +'%)</span></li>')
+                            $("#district_"+ request.id +"_legend").append('<li class="legend-data"><label class="body-span-reg">'+ key +'</label><span class="span-numdata"> ('+ value.percentage +'%)</span></li>')
                         });   
                         chart_div = 'district-'+ request.id +'-radial-chart'
                         Highcharts.chart(chart_div, {
