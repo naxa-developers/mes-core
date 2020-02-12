@@ -39,6 +39,7 @@ $(document).ready(function(){
             var inner_radius = ["90%", "60%", "30%"];
             i = 0;
             $("#phases-legend").empty();
+            var total = 0;
             $.each (result, function(key, value){
                 myseries.push({
                     name: key,
