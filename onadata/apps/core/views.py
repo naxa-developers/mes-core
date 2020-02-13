@@ -324,7 +324,10 @@ def get_district_progress(request):
     progress_data = {}
     categories = []
 
-    project=request.project
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project=request.project
     
     for item in types:
         beneficiary_progress = 0
@@ -355,13 +358,16 @@ def get_district_progress(request):
 
 
 def get_phase_data(request, *args, **kwargs):
-    project = request.project
+    if 'project_id' in request.session['project_id']:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     types = Beneficiary.objects.filter(cluster__project=project)
     construction_phases = {}
     data = []
         
     if 'district' in request.GET:
-        clusters = Cluster.objects.filter(project=request.project).order_by('name')
+        clusters = Cluster.objects.filter(project=project).order_by('name')
         district = District.objects.get(id=int(request.GET.get('district')))
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', clusterag__cluster__municipality__district=district).distinct()
 
@@ -388,7 +394,7 @@ def get_phase_data(request, *args, **kwargs):
             total_dict['percentage'] = round((float(beneficiaries) / len(types)) * 100, 2)
             construction_phases[ag.name] = total_dict
     else:
-        clusters = Cluster.objects.filter(project=request.project).order_by('name')
+        clusters = Cluster.objects.filter(project=project).order_by('name')
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         for ag in activity_groups:
             total_dict = {}
