@@ -504,7 +504,10 @@ def get_answer(json, labels):
 
 # for map data in dashboard1
 def get_map_data(request):
-    project = request.project
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
     form_json = form.json
     labels = get_form_location_label(json.loads(form_json))
@@ -536,7 +539,11 @@ class BeneficiaryProgressView(LoginRequiredMixin, MultipleObjectMixin, TemplateV
             key = request.GET.get('search')
             beneficiaries = Beneficiary.objects.filter(name__icontains=key)
         else:
-            beneficiaries = Beneficiary.objects.filter(cluster__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            beneficiaries = Beneficiary.objects.filter(cluster__project=project)
         page = request.GET.get('page', 1)
         paginator = Paginator(beneficiaries, 100)
         
