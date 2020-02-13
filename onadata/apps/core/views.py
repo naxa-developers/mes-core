@@ -344,7 +344,10 @@ def get_district_progress(request):
                     beneficiary_progress += obj.progress
                 except:
                     beneficiary_progress += 0
-            total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            try:
+                total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            except:
+                total_dict['sum'] = beneficiary_progress / 1
             total_dict['total'] = len(beneficiary)
             progress_data[item['Type']] = total_dict
         else:
@@ -354,7 +357,10 @@ def get_district_progress(request):
                     beneficiary_progress += obj.progress
                 except:
                     beneficiary_progress += 0
-            total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            try:
+                total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            except:
+                total_dict['sum'] = beneficiary_progress / 1
             total_dict['total'] = len(beneficiary)
             progress_data[item['Type']] = total_dict
     return JsonResponse(progress_data)
