@@ -143,16 +143,16 @@
                     <div class="row">
                         <div class="col-md-6">
                             <ul class="card-body-left">
-                                <li><label class="body-span1">Name :</label><span class="body-span-reg">{{ request.project.name }}</span></li>
-                                <li><label class="body-span1">Project Manager :</label><span class="body-span-reg">{{ request.project|get_project_manager|title }}</span></li>
-                                <li><label class="body-span1">reporting Period :</label><span class="body-span-reg">{{ request.project.get_reporting_period_display }}</span></li>
+                                <li><label class="body-span1">Name :</label><span class="body-span-reg">{{ project.name }}</span></li>
+                                <li><label class="body-span1">Project Manager :</label><span class="body-span-reg">{{ project|get_project_manager|title }}</span></li>
+                                <li><label class="body-span1">reporting Period :</label><span class="body-span-reg">{{ project.get_reporting_period_display }}</span></li>
                             </ul>
                         </div>
 
                         <div class="col-md-6">
                             <ul class="card-body-right">
-                                <li><label class="body-span1">Start Date :</label><span class="body-span-reg">{{ request.project.start_date|date }}</span></li>
-                                <li><label class="body-span1">End Date :</label><span class="body-span-reg">{{ request.project.end_date|date }}</span></li>
+                                <li><label class="body-span1">Start Date :</label><span class="body-span-reg">{{ project.start_date|date }}</span></li>
+                                <li><label class="body-span1">End Date :</label><span class="body-span-reg">{{ project.end_date|date }}</span></li>
                             </ul> 
                         </div>
                     </div>
@@ -174,7 +174,7 @@
                                                 <i class="la la-signal"></i>
                                             </div>
                                             <div class="card-text">
-                                                <span class="body-span2">{{ request.project.output.count }}</span>
+                                                <span class="body-span2">{{ project.output.count }}</span>
                                                 <span class="body-span-reg">Output</span>
                                             </div>
                                         </div>
@@ -210,7 +210,7 @@
                                                 <i class="la la-transgender-alt"></i>
                                             </div>
                                             <div class="card-text">
-                                                <span class="body-span2">{{ request.project.cluster.count }}</span>
+                                                <span class="body-span2">{{ project.cluster.count }}</span>
                                                 <span class="body-span-reg">Cluster</span>
                                             </div>
                                         </div>

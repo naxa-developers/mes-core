@@ -302,7 +302,6 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
 
     def get(self, request):
         if 'project_id' in self.request.session:
-            print(self.request.session['project_id'])
             project = Project.objects.get(id=self.request.session['project_id'])
         else:
             project = request.project
@@ -316,7 +315,8 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
             'activity_count': activity_count, 
             'beneficiary_count': beneficiary_count,
             'districts': districts,
-            'script_district': script_district})
+            'script_district': script_district,
+            'project': project})
 
 
 def get_district_progress(request):

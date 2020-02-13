@@ -35,8 +35,12 @@ class RoleInGroup(template.Node):
 
     def render(self, context):
         request = template.resolve_variable('request', context)
-        if request.role and request.role.group.name in USER_PERMS[self.role]:
+        if UserRole.objects.filter(project__id=request.session.get('project_id', 0), user=request.user).exists():
+            roles = UserRole.objects.filter(project__id=request.session.get('project_id', 0), user=request.user)
+            role = roles[0]
+        if role and role.group.name in USER_PERMS[self.role]:
             return self.nodelist.render(context)
+        
         else:
             return ''
 
