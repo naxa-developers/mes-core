@@ -68,6 +68,7 @@ from onadata.libs.utils.viewer_tools import _get_form_url
 
 
 def logout_view(request):
+    del request.session['project_id']
     logout(request)
 
     return HttpResponseRedirect('/core/sign-in/')
@@ -183,10 +184,7 @@ def signin(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    if user.user_roles.first().group.name == 'project-manager':
-                        return HttpResponseRedirect(reverse('dashboard-1'))
-                    else:
-                        return HttpResponseRedirect(reverse('home'))
+                    return HttpResponseRedirect(reverse('project-dashboard'))
                 else:
                     return render(request, 'core/sign-in.html',
                                   {'form': form,
@@ -302,7 +300,11 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard-1new.html'
 
     def get(self, request):
-        project = request.project
+        if 'project_id' in self.request.session:
+            print(self.request.session['project_id'])
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = request.project
         beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
         activity_count = Activity.objects.filter(activity_group__project=project).count()
         districts = District.objects.filter(beneficiary__isnull=False).distinct()
@@ -733,9 +735,13 @@ class UserClusterListView(LoginRequiredMixin, TemplateView):
     template_name = 'core/cluster-list.html'
 
     def get(self, request, **kwargs):
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = Project.objects.get(id=self.request.project)
         user = User.objects.get(pk=kwargs.get('pk'))
         user_roles = UserRole.objects.filter(Q(user=user) & ~Q(group__name="community-social-mobilizer"))
-        clusters = Cluster.objects.filter(userrole_cluster__in=user_roles)
+        clusters = Cluster.objects.filter(userrole_cluster__in=user_roles, project=project)
         return render(request, self.template_name, {'clusters': clusters})
 
 
