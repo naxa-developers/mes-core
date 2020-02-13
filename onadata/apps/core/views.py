@@ -2212,6 +2212,10 @@ def get_aggregation_fields(request, *args, **kwargs):
 
 
 def aggregation_settings(request, *args, **kwargs):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.method == 'GET':
         forms = XForm.objects.all()
         add_forms = list(XForm.objects.all().values('id', 'title'))
@@ -2238,12 +2242,12 @@ def aggregation_settings(request, *args, **kwargs):
 
         if len(aggregation_fields) > 0:
             aggregation_name = request.POST.get('aggregation_label', '')
-            if ActivityAggregate.objects.filter(name=aggregation_name, project=request.project).exists():
-                act_aggregate = ActivityAggregate.objects.get(name=aggregation_name, project=request.project)
+            if ActivityAggregate.objects.filter(name=aggregation_name, project=project).exists():
+                act_aggregate = ActivityAggregate.objects.get(name=aggregation_name, project=project)
                 act_aggregate.aggregation_fields = aggregation_fields
                 act_aggregate.save()
             else:
-                ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields, project=request.project)
+                ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields, project=project)
             
         return HttpResponseRedirect('/core/aggregation-list')
 
@@ -2252,14 +2256,18 @@ class AggregateView(ManagerMixin, TemplateView):
     template_name = 'core/aggregation-view.html'
 
     def get(self, request, *args, **kwargs):
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
         try:
-            aggregations = ActivityAggregate.objects.filter(project=self.request.project)
+            aggregations = ActivityAggregate.objects.filter(project=project)
             for aggregate in aggregations:
                 aggregate_question = aggregate.aggregation_fields
                 aggregation_answer = aggregate.aggregation_fields_value
                 if aggregation_answer == {}:
                     answer_dict = {}
-                    submissions = Submission.objects.filter(status='approved', cluster_activity__activity__activity_group__project=request.project)
+                    submissions = Submission.objects.filter(status='approved', cluster_activity__activity__activity_group__project=project)
                     for sub in submissions:
                         for item in aggregate_question:
                             for name, attributes in item.items():
@@ -2281,7 +2289,11 @@ class AggregationListView(ManagerMixin, TemplateView):
     template_name = 'core/aggregation-list.html'
 
     def get(self, request, *args, **kwargs):
-        aggregations = ActivityAggregate.objects.filter(project=request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        aggregations = ActivityAggregate.objects.filter(project=project)
         return render(request, self.template_name, {'aggregations': aggregations})
 
 
