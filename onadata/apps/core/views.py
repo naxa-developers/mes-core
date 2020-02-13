@@ -782,7 +782,11 @@ class ClusterListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 class UserClusterListView(LoginRequiredMixin, TemplateView):
@@ -807,7 +811,11 @@ class ClusterCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(ClusterCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -825,7 +833,11 @@ class ClusterUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(ClusterUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -841,10 +853,14 @@ class ClusterAssignView(ManagerMixin, View):
 
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
-        clusterag = ClusterAG.objects.filter(cluster_id=pk, cluster__project=self.request.project).order_by('id')
-        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag), project=self.request.project).order_by('id')
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        clusterag = ClusterAG.objects.filter(cluster_id=pk, cluster__project=project).order_by('id')
+        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag), project=project).order_by('id')
         selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group').order_by('id')
-        time_interval = ProjectTimeInterval.objects.filter(project=self.request.project)
+        time_interval = ProjectTimeInterval.objects.filter(project=project)
         return render(request, 'core/cluster-assign.html',
                       {
                           'activity_group': activity_group,
