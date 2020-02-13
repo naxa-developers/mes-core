@@ -336,9 +336,9 @@ def get_district_progress(request):
                         beneficiary_progress += obj.progress
                     except:
                         beneficiary_progress += 0
-                total_dict['sum'] = beneficiary_progress / len(beneficiary)
-                total_dict['total'] = len(beneficiary)
-                progress_data[item['Type']] = total_dict
+            total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            total_dict['total'] = len(beneficiary)
+            progress_data[item['Type']] = total_dict
         else:
             beneficiary = Beneficiary.objects.filter(district=district, Type=item['Type'], cluster__project=project).distinct()
             for obj in beneficiary:
