@@ -68,7 +68,8 @@ from onadata.libs.utils.viewer_tools import _get_form_url
 
 
 def logout_view(request):
-    del request.session['project_id']
+    if 'project_id' in request.session:
+        del request.session['project_id']
     logout(request)
 
     return HttpResponseRedirect('/core/sign-in/')
