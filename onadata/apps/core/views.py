@@ -329,13 +329,15 @@ def get_district_progress(request):
         total_dict = {}
         if 'request_data[]' in request.GET:
             municipalities = request.GET.getlist('request_data[]')
+            municipality_ids = []
             for municipality in municipalities:
-                beneficiary = Beneficiary.objects.filter(municipality__id=int(municipality), Type=item['Type'], cluster__project=project).distinct()
-                for obj in beneficiary:
-                    try:
-                        beneficiary_progress += obj.progress
-                    except:
-                        beneficiary_progress += 0
+                municipality_ids.append(int(municipality))
+            beneficiary = Beneficiary.objects.filter(municipality__id__in=municipality_ids, Type=item['Type'], cluster__project=project).distinct()
+            for obj in beneficiary:
+                try:
+                    beneficiary_progress += obj.progress
+                except:
+                    beneficiary_progress += 0
             total_dict['sum'] = beneficiary_progress / len(beneficiary)
             total_dict['total'] = len(beneficiary)
             progress_data[item['Type']] = total_dict
