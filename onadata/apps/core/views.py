@@ -1237,7 +1237,11 @@ class SubmissionView(LoginRequiredMixin, View):
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
         cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
-        time_interval = ProjectTimeInterval.objects.filter(project=request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        time_interval = ProjectTimeInterval.objects.filter(project=project)
         return render(request, 'core/submission.html', {
             'cluster_activity_groups': cluster_activity_group,
             'pk': pk,
@@ -1253,7 +1257,11 @@ class SubmissionListView(LoginRequiredMixin, View):
         return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
 
     def post(self, request, **kwargs):
-        aggregations_list = ActivityAggregate.objects.filter(project=self.request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        aggregations_list = ActivityAggregate.objects.filter(project=project)
         if 'approve' in request.POST:
             if ',' in request.POST.get('approve'):
                 sub_id = request.POST.get('approve').replace(',', '')
@@ -1296,7 +1304,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 
             order = submission.cluster_activity.activity.order
             if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order, beneficiary__cluster__project=self.request.project).update(status='approved')
+                Submission.objects.filter(cluster_activity__activity__order__lte=order, beneficiary__cluster__project=project).update(status='approved')
 
         elif 'reject' in request.POST:
             if ',' in request.POST.get('reject'):
@@ -1322,8 +1330,8 @@ class SubmissionListView(LoginRequiredMixin, View):
                 email.send()
 
         elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=self.request.project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=self.request.project, status="approved")
+            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
 
             if aggregations_list:
                 for aggregations in aggregations_list:
@@ -1396,7 +1404,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(beneficiary__cluster__project=self.request.project, cluster_activity__activity__order__lte=order).update(status='approved')
+                        Submission.objects.filter(beneficiary__cluster__project=project, cluster_activity__activity__order__lte=order).update(status='approved')
                         # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         # if aggregations_list:
@@ -1436,7 +1444,11 @@ class SubmissionListView(LoginRequiredMixin, View):
 class SubNotificationListView(LoginRequiredMixin, View):
 
     def get(self, request, **kwargs):
-        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=self.request.project).order_by('instance__date_created')
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=project).order_by('instance__date_created')
         page = request.GET.get('page', 1)
         paginator = Paginator(submissions, 200)
         
@@ -1449,7 +1461,11 @@ class SubNotificationListView(LoginRequiredMixin, View):
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
     def post(self, request, **kwargs):
-        aggregations_list = ActivityAggregate.objects.filter(project=self.request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        aggregations_list = ActivityAggregate.objects.filter(project=project)
         if 'approve' in request.POST:
             if ',' in request.POST.get('approve'):
                 sub_id = request.POST.get('approve').replace(',', '')
@@ -1490,7 +1506,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
 
             order = submission.cluster_activity.activity.order
             if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
+                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=project).update(status='approved')
                 # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                 # if aggregations_list:
@@ -1547,8 +1563,8 @@ class SubNotificationListView(LoginRequiredMixin, View):
                 )
                 email.send()
         elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=self.request.project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=self.request.project, status="approved")
+            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
 
             if aggregations_list:
                 for aggregations in aggregations_list:
