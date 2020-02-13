@@ -1635,7 +1635,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
 
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
+                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=project).update(status='approved')
                         # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         # if aggregations_list:
@@ -1872,14 +1872,18 @@ def get_municipalities(request):
 
 
 def get_clusters(request):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.is_ajax():
         municipalities = request.GET.getlist('municipalities[]')
         if municipalities:
-            clusters = Cluster.objects.filter(municipality__id__in=municipalities, project=request.project).distinct()
+            clusters = Cluster.objects.filter(municipality__id__in=municipalities, project=project).distinct()
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
         else:
-            clusters = Cluster.objects.filter(project=request.project)
+            clusters = Cluster.objects.filter(project=project)
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
     else:
@@ -1887,6 +1891,10 @@ def get_clusters(request):
 
 
 def get_activity_group(request):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.is_ajax():
         clusters = request.GET.getlist('clusters[]')
         if clusters:
@@ -1899,11 +1907,11 @@ def get_activity_group(request):
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
             else:
-                activity_groups = ActivityGroup.objects.filter(project=request.project)
+                activity_groups = ActivityGroup.objects.filter(project=project)
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
         else:
-            activity_groups = ActivityGroup.objects.filter(project=request.project)
+            activity_groups = ActivityGroup.objects.filter(project=project)
             activity_groups = serialize("json", activity_groups)
             return HttpResponse(activity_groups)
     else:
@@ -1911,6 +1919,10 @@ def get_activity_group(request):
 
 
 def get_activity(request):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.is_ajax():
         activity_groups = request.GET.getlist('activity_groups[]')
         if activity_groups:
@@ -1918,7 +1930,7 @@ def get_activity(request):
             activity = serialize("json", activity)
             return HttpResponse(activity)
         else:
-            activity = Activity.objects.filter(activity_group__project=request.project)
+            activity = Activity.objects.filter(activity_group__project=project)
             activity = serialize("json", activity)
             return HttpResponse(activity)
     else:
@@ -1933,19 +1945,27 @@ class ActivityAssignListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(activity_group__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(activity_group__project=project)
 
 
 def assign_activity(request, *args, **kwargs):
+    if 'project_id' in self.request.session:
+        project = Project.objects.get(id=self.request.session['project_id'])
+    else:
+        project = self.request.project
     activity = Activity.objects.get(pk=kwargs.get('pk'))
     if request.method == 'GET':
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=project)
 
     elif request.method == 'POST':
         activity = Activity.objects.get(pk=kwargs.get('pk'))
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=project)
         if 'assign' in request.POST:
             cluster = request.POST.getlist('clusters[]')
             for item in cluster:
