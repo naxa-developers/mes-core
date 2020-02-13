@@ -660,7 +660,11 @@ class ActivityGroupListVeiw(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 class ActivityGroupDeleteView(ManagerMixin, DeleteView):
@@ -677,7 +681,11 @@ class ActivityGroupCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityGroupCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -690,7 +698,11 @@ class ActivityGroupUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityGroupUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -708,7 +720,11 @@ class ActivityListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(activity_group__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(activity_group__project=project)
 
 
 class ActivityCreateView(ManagerMixin, CreateView):
@@ -719,7 +735,11 @@ class ActivityCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -737,7 +757,11 @@ class ActivityUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
         
