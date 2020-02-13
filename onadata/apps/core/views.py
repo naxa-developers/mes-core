@@ -1038,7 +1038,11 @@ class BeneficiaryListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(cluster__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(cluster__project=project)
 
 
 class BeneficiaryCreateView(ManagerMixin, CreateView):
@@ -1049,7 +1053,11 @@ class BeneficiaryCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(BeneficiaryCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -1067,7 +1075,11 @@ class BeneficiaryUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(BeneficiaryUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -1092,7 +1104,10 @@ class BeneficiaryUploadView(ManagerMixin, View):
                 if 'Project' in df:
                     project = Project.objects.get(id=df['Project'][row])
                 else:
-                    project = Project.objects.last()
+                    if 'project_id' in self.request.session:
+                        project = Project.objects.get(id=self.request.session['project_id'])
+                    else:
+                        project = self.request.project
 
                 district, created = District.objects.get_or_create(name=df['District '][row])
                 municipality, created = Municipality.objects.get_or_create(
@@ -1131,7 +1146,11 @@ class UserRoleListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 # class UserRoleCreateView(ManagerMixin, CreateView):
@@ -1143,7 +1162,11 @@ class UserRoleListView(ManagerMixin, ListView):
 
 class UserRoleCreateView(ManagerMixin, View):
     def get(self, request, **kwargs):
-        form = UserRoleForm(project=self.request.project, is_super_admin=self.request.is_super_admin)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        form = UserRoleForm(project=project, is_super_admin=self.request.is_super_admin)
         return render(request, 'core/userrole-form.html', {'form': form})
 
     def post(self, request, **kwargs):
@@ -1189,6 +1212,10 @@ class UserRoleUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(UserRoleUpdateView, self).get_form_kwargs()
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = project
         kwargs['project'] = self.request.project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
