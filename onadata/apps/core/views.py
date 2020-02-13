@@ -537,7 +537,11 @@ class BeneficiaryProgressView(LoginRequiredMixin, MultipleObjectMixin, TemplateV
     def get(self, request):
         if 'search' in request.GET:
             key = request.GET.get('search')
-            beneficiaries = Beneficiary.objects.filter(name__icontains=key)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            beneficiaries = Beneficiary.objects.filter(name__icontains=key, cluster__project=project)
         else:
             if 'project_id' in self.request.session:
                 project = Project.objects.get(id=self.request.session['project_id'])
@@ -596,7 +600,11 @@ class OutputListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 class OutputDetailView(ManagerMixin, DetailView):
@@ -612,7 +620,11 @@ class OutputCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(OutputCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -625,7 +637,11 @@ class OutputUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(OutputUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
