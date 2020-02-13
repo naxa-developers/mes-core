@@ -73,6 +73,17 @@ def logout_view(request):
     return HttpResponseRedirect('/core/sign-in/')
 
 
+class ProjectSelectView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/project-dashboard.html'
+
+    def get(self, request):
+        if self.request.group.name in ['super-admin',]:
+            return HttpResponseRedirect(reverse('home'))
+        else:
+            roles = UserRole.objects.filter(user=self.request.user).select_related('project')
+            return render(request, self.template_name, {'roles': roles})
+
+
 class HomeView(LoginRequiredMixin, TemplateView):    
     template_name = 'core/index.html'
 
@@ -80,12 +91,16 @@ class HomeView(LoginRequiredMixin, TemplateView):
         if self.request.group.name in ['project-coordinator', 'social-mobilizer']:
             return HttpResponseRedirect(reverse('user_cluster_list', kwargs={'pk': self.request.user.pk}))
         elif self.request.group.name in ['project-manager', 'project-management-unit']:
+            if 'project_id' in request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = request.project
             
-            output_count = Output.objects.filter(project=self.request.project).count()
-            activity_count = Activity.objects.filter(activity_group__project=self.request.project).count()
-            ag_count = ActivityGroup.objects.filter(project=self.request.project).count()     
-            cluster = Cluster.objects.filter(project=self.request.project).count()    
-            beneficiary = Beneficiary.objects.filter(cluster__project=self.request.project).count()   
+            output_count = Output.objects.filter(project=project).count()
+            activity_count = Activity.objects.filter(activity_group__project=project).count()
+            ag_count = ActivityGroup.objects.filter(project=project).count()     
+            cluster = Cluster.objects.filter(project=project).count()    
+            beneficiary = Beneficiary.objects.filter(cluster__project=project).count()   
             context = {
                 'output_count': output_count,
                 'activity_count': activity_count,
@@ -135,15 +150,11 @@ class ProjectDashboardView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
 
-class ProjectDashboardView(LoginRequiredMixin, TemplateView):
-    template_name = 'core/project-dashboard.html'
+def select_project(request, *args, **kwargs):
+    project_id = kwargs.get('pk')
+    request.session['project_id'] = project_id
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        output = Output.objects.all()
-        context['output'] = output
-        return context
+    return HttpResponseRedirect(reverse('home'))
 
 
 def web_authenticate(username=None, password=None):
@@ -325,7 +336,7 @@ def get_district_progress(request):
                         beneficiary_progress += obj.progress
                     except:
                         beneficiary_progress += 0
-                total_dict['sum'] = beneficiary_progress / len(beneficiary)
+                total_dict['sum'] = beneficiary_progress / (len(beneficiary) * 100)
                 total_dict['total'] = len(beneficiary)
                 progress_data[item['Type']] = total_dict
         else:
@@ -335,11 +346,10 @@ def get_district_progress(request):
                     beneficiary_progress += obj.progress
                 except:
                     beneficiary_progress += 0
-            total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            total_dict['sum'] = beneficiary_progress / (len(beneficiary) * 100)
             total_dict['total'] = len(beneficiary)
             progress_data[item['Type']] = total_dict
     return JsonResponse(progress_data)
-
 
 
 def get_phase_data(request, *args, **kwargs):
