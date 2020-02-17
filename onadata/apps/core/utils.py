@@ -541,7 +541,7 @@ def check_registration_submission(submission):
         return False
 
 
-def check_beneficiary_entry_submission(submission):
+def check_entry_submission(submission):
     if submission.cluster_activity.activity.is_entry:
         return True
     else:
@@ -627,4 +627,8 @@ def create_db_table(submission):
         return True
     else:
         return False
-        
+
+
+def beneficiary_entry(submission):
+    if check_entry_submission(submission):
+        pass
