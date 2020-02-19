@@ -10,20 +10,10 @@ $(function(){
 
 $(function(){
 	$('#Beneficiary_table').DataTable({
-//		"scrollX": "1000px",
+		"scrollX": "1000px",
 		"scrollCollapse": true,
-		'iDisplayLength': 25,
-		'bPaginate': false,
-	});
-});
-
-$(function(){
-	$('#dashboard_table').DataTable({
-		"scrollX": true,
-		"scrollCollapse": true,
-//		'iDisplayLength': 25,
-		'paging': false,
-
+		'iDisplayLength': 3,
+		
 	});
 });
 
@@ -34,7 +24,7 @@ $(function(){
 		"scrollY": "200px",
 		"scrollCollapse": true,
 		"paging": false,
-		'iDisplayLength': 25,
+		'iDisplayLength': 3,
 	});
 });
 

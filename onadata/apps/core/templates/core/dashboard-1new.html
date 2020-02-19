@@ -1,0 +1,424 @@
+{% extends 'core/base.html' %}
+{% block content %}
+{% load static %}
+{% load filters %}
+
+<!-- <div class="page-header">
+    <div class="page-header-wrap">
+        <div class="right-nav">
+            <div class="dropdown">
+                <button class="common-button is-clear btn_image">
+                    <img src="./images/noun_Upload_1507391.svg" alt="">
+                </button>
+            </div>
+        
+            <div class="dropdown">
+                <button class="common-button is-clear dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="title-head">
+                    <span class="body-span">Manish</span>
+                    <span class="body-smspan">Project Manager</span>
+                </div>
+                    <img src="./images/noun_Upload_1507391.svg" alt="">
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<!-- Main Content -->
+<style>
+    .loader {
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        margin: 10px 130px 0px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /*for district progress loader*/
+    .district_loader {
+        position: relative;
+        width: 50%;
+        margin: 20px auto;
+        height: 20px;
+    }
+
+    .duo {
+    height: 20px;
+    width: 50px;
+    background: hsla(0, 0%, 0%, 0.0);
+    position: absolute;
+    
+    }
+
+    .duo, .dot {
+    animation-duration: 0.8s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    }
+
+    .duo1 {
+    left: 0;
+    }
+
+    .duo2 {
+    left: 30px
+    }
+
+
+    .dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background: #333;
+    position: absolute;
+    }
+
+    .dot-a {
+    left: 0px;  
+    background: #76da92;
+    }
+
+    .dot-b {
+    right: 0px;
+    background: #e66062;
+    }
+
+
+    @keyframes spin {
+        0% { transform: rotate(0deg) }
+    50% { transform: rotate(180deg) }
+    100% { transform: rotate(180deg) }
+    }
+
+    @keyframes onOff {
+        0% { opacity: 0; }
+    49% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 1; }
+    }
+
+    .duo1 {
+    animation-name: spin;
+    }
+
+    .duo2 {
+    animation-name: spin;
+    animation-direction: reverse;
+    }
+
+    .duo2 .dot-b {
+    animation-name: onOff;
+    }
+
+    .duo1 .dot-a {
+    opacity: 0;
+    animation-name: onOff;
+    animation-direction: reverse;
+    }
+</style>
+
+<section class="content content-mod">
+
+    <!-- project-section -->
+    <div class="project-section project-section-mod sub-section">
+        <h2 class="h2-title h2-common">Project overview</h2>
+
+        <!-- project-list -->
+        <div class="project-list">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="card-body-left">
+                                <li><label class="body-span1">Name :</label><span class="body-span-reg">{{ project.name }}</span></li>
+                                <li><label class="body-span1">Project Manager :</label><span class="body-span-reg">{{ project|get_project_manager|title }}</span></li>
+                                <li><label class="body-span1">reporting Period :</label><span class="body-span-reg">{{ project.get_reporting_period_display }}</span></li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-6">
+                            <ul class="card-body-right">
+                                <li><label class="body-span1">Start Date :</label><span class="body-span-reg">{{ project.start_date|date }}</span></li>
+                                <li><label class="body-span1">End Date :</label><span class="body-span-reg">{{ project.end_date|date }}</span></li>
+                            </ul> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- map-view -->
+        <div class="map-view map-view-mod">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row clearfix">
+                        <div class="col-md-3">
+                            <div class="card card-widget">
+                                <div class="body">
+                                    <a href="{% url 'output_list' %}">
+                                        <div class="card-content card-content-blue">
+                                            <div class="card-icon">
+                                                <i class="la la-signal"></i>
+                                            </div>
+                                            <div class="card-text">
+                                                <span class="body-span2">{{ project.output.count }}</span>
+                                                <span class="body-span-reg">Output</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="card card-widget ">
+                                <div class="body">
+                                    <a href="{% url 'activity_list' %}">
+                                        <div class="card-content card-content-purple">
+                                            <div class="card-icon">
+                                                <i class="la la-line-chart"></i>
+                                            </div>
+                                            <div class="card-text">
+                                                <span class="body-span2">{{ activity_count }}</span>
+                                                <span class="body-span-reg">Actvities</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 ">
+                            <div class="card card-widget">
+                                <div class="body">
+                                    <a href="{% url 'cluster_list' %}">
+                                        <div class="card-content card-content-green">
+                                            <div class="card-icon">
+                                                <i class="la la-transgender-alt"></i>
+                                            </div>
+                                            <div class="card-text">
+                                                <span class="body-span2">{{ project.cluster.count }}</span>
+                                                <span class="body-span-reg">Cluster</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <div class="card card-widget">
+                                <div class="body">
+                                    <a href="{% url 'beneficiary_list' %}">
+                                        <div class="card-content card-content-yellow">
+                                            <div class="card-icon">
+                                                <i class="la la-sellsy"></i>
+                                            </div>
+                                            <div class="card-text">
+                                                <span class="body-span2">{{ beneficiary_count }}</span>
+                                                <span class="body-span-reg">Benificiaries</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="graph-section sub-section">
+        <h2 class="h2-title h2-common">Project summary</h2>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card content-card">
+                            <div class="card-header">
+                                <span class="body_subtitle">Construction phases</span>
+                            </div>  
+                            <div class="card-body card-body-graph">
+                                <div class="row no-gutters">
+                                    <div class="col-md-6">
+                                        <div class="loader" id="radialloader"></div>
+                                        <div id="radial-chart"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="legend-wrap">
+                                            <ul class="legend" id="phases-legend">
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card content-card">
+                            <div class="card-header">
+                                <span class="body_subtitle">Progress overview</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="loader" id="progressloader"></div>
+                                <div id="designerChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-graph-section sub-section">
+        
+        <h2 class="h2-title h2-common">District summary</h2>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    {% for district in districts %}
+                    <div class="col-md-6">
+                        <div class="card content-card">
+                            <div class="card-header">
+                                <div class="card-header-left">
+                                    <span class="body_title">{{ district.name }}</span>
+                                    <span class="body_subtitle">Construction phases</span>
+                                </div>
+                                <div class="card-header-right">
+                                    <form>
+                                        <div class="form-group">
+                                            <div class="select-option">
+                                                <span>select Municipality</span>
+                                                <div class="select-list">
+                                                    <ul>
+                                                        {% for municipality in district.municipality.all %}
+                                                        <li>
+                                                            <div class="checkbox">
+                                                                <input id="mun_{{ municipality.id }}" class="{{ district.id }}" type="checkbox" name="{{ municipality.id }}" value="{{ municipality.id }}" district_id="{{ district.id }}">
+                                                                <label for="mun_{{ municipality.id }}">{{ municipality.name }}</label>
+                                                            </div>
+                                                        </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" district_id="{{ district.id }}" class="btn filter-btn {{ district.id }}">Filter</button>
+                                    </form>
+                                </div>
+                            </div>  
+                            <div class="card-body card-body-graph">
+                                <div class="row no-gutters">
+                                    <div class="col-md-6">
+                                        <div class="loader" id="district-{{district.id}}-loader"></div>
+                                        <div id="district-{{ district.id }}-radial-chart" class="radial-chart"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="legend-wrap">
+                                            <ul class="legend" id="district_{{ district.id }}_legend">
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card content-card">
+                            <div class="card-header">
+                                <span class="body_subtitle">Progress overview</span>
+                            </div>  
+                            <div class="card-body card-body-graph" id="{{ district.id }}">
+                                <div class="district_loader" id="district-{{district.id}}-progressloader">
+                                    <div class="duo duo1">
+                                      <div class="dot dot-a"></div>
+                                      <div class="dot dot-b"></div>
+                                    </div>
+                                    <div class="duo duo2">
+                                      <div class="dot dot-a"></div>
+                                      <div class="dot dot-b"></div>
+                                    </div>
+                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+       
+    </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+    var district = {{ script_district|safe }};
+</script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="{% static 'js/pieradial.js' %}"></script>
+<script src="{% static 'js/c3.bundle.js' %}"></script>
+<script src="{% static 'js/c3.js' %}"></script>
+<script>
+    var district = {{ script_district|safe}};
+    district.forEach(function(request){
+        $.ajax({
+            url: '/core/get-district-progress/',
+            type: 'GET',
+            data: {'id': request.id},
+            dataType: "json",
+            
+            success: function(result){
+                $("#district-"+request.id+"-progressloader").css("display", "none");
+
+                $.each(result, function(key, value){
+                    $("#" + request.id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span> ('+ value.sum +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ value.sum +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
+                })
+            }
+        })
+    });
+    
+    $(".filter-btn").click(function(){
+        var request_data = []
+        district_id = $(this).attr('district_id');
+        $.each($("input[class='"+ district_id +"']:checked"), function(){
+            request_data.push(this.value);
+        });
+        $.ajax({
+            url: '/core/get-district-progress',
+            type: 'GET',
+            data: {'id': district_id, 'request_data': request_data},
+            dataType: "json",
+
+            success: function(result){
+                $("#" + district_id).empty();
+                $.each(result, function(key, value){
+                    $("#" + district_id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span> ('+ value.sum +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ value.sum +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');
+                })
+            }
+        });
+
+    });
+    
+</script>
+
+{% endblock %}

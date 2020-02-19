@@ -209,7 +209,8 @@
     </ul>
 </div>
 <!-- Left Sidebar -->
-<aside id="leftsidebar" class="sidebar">
+
+<aside id="leftsidebar" class="sidebar sidebar-mod">
     <div class="navbar-brand">
         <button class="btn-menu ls-toggle-btn" type="button"><i class="la la-navicon"></i></button>
         <a href="{% url 'home' %}">Practical Action</a>
@@ -221,7 +222,7 @@
                     <a class="image" href="#"><img src="{% static 'images/pf.png' %}" alt="User"></a>
                     <div class="detail">
                         <h4>{{ request.user.username|title }}</h4>
-                        <small>{{ request.user.user_roles.first }}</small>
+                        <small>{{ role.group.name }}</small>
                     </div>
                 </div>
             </li>
@@ -229,8 +230,16 @@
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-tasks"></i><span>Dashboard</span></a>
                 <ul class="ml-menu">
                     <li><a href="{% url 'dashboard-1' %}">Dashboard-1</a></li>
-                    <li><a href="{% url 'dashboard-2' %}">Dashboard-2</a></li>
-                    <li><a href="{% url 'beneficiary-progress' %}">Dashboard-3</a></li>
+                    <li><a href="{% url 'beneficiary-progress' %}">Dashboard-2</a></li>
+                    <li><a href="{% url 'map-dashboard' %}">Map Dashboard</a></li>
+                </ul>
+            </li>
+            {% end ifrole %}
+            {% ifrole 'donor' %}
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-tasks"></i><span>Dashboard</span></a>
+                <ul class="ml-menu">
+                    <li><a href="{% url 'dashboard-1' %}">Dashboard-1</a></li>
+                    <li><a href="{% url 'beneficiary-progress' %}">Dashboard-2</a></li>
                     <li><a href="{% url 'map-dashboard' %}">Map Dashboard</a></li>
                 </ul>
             </li>
@@ -241,7 +250,6 @@
                     <li><a href="{% url 'project_list' %}">Projects List</a></li>
                     <li><a href="{% url 'project_add' %}">Create Projects</a></li>
                 </ul>
-
             {% end ifrole %}
             {% ifrole 'manager_only' %}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-signal"></i><span>Output</span></a>
@@ -295,19 +303,21 @@
                     <li><a href="{% url 'aggregation-view' %}">Aggregation View</a></li>
                     <li><a href="{% url 'aggregation-settings' %}">Aggregation Setting</a></li>
                 </ul>
-            </li>
+            </li>   
             {% end ifrole %}
             <!--<li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-asterisk"></i><span>Config</span></a>-->
                 <!--<ul class="ml-menu">-->
                     <!--<li><a href="{% url 'config_edit' 1 %}">config-edit</a></li>-->
                 <!--</ul>-->
             <!--</li>-->
+            {% ifrole 'manager' %}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-user"></i><span>User-Role</span></a>
                 <ul class="ml-menu">
                     <li><a href="{% url 'userrole_list' %}">User-role List</a></li>
                     <li><a href="{% url 'userrole_add' %}">Add User-role</a></li>
                 </ul>
             </li>
+            {% end ifrole %}
             <!--<li><a href="javascript:void(0);" class="menu-toggle"><i class="la la-lock"></i><span>Authentication</span></a>-->
                 <!--<ul class="ml-menu">-->
                     <!--&lt;!&ndash; <li><a href="{% url 'forgot_password' %}">Forgot Password</a></li> &ndash;&gt;-->
@@ -345,6 +355,4 @@
 {% block scripts %}
 {% endblock %}
 </body>
-
-
 </html>

@@ -145,7 +145,7 @@
                 }
             }
             input.form-control, textarea{
-                background-color: $color-bg;
+                background-color: $color-white;
                 border-color:rgba($color-primary, 0.2);
                 &::placeholder{
                     font-size: 0.775rem;
@@ -176,7 +176,7 @@
                     color:$color-primary;
                     font-size: 0.775rem;
                     background:none;
-                    background-color:$color-bg;
+                    background-color:$color-white;
                     option{
                         font-size:0.775rem;
                     }
@@ -215,7 +215,7 @@
             .select2-container--default 
             .select2-selection--multiple,
             .select2-container--default  .select2-selection--single{
-                background-color: $color-bg;
+                background-color: $color-white;
                 border:1px solid rgba($color-primary, 0.2);
                 height: calc(2.25rem + 2px);
                 padding: .375rem 1.75rem .375rem .75rem;
@@ -516,6 +516,7 @@
 .taglist{
     p{
         font-size:0.875rem;
+        font-style: italic;
         label{
             display: inline-block;
             font-weight: 600;
@@ -523,7 +524,7 @@
             &::after{
                 content:":";
                 display: inline-block;
-                margin:0 2px;
+                margin:0 5px;
             }
         }
     }
@@ -534,6 +535,40 @@
         button{
             margin-left: 15px;
         }
+    }
+}
+.multiple-flex{
+    @include flexjust;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top:0.5rem;
+    button{
+        margin-right: 1rem;
+    }
+    .custom-select{
+        height: calc(1.75rem + 2px);
+        padding: .45rem 1.75rem .45rem .75rem;
+        line-height: 1.5;
+    }
+}
+.assign-flex{
+    @include flexjust;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top:0.5rem;
+    flex-wrap: nowrap;
+    label{
+        font-size: 0.875rem
+    }
+    .custom-select{
+        height: calc(1.75rem + 2px);
+        padding: .45rem 1.75rem .45rem .75rem;
+        line-height: 1.5;
+    } 
+    input{
+        margin:0 1rem;
+        height: 32px;
+        padding:0.45rem 0.75rem;
     }
 }
 

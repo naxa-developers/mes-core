@@ -418,7 +418,7 @@ class UserRoleForm(forms.ModelForm):
         else:
             self.fields['project'].choices = ((project.id, project.name) for project in Project.objects.filter(id=project.id))
             self.fields['cluster'].queryset = Cluster.objects.filter(project=project)
-            self.fields['user'].choices = ((user.id, user.username) for user in User.objects.filter(Q(user_roles__isnull=True)|Q(user_roles__project=project)))
+            self.fields['user'].choices = ((user.id, user.username) for user in User.objects.all())
 
     class Meta:
         model = UserRole
@@ -441,6 +441,12 @@ class UserRoleForm(forms.ModelForm):
                 })
 
         elif self.instance.pk:
+            if UserRole.objects.filter(~Q(group=cleaned_data.get('group'), project=cleaned_data.get('project'), user=cleaned_data.get('user'))).exists():
+                raise ValidationError({
+                    'user': [
+                        'A user can only be assigned to a single role in a project'
+                    ]
+                })
             clusters = cleaned_data.get('cluster')
             if clusters:
                 if cleaned_data.get('group').name in ['social-mobilizer']:
@@ -457,6 +463,13 @@ class UserRoleForm(forms.ModelForm):
                                         'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
 
         else:
+            if UserRole.objects.filter(~Q(group=cleaned_data.get('group')), project=cleaned_data.get('project'), user=cleaned_data.get('user')).exists():
+                raise ValidationError({
+                    'user': [
+                        'A user can only be assigned to a single role in a project'
+                    ]
+                })
+
             if cleaned_data.get('cluster'):
                 if cleaned_data.get('group').name in ['social-mobilizer']:
                     pass
@@ -474,6 +487,8 @@ class UserRoleForm(forms.ModelForm):
                         'cluster': [
                             'This user has already been assigned to another cluster.']})
             else:
+                if cleaned_data.get('group').name in ['donor']:
+                    return cleaned_data
                 raise ValidationError({
                     'cluster': [
                         'This field is required.']})

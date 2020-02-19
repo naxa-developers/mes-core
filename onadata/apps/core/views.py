@@ -68,9 +68,22 @@ from onadata.libs.utils.viewer_tools import _get_form_url
 
 
 def logout_view(request):
+    if 'project_id' in request.session:
+        del request.session['project_id']
     logout(request)
 
     return HttpResponseRedirect('/core/sign-in/')
+
+
+class ProjectSelectView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/project-dashboard.html'
+
+    def get(self, request):
+        if self.request.group.name in ['super-admin',]:
+            return HttpResponseRedirect(reverse('home'))
+        else:
+            roles = UserRole.objects.filter(user=self.request.user).select_related('project')
+            return render(request, self.template_name, {'roles': roles})
 
 
 class HomeView(LoginRequiredMixin, TemplateView):    
@@ -80,12 +93,16 @@ class HomeView(LoginRequiredMixin, TemplateView):
         if self.request.group.name in ['project-coordinator', 'social-mobilizer']:
             return HttpResponseRedirect(reverse('user_cluster_list', kwargs={'pk': self.request.user.pk}))
         elif self.request.group.name in ['project-manager', 'project-management-unit']:
+            if 'project_id' in request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = request.project
             
-            output_count = Output.objects.filter(project=self.request.project).count()
-            activity_count = Activity.objects.filter(activity_group__project=self.request.project).count()
-            ag_count = ActivityGroup.objects.filter(project=self.request.project).count()     
-            cluster = Cluster.objects.filter(project=self.request.project).count()    
-            beneficiary = Beneficiary.objects.filter(cluster__project=self.request.project).count()   
+            output_count = Output.objects.filter(project=project).count()
+            activity_count = Activity.objects.filter(activity_group__project=project).count()
+            ag_count = ActivityGroup.objects.filter(project=project).count()     
+            cluster = Cluster.objects.filter(project=project).count()    
+            beneficiary = Beneficiary.objects.filter(cluster__project=project).count()   
             context = {
                 'output_count': output_count,
                 'activity_count': activity_count,
@@ -108,6 +125,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
                 'beneficiary': beneficiary
             }
             return render(request, self.template_name, context)
+        elif self.request.group.name in ['donor']:
+            return HttpResponseRedirect(reverse('dashboard-1'))
         else:
             return HttpResponseRedirect(reverse('404_error'))
             # raise PermissionDenied()
@@ -133,15 +152,11 @@ class ProjectDashboardView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
 
-class ProjectDashboardView(LoginRequiredMixin, TemplateView):
-    template_name = 'core/project-dashboard.html'
+def select_project(request, *args, **kwargs):
+    project_id = kwargs.get('pk')
+    request.session['project_id'] = project_id
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        output = Output.objects.all()
-        context['output'] = output
-        return context
+    return HttpResponseRedirect(reverse('home'))
 
 
 def web_authenticate(username=None, password=None):
@@ -170,10 +185,7 @@ def signin(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    if user.user_roles.first().group.name == 'project-manager':
-                        return HttpResponseRedirect(reverse('dashboard-1'))
-                    else:
-                        return HttpResponseRedirect(reverse('home'))
+                    return HttpResponseRedirect(reverse('project-dashboard'))
                 else:
                     return render(request, 'core/sign-in.html',
                                   {'form': form,
@@ -286,78 +298,209 @@ class ErrorView(TemplateView):
 
 
 class Dashboard1View(LoginRequiredMixin, TemplateView):
-    template_name = 'core/dashboard-1.html'
+    template_name = 'core/dashboard-1new.html'
 
     def get(self, request):
-        project = request.project
-        # data required for charts and drop down menus
-        districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
-        municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
-        select_cluster = Cluster.objects.filter(project=project)
-
-        types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
-        # intervals = ProjectTimeInterval.objects.values('label').order_by('label')
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = request.project
         beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
         activity_count = Activity.objects.filter(activity_group__project=project).count()
-        interval = []
+        districts = District.objects.filter(beneficiary__isnull=False).distinct()
 
-        # time intervals for activity progress data
-        # for item in intervals:
-        #     interval.append(str(item['label']))
-
-        # for beneficiary type pie data
-        pie_data = {}
-        beneficiary_types = types.annotate(total=Count('Type'))
-        for item in beneficiary_types:
-            pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
-
-        # get cluster activity overview data on basis of filter used
-        # if 'cluster_activity' in request.GET:
-        #     checked = [(name, value) for name, value in request.GET.iteritems()]
-        #     activity = []
-        #     for item in checked:
-        #         if item[0].startswith('a'):
-        #             activity.append(item[0].split("_")[1])
-
-        #     chart_single = get_cluster_activity_data(request.project, activity)
-
-        # for no filter used
-        # else:
-        #     chart_single = get_cluster_activity_data(request.project)
-
-        # get progress overview data on basis of filter used
-        # if 'progress' in request.GET:
-        #     checked = [(name, value) for name, value in request.GET.iteritems()]
-        #     clusters = []
-        #     select_districts = []
-        #     munis = []
-        #     for item in checked:
-        #         if item[0].startswith('cl'):
-        #             clusters.append(int(item[0].split("_")[1]))
-
-        #         if item[0].startswith('mun'):
-        #             munis.append(int(item[0].split("_")[1]))
-
-        #         if item[0].startswith('dist'):
-        #             select_districts.append(int(item[0].split("_")[1]))
-
-        #     construction_phases = get_progress_data(
-        #         request.project, types, clusters, select_districts, munis)
-
-        # else:
-        #     construction_phases = get_progress_data(request.project, types)
-
+        script_district_queryset = District.objects.filter(beneficiary__isnull=False).distinct().values('id', 'name')
+        script_district = json.dumps(list(script_district_queryset))
         return render(request, self.template_name, {
-            'districts': districts,
-            'municipalities': municipalities,
-            'select_clusters': select_cluster,
-            'activity_count': activity_count,
+            'activity_count': activity_count, 
             'beneficiary_count': beneficiary_count,
-            # 'intervals': interval,
-            # 'chart_single': chart_single,
-            'pie_data': pie_data,
-            # 'construction_phases': construction_phases
-        })
+            'districts': districts,
+            'script_district': script_district,
+            'project': project})
+
+
+def get_district_progress(request):
+    district = District.objects.get(pk=request.GET.get('id'))
+    types = Beneficiary.objects.filter(district=district, cluster__project=request.project).values('Type').distinct()
+    progress_data = {}
+    categories = []
+
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project=request.project
+    
+    for item in types:
+        beneficiary_progress = 0
+        total_dict = {}
+        if 'request_data[]' in request.GET:
+            municipalities = request.GET.getlist('request_data[]')
+            municipality_ids = []
+            for municipality in municipalities:
+                municipality_ids.append(int(municipality))
+            beneficiary = Beneficiary.objects.filter(municipality__id__in=municipality_ids, Type=item['Type'], cluster__project=project).distinct()
+            for obj in beneficiary:
+                try:
+                    beneficiary_progress += obj.progress
+                except:
+                    beneficiary_progress += 0
+            try:
+                total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            except:
+                total_dict['sum'] = beneficiary_progress / 1
+            total_dict['total'] = len(beneficiary)
+            progress_data[item['Type']] = total_dict
+        else:
+            beneficiary = Beneficiary.objects.filter(district=district, Type=item['Type'], cluster__project=project).distinct()
+            for obj in beneficiary:
+                try:
+                    beneficiary_progress += obj.progress
+                except:
+                    beneficiary_progress += 0
+            try:
+                total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            except:
+                total_dict['sum'] = beneficiary_progress / 1
+            total_dict['total'] = len(beneficiary)
+            progress_data[item['Type']] = total_dict
+    return JsonResponse(progress_data)
+
+
+def get_phase_data(request, *args, **kwargs):
+    if 'project_id' in request.session['project_id']:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
+    types = Beneficiary.objects.filter(cluster__project=project)
+    construction_phases = {}
+    data = []
+        
+    if 'district' in request.GET:
+        clusters = Cluster.objects.filter(project=project).order_by('name')
+        district = District.objects.get(id=int(request.GET.get('district')))
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', clusterag__cluster__municipality__district=district).distinct()
+
+        for ag in activity_groups:
+            total_dict = {}
+            beneficiaries = 0
+            total = 0
+            phases = []
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                district=district, 
+                submissions__cluster_activity__cag__activity_group=ag,
+                submissions__cluster_activity__cag__cluster__in=clusters).distinct()
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            total_dict['number'] = beneficiaries
+            total_dict['percentage'] = round((float(beneficiaries) / len(types)) * 100, 2)
+            construction_phases[ag.name] = total_dict
+    else:
+        clusters = Cluster.objects.filter(project=project).order_by('name')
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
+        for ag in activity_groups:
+            total_dict = {}
+            beneficiaries = 0
+            phases = []
+            activities = Activity.objects.filter(activity_group=ag)
+            beneficiary = Beneficiary.objects.filter(
+                submissions__cluster_activity__cag__activity_group=ag, 
+                submissions__cluster_activity__cag__cluster__in=clusters).distinct()
+            for item in beneficiary:
+                completed = True
+                for activity in activities:
+                    submission = Submission.objects.filter(beneficiary=item, cluster_activity__activity=activity)
+                    for s in submission:
+                        if s.status != 'approved':
+                            completed = False
+                if completed:
+                    beneficiaries += 1
+            total_dict['number'] = beneficiaries
+            total_dict['percentage'] = round((float(beneficiaries) / len(types)) * 100, 2)
+            construction_phases[ag.name] = total_dict
+    return JsonResponse(construction_phases)
+
+
+# class Dashboard1View(LoginRequiredMixin, TemplateView):
+#     template_name = 'core/dashboard-1.html'
+
+#     def get(self, request):
+#         project = request.project
+#         # data required for charts and drop down menus
+#         districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
+#         municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
+#         select_cluster = Cluster.objects.filter(project=project)
+
+#         types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
+#         # intervals = ProjectTimeInterval.objects.values('label').order_by('label')
+#         beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
+#         activity_count = Activity.objects.filter(activity_group__project=project).count()
+#         interval = []
+
+#         # time intervals for activity progress data
+#         # for item in intervals:
+#         #     interval.append(str(item['label']))
+
+#         # for beneficiary type pie data
+#         pie_data = {}
+#         beneficiary_types = types.annotate(total=Count('Type'))
+#         for item in beneficiary_types:
+#             pie_data[str(item['Type'])] = [round((float(item['total']) / beneficiary_count) * 100, 2)]
+
+#         # get cluster activity overview data on basis of filter used
+#         # if 'cluster_activity' in request.GET:
+#         #     checked = [(name, value) for name, value in request.GET.iteritems()]
+#         #     activity = []
+#         #     for item in checked:
+#         #         if item[0].startswith('a'):
+#         #             activity.append(item[0].split("_")[1])
+
+#         #     chart_single = get_cluster_activity_data(request.project, activity)
+
+#         # for no filter used
+#         # else:
+#         #     chart_single = get_cluster_activity_data(request.project)
+
+#         # get progress overview data on basis of filter used
+#         # if 'progress' in request.GET:
+#         #     checked = [(name, value) for name, value in request.GET.iteritems()]
+#         #     clusters = []
+#         #     select_districts = []
+#         #     munis = []
+#         #     for item in checked:
+#         #         if item[0].startswith('cl'):
+#         #             clusters.append(int(item[0].split("_")[1]))
+
+#         #         if item[0].startswith('mun'):
+#         #             munis.append(int(item[0].split("_")[1]))
+
+#         #         if item[0].startswith('dist'):
+#         #             select_districts.append(int(item[0].split("_")[1]))
+
+#         #     construction_phases = get_progress_data(
+#         #         request.project, types, clusters, select_districts, munis)
+
+#         # else:
+#         #     construction_phases = get_progress_data(request.project, types)
+
+#         return render(request, self.template_name, {
+#             'districts': districts,
+#             'municipalities': municipalities,
+#             'select_clusters': select_cluster,
+#             'activity_count': activity_count,
+#             'beneficiary_count': beneficiary_count,
+#             # 'intervals': interval,
+#             # 'chart_single': chart_single,
+#             'pie_data': pie_data,
+#             # 'construction_phases': construction_phases
+#         })
 
 
 def get_answer(json, labels):
@@ -370,7 +513,10 @@ def get_answer(json, labels):
 
 # for map data in dashboard1
 def get_map_data(request):
-    project = request.project
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
     form_json = form.json
     labels = get_form_location_label(json.loads(form_json))
@@ -394,65 +540,23 @@ def get_map_data(request):
     return HttpResponse(data)
 
 
-# it contains tabular data of each beneficiary and their progress
-class Dashboard2View(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
-    template_name = 'core/dashboard-2.html'
-
-    def get(self, request):
-        project = self.request.project
-        checked = [(name, value) for name, value in request.GET.iteritems()]
-        clusters = []
-        b_types = []
-        districts = []
-        munis = []
-        for item in checked:
-            if item[0].startswith('cl'):
-                clusters.append(int(item[0].split("_")[1]))
-
-            if item[0].startswith('tp'):
-                b_types.append(item[0].split("_")[1])
-
-            if item[0].startswith('mun'):
-                munis.append(int(item[0].split("_")[1]))
-
-            if item[0].startswith('dist'):
-                districts.append(int(item[0].split("_")[1]))
-
-        beneficiaries = get_beneficiaries(districts, munis, clusters, b_types, project)
-
-        ag = ActivityGroup.objects.filter(project=project).prefetch_related('activity')
-
-
-        
-        page = request.GET.get('page', 1)
-        paginator = Paginator(beneficiaries, 100)
-        
-        try:
-            beneficiaries = paginator.page(page)
-        except PageNotAnInteger:
-            beneficiaries = paginator.page(1)
-        except EmptyPage:
-            beneficiaries = paginator.page(paginator.num_pages)
-
-        districts = District.objects.filter(id__in=Beneficiary.objects.values('district__id').distinct())
-        municipalities = Municipality.objects.filter(id__in=Beneficiary.objects.values('municipality__id').distinct())
-        cluster = Cluster.objects.filter(project=project)
-        types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct('Type')
-        return render(request, self.template_name, {
-            'activity_groups': ag, 
-            'beneficiaries': beneficiaries, 
-            'districts': districts, 
-            'municipalities': municipalities,
-            'clusters': cluster,
-            'types': types
-        })
-
-
 class BeneficiaryProgressView(LoginRequiredMixin, MultipleObjectMixin, TemplateView):
     template_name = 'core/beneficiary-progress.html'
 
     def get(self, request):
-        beneficiaries = Beneficiary.objects.filter(cluster__project=self.request.project)
+        if 'search' in request.GET:
+            key = request.GET.get('search')
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            beneficiaries = Beneficiary.objects.filter(name__icontains=key, cluster__project=project)
+        else:
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            beneficiaries = Beneficiary.objects.filter(cluster__project=project)
         page = request.GET.get('page', 1)
         paginator = Paginator(beneficiaries, 100)
         
@@ -505,7 +609,11 @@ class OutputListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 class OutputDetailView(ManagerMixin, DetailView):
@@ -521,7 +629,11 @@ class OutputCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(OutputCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -534,7 +646,11 @@ class OutputUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(OutputUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -553,7 +669,11 @@ class ActivityGroupListVeiw(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 class ActivityGroupDeleteView(ManagerMixin, DeleteView):
@@ -570,7 +690,11 @@ class ActivityGroupCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityGroupCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -583,7 +707,11 @@ class ActivityGroupUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityGroupUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -601,7 +729,11 @@ class ActivityListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(activity_group__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(activity_group__project=project)
 
 
 class ActivityCreateView(ManagerMixin, CreateView):
@@ -612,7 +744,11 @@ class ActivityCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -630,7 +766,11 @@ class ActivityUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
         
@@ -650,16 +790,24 @@ class ClusterListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 class UserClusterListView(LoginRequiredMixin, TemplateView):
     template_name = 'core/cluster-list.html'
 
     def get(self, request, **kwargs):
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = Project.objects.get(id=self.request.project)
         user = User.objects.get(pk=kwargs.get('pk'))
         user_roles = UserRole.objects.filter(Q(user=user) & ~Q(group__name="community-social-mobilizer"))
-        clusters = Cluster.objects.filter(userrole_cluster__in=user_roles)
+        clusters = Cluster.objects.filter(userrole_cluster__in=user_roles, project=project)
         return render(request, self.template_name, {'clusters': clusters})
 
 
@@ -671,7 +819,11 @@ class ClusterCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(ClusterCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -689,7 +841,11 @@ class ClusterUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(ClusterUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -705,10 +861,14 @@ class ClusterAssignView(ManagerMixin, View):
 
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
-        clusterag = ClusterAG.objects.filter(cluster_id=pk, cluster__project=self.request.project).order_by('id')
-        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag), project=self.request.project).order_by('id')
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        clusterag = ClusterAG.objects.filter(cluster_id=pk, cluster__project=project).order_by('id')
+        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag), project=project).order_by('id')
         selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group').order_by('id')
-        time_interval = ProjectTimeInterval.objects.filter(project=self.request.project)
+        time_interval = ProjectTimeInterval.objects.filter(project=project)
         return render(request, 'core/cluster-assign.html',
                       {
                           'activity_group': activity_group,
@@ -886,7 +1046,11 @@ class BeneficiaryListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(cluster__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(cluster__project=project)
 
 
 class BeneficiaryCreateView(ManagerMixin, CreateView):
@@ -897,7 +1061,11 @@ class BeneficiaryCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(BeneficiaryCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -915,7 +1083,11 @@ class BeneficiaryUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(BeneficiaryUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -940,7 +1112,10 @@ class BeneficiaryUploadView(ManagerMixin, View):
                 if 'Project' in df:
                     project = Project.objects.get(id=df['Project'][row])
                 else:
-                    project = Project.objects.last()
+                    if 'project_id' in self.request.session:
+                        project = Project.objects.get(id=self.request.session['project_id'])
+                    else:
+                        project = self.request.project
 
                 district, created = District.objects.get_or_create(name=df['District '][row])
                 municipality, created = Municipality.objects.get_or_create(
@@ -979,7 +1154,11 @@ class UserRoleListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 # class UserRoleCreateView(ManagerMixin, CreateView):
@@ -991,7 +1170,11 @@ class UserRoleListView(ManagerMixin, ListView):
 
 class UserRoleCreateView(ManagerMixin, View):
     def get(self, request, **kwargs):
-        form = UserRoleForm(project=self.request.project, is_super_admin=self.request.is_super_admin)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        form = UserRoleForm(project=project, is_super_admin=self.request.is_super_admin)
         return render(request, 'core/userrole-form.html', {'form': form})
 
     def post(self, request, **kwargs):
@@ -1037,6 +1220,10 @@ class UserRoleUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(UserRoleUpdateView, self).get_form_kwargs()
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = project
         kwargs['project'] = self.request.project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
@@ -1058,7 +1245,11 @@ class SubmissionView(LoginRequiredMixin, View):
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
         cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
-        time_interval = ProjectTimeInterval.objects.filter(project=request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        time_interval = ProjectTimeInterval.objects.filter(project=project)
         return render(request, 'core/submission.html', {
             'cluster_activity_groups': cluster_activity_group,
             'pk': pk,
@@ -1074,7 +1265,11 @@ class SubmissionListView(LoginRequiredMixin, View):
         return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
 
     def post(self, request, **kwargs):
-        aggregations_list = ActivityAggregate.objects.filter(project=self.request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        aggregations_list = ActivityAggregate.objects.filter(project=project)
         if 'approve' in request.POST:
             if ',' in request.POST.get('approve'):
                 sub_id = request.POST.get('approve').replace(',', '')
@@ -1117,7 +1312,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 
             order = submission.cluster_activity.activity.order
             if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order, beneficiary__cluster__project=self.request.project).update(status='approved')
+                Submission.objects.filter(cluster_activity__activity__order__lte=order, beneficiary__cluster__project=project).update(status='approved')
 
         elif 'reject' in request.POST:
             if ',' in request.POST.get('reject'):
@@ -1143,8 +1338,8 @@ class SubmissionListView(LoginRequiredMixin, View):
                 email.send()
 
         elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=self.request.project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=self.request.project, status="approved")
+            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
 
             if aggregations_list:
                 for aggregations in aggregations_list:
@@ -1217,7 +1412,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(beneficiary__cluster__project=self.request.project, cluster_activity__activity__order__lte=order).update(status='approved')
+                        Submission.objects.filter(beneficiary__cluster__project=project, cluster_activity__activity__order__lte=order).update(status='approved')
                         # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         # if aggregations_list:
@@ -1257,7 +1452,11 @@ class SubmissionListView(LoginRequiredMixin, View):
 class SubNotificationListView(LoginRequiredMixin, View):
 
     def get(self, request, **kwargs):
-        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=self.request.project).order_by('instance__date_created')
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=project).order_by('instance__date_created')
         page = request.GET.get('page', 1)
         paginator = Paginator(submissions, 200)
         
@@ -1270,7 +1469,11 @@ class SubNotificationListView(LoginRequiredMixin, View):
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
     def post(self, request, **kwargs):
-        aggregations_list = ActivityAggregate.objects.filter(project=self.request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        aggregations_list = ActivityAggregate.objects.filter(project=project)
         if 'approve' in request.POST:
             if ',' in request.POST.get('approve'):
                 sub_id = request.POST.get('approve').replace(',', '')
@@ -1311,7 +1514,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
 
             order = submission.cluster_activity.activity.order
             if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
+                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=project).update(status='approved')
                 # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                 # if aggregations_list:
@@ -1368,8 +1571,8 @@ class SubNotificationListView(LoginRequiredMixin, View):
                 )
                 email.send()
         elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=self.request.project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=self.request.project, status="approved")
+            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
 
             if aggregations_list:
                 for aggregations in aggregations_list:
@@ -1409,7 +1612,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
                     submission.status = 'approved'
                     submission.save()
                     created = create_db_table(submission)
-                    
+
                     if aggregations_list:
                         for aggregations in aggregations_list:
                             aggregation_questions = aggregations.aggregation_fields
@@ -1440,7 +1643,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
 
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
+                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=project).update(status='approved')
                         # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         # if aggregations_list:
@@ -1677,14 +1880,18 @@ def get_municipalities(request):
 
 
 def get_clusters(request):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.is_ajax():
         municipalities = request.GET.getlist('municipalities[]')
         if municipalities:
-            clusters = Cluster.objects.filter(municipality__id__in=municipalities, project=request.project).distinct()
+            clusters = Cluster.objects.filter(municipality__id__in=municipalities, project=project).distinct()
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
         else:
-            clusters = Cluster.objects.filter(project=request.project)
+            clusters = Cluster.objects.filter(project=project)
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
     else:
@@ -1692,6 +1899,10 @@ def get_clusters(request):
 
 
 def get_activity_group(request):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.is_ajax():
         clusters = request.GET.getlist('clusters[]')
         if clusters:
@@ -1704,11 +1915,11 @@ def get_activity_group(request):
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
             else:
-                activity_groups = ActivityGroup.objects.filter(project=request.project)
+                activity_groups = ActivityGroup.objects.filter(project=project)
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
         else:
-            activity_groups = ActivityGroup.objects.filter(project=request.project)
+            activity_groups = ActivityGroup.objects.filter(project=project)
             activity_groups = serialize("json", activity_groups)
             return HttpResponse(activity_groups)
     else:
@@ -1716,6 +1927,10 @@ def get_activity_group(request):
 
 
 def get_activity(request):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.is_ajax():
         activity_groups = request.GET.getlist('activity_groups[]')
         if activity_groups:
@@ -1723,7 +1938,7 @@ def get_activity(request):
             activity = serialize("json", activity)
             return HttpResponse(activity)
         else:
-            activity = Activity.objects.filter(activity_group__project=request.project)
+            activity = Activity.objects.filter(activity_group__project=project)
             activity = serialize("json", activity)
             return HttpResponse(activity)
     else:
@@ -1738,19 +1953,27 @@ class ActivityAssignListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(activity_group__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(activity_group__project=project)
 
 
 def assign_activity(request, *args, **kwargs):
+    if 'project_id' in self.request.session:
+        project = Project.objects.get(id=self.request.session['project_id'])
+    else:
+        project = self.request.project
     activity = Activity.objects.get(pk=kwargs.get('pk'))
     if request.method == 'GET':
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=project)
 
     elif request.method == 'POST':
         activity = Activity.objects.get(pk=kwargs.get('pk'))
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=project)
         if 'assign' in request.POST:
             cluster = request.POST.getlist('clusters[]')
             for item in cluster:
@@ -1827,139 +2050,36 @@ def edit_submission(request,  id_string, data_id):
 
 def get_progress(request):
     types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').distinct()
-    progress_data = {}
+    progress_data = []
     categories = []
-
-    checked = [(name, value) for name, value in request.GET.iteritems()]
-    clusters = []
-    select_districts = []
-    munis = []
-    for item in checked:
-        if item[0].startswith('cl'):
-            clusters.append(int(item[0].split("_")[1]))
-
-        if item[0].startswith('mun'):
-            munis.append(int(item[0].split("_")[1]))
-
-        if item[0].startswith('dist'):
-            select_districts.append(int(item[0].split("_")[1]))
-    
-    if clusters:
-        # for cluster progress bar data
-        # gives the data of the volume of beneficiaries that have completed all the activities as per the type of beneficiaries
-        # increase by 1 if all the activities have been completed(all submissions are approved)
-        
-        selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
-        for item in types:
-            total_list = []
-            for obj in selected_clusters:
-                beneficiary = Beneficiary.objects.filter(cluster=obj, Type=item['Type'])
-                beneficiary_progress = 0
-                for obj in beneficiary:
-                    if Submission.objects.filter(beneficiary=obj).exists():
-                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-                            'beneficiary__Type'). \
-                            annotate(progress=Sum('cluster_activity__activity__weight'))
-                        for submission in submissions:
-                            beneficiary_progress += submission['progress']
-                    else:
-                        pass
-                try:
-                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-                except Exception:
-                    total_list.append(beneficiary_progress/1)
-            progress_data[str(item['Type'])] = total_list
-        for item in selected_clusters:
-            categories.append(str(item.name))
-        
-        data = {'categories': categories, 'progress_data': progress_data}
-        return JsonResponse(data)
-    
-    elif munis:
-        selected_munis = Municipality.objects.filter(id__in=munis).order_by('name')
-        clusters = Cluster.objects.filter(municipality__in=selected_munis)
-        for item in types:
-            total_list = []
-            for obj in selected_munis:
-                beneficiary = Beneficiary.objects.filter(municipality=obj, Type=item['Type'])
-                beneficiary_progress = 0
-                for obj in beneficiary:
-                    if Submission.objects.filter(beneficiary=obj).exists():
-                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-                            'beneficiary__Type'). \
-                            annotate(progress=Sum('cluster_activity__activity__weight'))
-                        for submission in submissions:
-                            beneficiary_progress += submission['progress']
-                    else:
-                        pass
-                try:
-                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-                except Exception:
-                    total_list.append(beneficiary_progress / 1)
-            progress_data[str(item['Type'])] = total_list
-        for item in selected_munis:
-            categories.append(str(item.name))
-        
-        data = {'categories': categories, 'progress_data': progress_data}
-        return JsonResponse(data)
-    
-    elif select_districts:
-        selected_districts = District.objects.filter(id__in=districts).order_by('name')
-        clusters = Cluster.objects.filter(municipality__district__in=selected_districts)
-        for item in types:
-            total_list = []
-            for obj in selected_districts:
-                beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
-                beneficiary_progress = 0
-                for obj in beneficiary:
-                    if Submission.objects.filter(beneficiary=obj).exists():
-                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-                            'beneficiary__Type'). \
-                            annotate(progress=Sum('cluster_activity__activity__weight'))
-                        for submission in submissions:
-                            beneficiary_progress += submission['progress']
-                    else:
-                        pass
-                try:
-                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-                except Exception:
-                    total_list.append(beneficiary_progress / 1)
-            progress_data[str(item['Type'])] = total_list
-        for item in selected_districts:
-            categories.append(str(item.name))
-        
-        data = {'categories': categories, 'progress_data': progress_data}
-        return JsonResponse(data)
-    
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
     else:
-        selected_districts = District.objects.filter(id__in=Beneficiary.objects.filter(cluster__project=request.project).values('district__id').distinct())
-        for item in types:
-            total_list = []
-            for obj in selected_districts:
-                beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
-                beneficiary_progress = 0
-                for obj in beneficiary:
-                    if Submission.objects.filter(beneficiary=obj).exists():
-                        submissions = Submission.objects.filter(beneficiary=obj, status='approved').values('beneficiary__Type').\
-                            annotate(progress=Sum('cluster_activity__activity__weight'))
-                        for submission in submissions:
-                            beneficiary_progress += submission['progress']
-                    else:
-                        pass
-                try:
-                    total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-                except Exception:
-                    total_list.append(beneficiary_progress / 1)
-            progress_data[str(item['Type'])] = total_list
-        for item in selected_districts:
-            categories.append(str(item.name))
-        
-        data = {'categories': categories, 'progress_data': progress_data}
-        return JsonResponse(data)
+        project = request.project
+    
+    for item in types:
+        total_list = []
+        beneficiary = Beneficiary.objects.filter(Type=item['Type'], cluster__project=project)
+        beneficiary_progress = 0
+        for obj in beneficiary:
+            beneficiary_progress += obj.progress
+        try:
+            total_list.append(round(beneficiary_progress / len(beneficiary), 2))
+        except Exception:
+            total_list.append(beneficiary_progress/1)
+        if not total_list == [0.0]:
+            progress_data.append(total_list)
+            categories.append(item['Type'])
+    
+    data = {'categories': categories, 'progress_data': progress_data}
+    return JsonResponse(data)
 
 
 def get_progress_phase_pie(request):
-    project = request.project
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
     construction_phases = {}
 
@@ -2059,7 +2179,7 @@ def get_progress_phase_pie(request):
         return JsonResponse(data)
     
     else:
-        clusters = Cluster.objects.filter(project=request.project).order_by('name')
+        clusters = Cluster.objects.filter(project=project).order_by('name')
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         construction_phases = {}
         for ag in activity_groups:
@@ -2100,6 +2220,10 @@ def get_aggregation_fields(request, *args, **kwargs):
 
 
 def aggregation_settings(request, *args, **kwargs):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.method == 'GET':
         forms = XForm.objects.all()
         add_forms = list(XForm.objects.all().values('id', 'title'))
@@ -2126,12 +2250,12 @@ def aggregation_settings(request, *args, **kwargs):
 
         if len(aggregation_fields) > 0:
             aggregation_name = request.POST.get('aggregation_label', '')
-            if ActivityAggregate.objects.filter(name=aggregation_name, project=request.project).exists():
-                act_aggregate = ActivityAggregate.objects.get(name=aggregation_name, project=request.project)
+            if ActivityAggregate.objects.filter(name=aggregation_name, project=project).exists():
+                act_aggregate = ActivityAggregate.objects.get(name=aggregation_name, project=project)
                 act_aggregate.aggregation_fields = aggregation_fields
                 act_aggregate.save()
             else:
-                ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields, project=request.project)
+                ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields, project=project)
             
         return HttpResponseRedirect('/core/aggregation-list')
 
@@ -2140,14 +2264,18 @@ class AggregateView(ManagerMixin, TemplateView):
     template_name = 'core/aggregation-view.html'
 
     def get(self, request, *args, **kwargs):
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
         try:
-            aggregations = ActivityAggregate.objects.filter(project=self.request.project)
+            aggregations = ActivityAggregate.objects.filter(project=project)
             for aggregate in aggregations:
                 aggregate_question = aggregate.aggregation_fields
                 aggregation_answer = aggregate.aggregation_fields_value
                 if aggregation_answer == {}:
                     answer_dict = {}
-                    submissions = Submission.objects.filter(status='approved', cluster_activity__activity__activity_group__project=request.project)
+                    submissions = Submission.objects.filter(status='approved', cluster_activity__activity__activity_group__project=project)
                     for sub in submissions:
                         for item in aggregate_question:
                             for name, attributes in item.items():
@@ -2169,7 +2297,11 @@ class AggregationListView(ManagerMixin, TemplateView):
     template_name = 'core/aggregation-list.html'
 
     def get(self, request, *args, **kwargs):
-        aggregations = ActivityAggregate.objects.filter(project=request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        aggregations = ActivityAggregate.objects.filter(project=project)
         return render(request, self.template_name, {'aggregations': aggregations})
 
 

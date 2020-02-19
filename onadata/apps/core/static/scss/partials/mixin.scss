@@ -7,6 +7,12 @@
     }
 }
 
+@mixin border($width, $style, $color){
+    border-width: $width;
+    border-style: $style;
+    border-color: $color;
+}
+
 @mixin radius50 {
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%;
@@ -21,6 +27,20 @@
     border-radius: 5px;
 }
 
+@mixin border-radius($radius){
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    border-radius: $radius;
+}
+
+@mixin radius($value) {
+    -webkit-border-radius: $value;
+    -moz-border-radius: $value;
+    -ms-border-radius: $value;
+    border-radius: $value;
+}
+
 @mixin boxshadow {
     -webkit-box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.1);
     -ms-box-shadow: 0 0 13px 0 rgba(0, 0, 0, 0.1);
@@ -32,6 +52,14 @@
     -moz-box-shadow: 0 1px 6px 0 rgba(135, 152, 164, 0.4);
     -webkit-box-shadow: 0 1px 6px 0 rgba(135, 152, 164, 0.4);
     box-shadow: 0 1px 6px 0 rgba(135, 152, 164, 0.4);
+}
+
+@mixin boxshadow_all ($boxshadow){
+    -webkit-box-shadow: $boxshadow;
+    -ms-box-shadow: $boxshadow;
+    -o-box-shadow: $boxshadow;
+    -moz-box-shadow: $boxshadow;
+    box-shadow: $boxshadow;
 }
 
 @mixin translatey {
@@ -61,13 +89,65 @@
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
-@mixin animate {
+
+@mixin translate($value1, $value2){
+    position: absolute;
+    -webkit-transform: translate($value1 ,$value2);
+    -ms-transform: translate($value1, $value2);
+    transform: translate($value1, $value2);
+}
+
+@mixin transition($value) {
+    -webkit-transition: $value;
+    -moz-transition: $value;
+    -o-transition: $value;
+    transition: $value;
+}
+
+@mixin transition-duration($time) {
+    -webkit-transition-duration: $time;
+    -o-transition-duration: $time;
+    -moz-transition-duration: $time;
+    transition-duration: $time;
+}
+
+@mixin animation($value) {
+    -webkit-animation: $value;
+    -moz-animation: $value;
+    -o-animation: $value;
+    animation: $value;
+}
+
+@mixin animate{
     -webkit-transition: all .4s ease-in-out;
     -ms-transition: all .4s ease-in-out;
     -moz-transition: all .4s ease-in-out;
     -o-transition: all .4s ease-in-out;
     transition: all .4s ease-in-out;
 }
+
+@mixin  anim05{
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+@mixin animZoom-before{
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    -o-transform: scale(0);
+    -webkit-transform: scale(0);
+}
+@mixin animZoom-after{
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -o-transform: scale(1);
+    -webkit-transform: scale(1);
+    transform: scale(1)
+}
+
+
 @mixin imganimate {
     -moz-transition-property: all;
     -o-transition-property: all;
@@ -85,7 +165,142 @@
     -o-transform: scale(1.3);
     backface-visibility: hidden;
 }
+@mixin display-flex($value) {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: $value;
+}
+@mixin flex-base($value) {
+    -webkit-box-flex: 0;
+    -ms-flex: $value;
+    flex: $value;
+}
+@mixin inline-flex(){
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    margin-right: .6125rem;
+}
+@mixin flex-flow($value) {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-flow: $value;
+    flex-flow: $value;
+}
+@mixin flex-wrap($value) {
+    -ms-flex-wrap: $value;
+    flex-wrap: $value;
+}
+@mixin order($value) {
+    -webkit-box-ordinal-group: $value + 1;
+    -ms-flex-order: $value;
+    order: $value
+}
+@mixin flex-direction-row($value) {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: $value;
+    flex-direction: $value;
+}
+@mixin flex-direction-row-reverse($value) {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: $value;
+    flex-direction: $value;
+}
+@mixin flex-direction-column($value) {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: $value;
+    flex-direction: $value;
+}
+@mixin flex-direction-column-reverse($value) {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: reverse;
+    -ms-flex-direction: $value;
+    flex-direction: $value;
+}
+@mixin justify-content-start {
+    -webkit-box-pack: start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+}
+@mixin justify-content-center {
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+@mixin justify-content-end {
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+}
+@mixin justify-content-between {
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+@mixin justify-content-around {
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+}
+@mixin align-items-start {
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+}
+@mixin align-items-center {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+@mixin align-items-end {
+    -webkit-box-align: end;
+    -ms-flex-align: end;
+    align-items: flex-end;
+}
+@mixin align-items-stretch {
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+}
 
+@mixin ellipsis() {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+@mixin line-clamp($value) {
+    display: -webkit-box;
+    -webkit-line-clamp: $value;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+@mixin flex{
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+}
+@mixin flex_start {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content:flex-start;
+    flex-wrap: wrap;
+}
+@mixin flex_end {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content:flex-end;
+    flex-wrap: wrap;
+}
 @mixin flexjust {
     display: -webkit-box;
     display: -moz-box;
@@ -259,23 +474,4 @@
             box-shadow: 0 0 0 0 rgba(255, 7, 7, 0.5);
         }
     }
-}
-@mixin  anim05{
-    -moz-transition: all 0.5s;
-    -o-transition: all 0.5s;
-    -webkit-transition: all 0.5s;
-    transition: all 0.5s;
-}
-@mixin animZoom-before{
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0);
-    -webkit-transform: scale(0);
-}
-@mixin animZoom-after{
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1);
-    -webkit-transform: scale(1);
-    transform: scale(1)
 }
