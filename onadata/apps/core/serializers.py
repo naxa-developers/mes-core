@@ -25,7 +25,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class ActivitySerializer(serializers.ModelSerializer):
     id_string = serializers.SerializerMethodField()
-    start_date = serialzers.SerializerMethodField()
+    start_date = serializers.SerializerMethodField()
     end_date = serializers.SerializerMethodField()
 
     def get_id_string(self, obj):
