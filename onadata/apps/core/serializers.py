@@ -25,6 +25,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class ActivitySerializer(serializers.ModelSerializer):
     id_string = serializers.SerializerMethodField()
+    start_date = serialzers.SerializerMethodField()
+    end_date = serializers.SerializerMethodField()
 
     def get_id_string(self, obj):
         if obj.form:
@@ -37,6 +39,18 @@ class ActivitySerializer(serializers.ModelSerializer):
         fields = (
         'id', 'name', 'description', 'target_number', 'target_unit', 'start_date', 'end_date', 'form', 'id_string',
         'beneficiary_level')
+    
+    def get_start_date(self, obj):
+        if obj.time_interval:
+            return obj.time_interval.start_date
+        else:
+            return None
+    
+    def get_end_date(self, obj):
+        if obj.time_interval:
+            return obj.time_interval.end_date
+        else:
+            return None
 
 
 class ActivityGroupSerializer(serializers.ModelSerializer):
