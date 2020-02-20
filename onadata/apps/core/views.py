@@ -346,7 +346,7 @@ def get_district_progress(request):
                 except:
                     beneficiary_progress += 0
             try:
-                total_dict['sum'] = beneficiary_progress / len(beneficiary)
+                total_dict['sum'] = round(beneficiary_progress / len(beneficiary), 2)
             except:
                 total_dict['sum'] = beneficiary_progress / 1
             total_dict['total'] = len(beneficiary)
@@ -359,7 +359,7 @@ def get_district_progress(request):
                 except:
                     beneficiary_progress += 0
             try:
-                total_dict['sum'] = beneficiary_progress / len(beneficiary)
+                total_dict['sum'] = round(beneficiary_progress / len(beneficiary), 2)
             except:
                 total_dict['sum'] = beneficiary_progress / 1
             total_dict['total'] = len(beneficiary)
@@ -426,6 +426,7 @@ def get_phase_data(request, *args, **kwargs):
             total_dict['number'] = beneficiaries
             total_dict['percentage'] = round((float(beneficiaries) / len(types)) * 100, 2)
             construction_phases[ag.name] = total_dict
+
     phases = sorted(construction_phases.items(), key=lambda x: x[1], reverse=True)
     return JsonResponse(construction_phases)
 
