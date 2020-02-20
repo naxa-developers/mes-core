@@ -438,58 +438,6 @@ $(function() {
             $.ajax({
                 type: "GET",
                 url: '/core/get-progress-data',
-                data: "{}",
-                success: function(result){
-                    OnSuccess(result);
-                },  
-            });
-
-            function OnSuccess(response){
-                var progress_data = response.progress_data;
-                var categories = response.categories;
-                var chart = c3.generate({
-                    bindto: '#chart-bar', // id of chart wrapper
-                    data: {
-                        json: progress_data,
-                        type: 'bar',
-                    },
-                    axis: {
-                        x: {
-                            type: 'category',
-                            // name of each category
-                            categories: categories,
-
-                        },
-                    },
-                    bar: {
-                        width: 15
-                    },
-                    legend: {
-                        show: true, //hide legend
-                        position: 'inset',
-                        inset: {
-                                anchor: 'top-right',
-                                x: 50,
-                                y: -30,
-                                step: 1
-                            }
-                    },
-                    padding: {
-                        bottom: 0,
-                        top: 30
-                    },
-                    color: {
-                        pattern: ['#A3A0FB', '#5EE2A0','#FF6565','F2E5D2','#FFA177']
-                    },
-                    
-                });
-            }
-        });
-        //double graph for progress overview
-        $(document).ready(function(){
-            $.ajax({
-                type: "GET",
-                url: '/core/get-progress-data',
                 success: function(result){
                     $('#progressloader').css("display", "none");
                     OnSuccess(result);

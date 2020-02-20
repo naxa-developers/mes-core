@@ -405,7 +405,7 @@ def get_phase_data(request, *args, **kwargs):
             construction_phases[ag.name] = total_dict
     else:
         clusters = Cluster.objects.filter(project=project).order_by('name')
-        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', activity__is_entry=False, activity__is_registration=False)
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', activity__is_entry=False, activity__is_registration=False).distinct()
         for ag in activity_groups:
             total_dict = {}
             beneficiaries = 0
@@ -427,8 +427,11 @@ def get_phase_data(request, *args, **kwargs):
             total_dict['percentage'] = round((float(beneficiaries) / len(types)) * 100, 2)
             construction_phases[ag.name] = total_dict
 
-    phases = sorted(construction_phases.items(), key=lambda x: x[1], reverse=True)
-    return JsonResponse(construction_phases)
+    phases = sorted(construction_phases.items(), key=lambda x: x[1]['percentage'])
+    construction_phases = {}
+    for item in phases:
+        construction_phases[str(item[0])] = item[1]
+    return JsonResponse(construction_phases, safe=False)
 
 
 # class Dashboard1View(LoginRequiredMixin, TemplateView):
