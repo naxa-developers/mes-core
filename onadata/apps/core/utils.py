@@ -604,7 +604,7 @@ def get_arguments(question_answer):
             if item['answer'] == "text":
                 column_type = "varchar(255)"
             elif item['answer'] == "select":
-                column_type = "bool"
+                column_type = "varchar(255)"
             elif item['answer'] == "number":
                 column_type = 'int'
             else:
