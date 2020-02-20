@@ -379,7 +379,7 @@ def get_phase_data(request, *args, **kwargs):
     if 'district' in request.GET:
         clusters = Cluster.objects.filter(project=project).order_by('name')
         district = District.objects.get(id=int(request.GET.get('district')))
-        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', clusterag__cluster__municipality__district=district, is_registration=False, is_entry=False).distinct()
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', clusterag__cluster__municipality__district=district, activity__is_registration=False, activity__is_entry=False).distinct()
 
         for ag in activity_groups:
             total_dict = {}
@@ -405,7 +405,7 @@ def get_phase_data(request, *args, **kwargs):
             construction_phases[ag.name] = total_dict
     else:
         clusters = Cluster.objects.filter(project=project).order_by('name')
-        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', is_entry=False, is_registration=False)
+        activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', activity__is_entry=False, activity__is_registration=False)
         for ag in activity_groups:
             total_dict = {}
             beneficiaries = 0
