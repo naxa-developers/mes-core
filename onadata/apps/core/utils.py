@@ -630,7 +630,7 @@ def get_entry_question_answer(submission):
         ques_ans = []
         for question in questions:
             if question['question'] in item:
-                row = {'question': question['label', 'answer': item[question['question']]]}
+                row = {'question': question['label'], 'answer': item[question['question']]]}
                 ques_ans.append(row)
         data.append(ques_ans)
     return data
