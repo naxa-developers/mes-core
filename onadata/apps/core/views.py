@@ -62,7 +62,7 @@ from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, Proje
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
 from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, get_progress_data, \
-    get_form_location_label, image_urls_dict, inject_instanceid, create_db_table
+    get_form_location_label, image_urls_dict, inject_instanceid, create_db_table, fill_cseb_table
 
 from onadata.libs.utils.viewer_tools import _get_form_url
 
@@ -1280,107 +1280,9 @@ class SubmissionListView(LoginRequiredMixin, View):
             submission.save()
             
             created = create_db_table(submission)
-            if aggregations_list:
-                for aggregations in aggregations_list:
-                    aggregation_questions = aggregations.aggregation_fields
-                    aggregation_answer = aggregations.aggregation_fields_value
-                    answer_dict = {}
-                    
-
-                    if aggregation_answer == {}:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    if key in submission.instance.json:
-                                        answer_dict[value] = submission.instance.json[key]
-                        aggregations.aggregation_fields_value = answer_dict
-                        aggregations.save()
-                    else:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    if key in submission.instance.json:
-                                        if value in aggregation_answer:
-                                            previous_answer = aggregation_answer.get(value, '0')
-                                            aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
-                                        else:
-                                            aggregation_answer[value] = submission.instance.json[key]
-                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        aggregations.aggregation_fields_value = aggregation_answer
-                        aggregations.save()
-
-
-            order = submission.cluster_activity.activity.order
-            if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order, beneficiary__cluster__project=project).update(status='approved')
-
-        elif 'reject' in request.POST:
-            if ',' in request.POST.get('reject'):
-                sub_id = request.POST.get('reject').replace(',', '')
-            else:
-                sub_id = request.POST.get('reject')
-            submission = Submission.objects.get(pk=sub_id)
-            submission.status = 'rejected'
-            submission.save()
-            if submission.instance.user:
-                to_email = submission.instance.user.email
-                mail_subject = 'Submission Rejected.'
-                message = render_to_string('core/submission_reject_email.html', {
-                    'submission': submission.instance,
-                    'rejected_by': request.user.username,
-                    'activity': submission.cluster_activity.activity.name,
-                    'cluster': submission.cluster_activity.cag.cluster.name,
-                    'date': datetime.now(),
-                })
-                email = EmailMessage(
-                    mail_subject, message, to=[to_email]
-                )
-                email.send()
-
-        elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
-
-            if aggregations_list:
-                for aggregations in aggregations_list:
-                    aggregation_questions = aggregations.aggregation_fields
-                    aggregation_answer = aggregations.aggregation_fields_value
-                    answer_dict = {}
-                    
-
-                    if aggregation_answer == {}:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    for instance in submissions:
-                                        if key in instance.instance.json:
-                                            answer_dict[value] = instance.instance.json[key]
-                        aggregations.aggregation_fields_value = answer_dict
-                        aggregations.save()
-                    else:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    for instance in submissions:
-                                        if key in instance.instance.json:
-                                            if value in aggregation_answer:
-                                                previous_answer = aggregation_answer.get(value, '0')
-                                                aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
-                                            else:
-                                                aggregation_answer[value] = submission.instance.json[key]
-                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        aggregations.aggregation_fields_value = aggregation_answer
-                        aggregations.save()
-        
-        elif 'approve-selected' in request.POST:
-            checked = request.POST.getlist('checked[]')
-            if checked:
-                for item in checked:
-                    submission = Submission.objects.get(id=int(item))
-                    submission.status = 'approved'
-                    submission.save()
-                    created = create_db_table(submission)
-                    
+            if not created:
+                filled = fill_cseb_table(submission)
+                if not filled:
                     if aggregations_list:
                         for aggregations in aggregations_list:
                             aggregation_questions = aggregations.aggregation_fields
@@ -1410,40 +1312,150 @@ class SubmissionListView(LoginRequiredMixin, View):
                                 aggregations.aggregation_fields_value = aggregation_answer
                                 aggregations.save()
 
+
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(beneficiary__cluster__project=project, cluster_activity__activity__order__lte=order).update(status='approved')
-                        # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
+                        Submission.objects.filter(cluster_activity__activity__order__lte=order, beneficiary__cluster__project=project).update(status='approved')
 
-                        # if aggregations_list:
-                        #     for aggregations in aggregations_list:
-                        #         aggregation_questions = aggregations.aggregation_fields
-                        #         aggregation_answer = aggregations.aggregation_fields_value
-                        #         answer_dict = {}
-                                
-                        #         if aggregation_answer == {}:
-                        #             for item in aggregation_questions:
-                        #                 for name, attributes in item.items():
-                        #                     for key, value in attributes.items():
-                        #                         for instance in submissions:
-                        #                             if key in instance.instance.json:
-                        #                                 answer_dict[value] = instance.instance.json[key]
-                        #             aggregations.aggregation_fields_value = answer_dict
-                        #             aggregations.save()
-                        #         else:
-                        #             for item in aggregation_questions:
-                        #                 for name, attributes in item.items():
-                        #                     for key, value in attributes.items():
-                        #                         for instance in submissions:
-                        #                             if key in instance.instance.json:
-                        #                                 if value in aggregation_answer:
-                        #                                     previous_answer = aggregation_answer.get(value, '0')
-                        #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
-                        #                                 else:
-                        #                                     aggregation_answer[value] = submission.instance.json[key]
-                        #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        #             aggregations.aggregation_fields_value = aggregation_answer
-                        #             aggregations.save()
+        elif 'reject' in request.POST:
+            if ',' in request.POST.get('reject'):
+                sub_id = request.POST.get('reject').replace(',', '')
+            else:
+                sub_id = request.POST.get('reject')
+            submission = Submission.objects.get(pk=sub_id)
+            submission.status = 'rejected'
+            submission.save()
+            if submission.instance.user:
+                to_email = submission.instance.user.email
+                mail_subject = 'Submission Rejected.'
+                message = render_to_string('core/submission_reject_email.html', {
+                    'submission': submission.instance,
+                    'rejected_by': request.user.username,
+                    'activity': submission.cluster_activity.activity.name,
+                    'cluster': submission.cluster_activity.cag.cluster.name,
+                    'date': datetime.now(),
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+
+        elif 'approve-all' in request.POST:
+            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
+            
+            for submission in submissions:
+                created = create_db_table(submission)
+                if not created:
+                    filled = fill_cseb_table(submission)
+            if aggregations_list:
+                for aggregations in aggregations_list:
+                    aggregation_questions = aggregations.aggregation_fields
+                    aggregation_answer = aggregations.aggregation_fields_value
+                    answer_dict = {}
+                    
+
+                    if aggregation_answer == {}:
+                        for item in aggregation_questions:
+                            for name, attributes in item.items():
+                                for key, value in attributes.items():
+                                    for instance in submissions:
+                                        if key in instance.instance.json:
+                                            answer_dict[value] = instance.instance.json[key]
+                        aggregations.aggregation_fields_value = answer_dict
+                        aggregations.save()
+                    else:
+                        for item in aggregation_questions:
+                            for name, attributes in item.items():
+                                for key, value in attributes.items():
+                                    for instance in submissions:
+                                        created = create_db_table(instance)
+                                        if not created:
+                                            if key in instance.instance.json:
+                                                if value in aggregation_answer:
+                                                    previous_answer = aggregation_answer.get(value, '0')
+                                                    aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                                else:
+                                                    aggregation_answer[value] = submission.instance.json[key]
+                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                        aggregations.aggregation_fields_value = aggregation_answer
+                        aggregations.save()
+        
+        elif 'approve-selected' in request.POST:
+            checked = request.POST.getlist('checked[]')
+            if checked:
+                for item in checked:
+                    submission = Submission.objects.get(id=int(item))
+                    submission.status = 'approved'
+                    submission.save()
+                    created = create_db_table(submission)
+
+                    if not created:
+                        filled = fill_cseb_table(submission)
+                        if not filled:
+                            if aggregations_list:
+                                for aggregations in aggregations_list:
+                                    aggregation_questions = aggregations.aggregation_fields
+                                    aggregation_answer = aggregations.aggregation_fields_value
+                                    answer_dict = {}
+                                    
+
+                                    if aggregation_answer == {}:
+                                        for item in aggregation_questions:
+                                            for name, attributes in item.items():
+                                                for key, value in attributes.items():
+                                                    if key in submission.instance.json:
+                                                        answer_dict[value] = submission.instance.json[key]
+                                        aggregations.aggregation_fields_value = answer_dict
+                                        aggregations.save()
+                                    else:
+                                        for item in aggregation_questions:
+                                            for name, attributes in item.items():
+                                                for key, value in attributes.items():
+                                                    if key in submission.instance.json:
+                                                        if value in aggregation_answer:
+                                                            previous_answer = aggregation_answer.get(value, '0')
+                                                            aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
+                                                        else:
+                                                            aggregation_answer[value] = submission.instance.json[key]
+                                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                                        aggregations.aggregation_fields_value = aggregation_answer
+                                        aggregations.save()
+
+                            order = submission.cluster_activity.activity.order
+                            if order:
+                                Submission.objects.filter(beneficiary__cluster__project=project, cluster_activity__activity__order__lte=order).update(status='approved')
+                                # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
+
+                                # if aggregations_list:
+                                #     for aggregations in aggregations_list:
+                                #         aggregation_questions = aggregations.aggregation_fields
+                                #         aggregation_answer = aggregations.aggregation_fields_value
+                                #         answer_dict = {}
+                                        
+                                #         if aggregation_answer == {}:
+                                #             for item in aggregation_questions:
+                                #                 for name, attributes in item.items():
+                                #                     for key, value in attributes.items():
+                                #                         for instance in submissions:
+                                #                             if key in instance.instance.json:
+                                #                                 answer_dict[value] = instance.instance.json[key]
+                                #             aggregations.aggregation_fields_value = answer_dict
+                                #             aggregations.save()
+                                #         else:
+                                #             for item in aggregation_questions:
+                                #                 for name, attributes in item.items():
+                                #                     for key, value in attributes.items():
+                                #                         for instance in submissions:
+                                #                             if key in instance.instance.json:
+                                #                                 if value in aggregation_answer:
+                                #                                     previous_answer = aggregation_answer.get(value, '0')
+                                #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                #                                 else:
+                                #                                     aggregation_answer[value] = submission.instance.json[key]
+                                #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                                #             aggregations.aggregation_fields_value = aggregation_answer
+                                #             aggregations.save()
         cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
         submissions = Submission.objects.filter(cluster_activity=cluster_activity)
         return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
@@ -1483,142 +1495,15 @@ class SubNotificationListView(LoginRequiredMixin, View):
             submission.status = 'approved'
             submission.save()
             created = create_db_table(submission)
-
-            if aggregations_list:
-                for aggregations in aggregations_list:
-                    aggregation_questions = aggregations.aggregation_fields
-                    aggregation_answer = aggregations.aggregation_fields_value
-                    answer_dict = {}
-
-                    if aggregation_answer == {}:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    if key in submission.instance.json:
-                                        answer_dict[value] = submission.instance.json[key]
-                        aggregations.aggregation_fields_value = answer_dict
-                        aggregations.save()
-                    else:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    if key in submission.instance.json:
-                                        if value in aggregation_answer:
-                                            previous_answer = aggregation_answer.get(value, '0')
-                                            aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
-                                        else:
-                                            aggregation_answer[value] = submission.instance.json[key]
-                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        aggregations.aggregation_fields_value = aggregation_answer
-                        aggregations.save()
-
-            order = submission.cluster_activity.activity.order
-            if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=project).update(status='approved')
-                # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
-
-                # if aggregations_list:
-                #     for aggregations in aggregations_list:
-                #         aggregation_questions = aggregations.aggregation_fields
-                #         aggregation_answer = aggregations.aggregation_fields_value
-                #         answer_dict = {}
-
-                #         if aggregation_answer == {}:
-                #             for item in aggregation_questions:
-                #                 for name, attributes in item.items():
-                #                     for key, value in attributes.items():
-                #                         for instance in submissions:
-                #                             if key in instance.instance.json:
-                #                                 answer_dict[value] = instance.instance.json[key]
-                #             aggregations.aggregation_fields_value = answer_dict
-                #             aggregations.save()
-                #         else:
-                #             for item in aggregation_questions:
-                #                 for name, attributes in item.items():
-                #                     for key, value in attributes.items():
-                #                         for instance in submissions:
-                #                             if key in instance.instance.json:
-                #                                 if value in aggregation_answer:
-                #                                     previous_answer = aggregation_answer.get(value, '0')
-                #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
-                #                                 else:
-                #                                     aggregation_answer[value] = submission.instance.json[key]
-                #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                #             aggregations.aggregation_fields_value = aggregation_answer
-                #             aggregations.save()
-
-        elif 'reject' in request.POST:
-
-            if ',' in request.POST.get('reject'):
-                sub_id = request.POST.get('reject').replace(',', '')
-            else:
-                sub_id = request.POST.get('reject')
-            submission = Submission.objects.get(pk=sub_id)
-            submission.status = 'rejected'
-            submission.save()
-            if submission.instance.user:
-                to_email = submission.instance.user.email
-                mail_subject = 'Submission Rejected.'
-                message = render_to_string('core/submission_reject_email.html', {
-                    'submission': submission.instance,
-                    'rejected_by': request.user.username,
-                    'activity': submission.cluster_activity.activity.name,
-                    'cluster': submission.cluster_activity.cag.cluster.name,
-                    'date': datetime.now(),
-                })
-                email = EmailMessage(
-                    mail_subject, message, to=[to_email]
-                )
-                email.send()
-        elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
-
-            if aggregations_list:
-                for aggregations in aggregations_list:
-                    aggregation_questions = aggregations.aggregation_fields
-                    aggregation_answer = aggregations.aggregation_fields_value
-                    answer_dict = {}
-
-                    if aggregation_answer == {}:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    for instance in submissions:
-                                        if key in instance.instance.json:
-                                            answer_dict[value] = instance.instance.json[key]
-                        aggregations.aggregation_fields_value = answer_dict
-                        aggregations.save()
-                    else:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    for instance in submissions:
-                                        if key in instance.instance.json:
-                                            if value in aggregation_answer:
-                                                previous_answer = aggregation_answer.get(value, '0')
-                                                aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
-                                            else:
-                                                aggregation_answer[value] = submission.instance.json[key]
-                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        aggregations.aggregation_fields_value = aggregation_answer
-                        aggregations.save()
-        
-        elif 'approve-selected' in request.POST:
-            checked = request.POST.getlist('checked[]')
-            if checked:
-                for item in checked:
-                    submission = Submission.objects.get(id=int(item))
-                    submission.status = 'approved'
-                    submission.save()
-                    created = create_db_table(submission)
-
+            if not created:
+                filled = fill_cseb_table(submission)
+                if not filled:
                     if aggregations_list:
                         for aggregations in aggregations_list:
                             aggregation_questions = aggregations.aggregation_fields
                             aggregation_answer = aggregations.aggregation_fields_value
                             answer_dict = {}
-                            
+
                             if aggregation_answer == {}:
                                 for item in aggregation_questions:
                                     for name, attributes in item.items():
@@ -1675,6 +1560,141 @@ class SubNotificationListView(LoginRequiredMixin, View):
                         #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
                         #             aggregations.aggregation_fields_value = aggregation_answer
                         #             aggregations.save()
+
+        elif 'reject' in request.POST:
+
+            if ',' in request.POST.get('reject'):
+                sub_id = request.POST.get('reject').replace(',', '')
+            else:
+                sub_id = request.POST.get('reject')
+            submission = Submission.objects.get(pk=sub_id)
+            submission.status = 'rejected'
+            submission.save()
+            if submission.instance.user:
+                to_email = submission.instance.user.email
+                mail_subject = 'Submission Rejected.'
+                message = render_to_string('core/submission_reject_email.html', {
+                    'submission': submission.instance,
+                    'rejected_by': request.user.username,
+                    'activity': submission.cluster_activity.activity.name,
+                    'cluster': submission.cluster_activity.cag.cluster.name,
+                    'date': datetime.now(),
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+        elif 'approve-all' in request.POST:
+            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
+
+            for submission in submissions:
+                created = create_db_table(submission)
+                if not created:
+                    filled = fill_cseb_table(submission)
+            if aggregations_list:
+                for aggregations in aggregations_list:
+                    aggregation_questions = aggregations.aggregation_fields
+                    aggregation_answer = aggregations.aggregation_fields_value
+                    answer_dict = {}
+
+                    if aggregation_answer == {}:
+                        for item in aggregation_questions:
+                            for name, attributes in item.items():
+                                for key, value in attributes.items():
+                                    for instance in submissions:
+                                        if key in instance.instance.json:
+                                            answer_dict[value] = instance.instance.json[key]
+                        aggregations.aggregation_fields_value = answer_dict
+                        aggregations.save()
+                    else:
+                        for item in aggregation_questions:
+                            for name, attributes in item.items():
+                                for key, value in attributes.items():
+                                    for instance in submissions:
+                                        if key in instance.instance.json:
+                                            if value in aggregation_answer:
+                                                previous_answer = aggregation_answer.get(value, '0')
+                                                aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                            else:
+                                                aggregation_answer[value] = submission.instance.json[key]
+                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                        aggregations.aggregation_fields_value = aggregation_answer
+                        aggregations.save()
+        
+        elif 'approve-selected' in request.POST:
+            checked = request.POST.getlist('checked[]')
+            if checked:
+                for item in checked:
+                    submission = Submission.objects.get(id=int(item))
+                    submission.status = 'approved'
+                    submission.save()
+                    created = create_db_table(submission)
+                    if not created:
+                        filled = fill_cseb_table(submission)
+                        if not filled:
+                            if aggregations_list:
+                                for aggregations in aggregations_list:
+                                    aggregation_questions = aggregations.aggregation_fields
+                                    aggregation_answer = aggregations.aggregation_fields_value
+                                    answer_dict = {}
+                                    
+                                    if aggregation_answer == {}:
+                                        for item in aggregation_questions:
+                                            for name, attributes in item.items():
+                                                for key, value in attributes.items():
+                                                    if key in submission.instance.json:
+                                                        answer_dict[value] = submission.instance.json[key]
+                                        aggregations.aggregation_fields_value = answer_dict
+                                        aggregations.save()
+                                    else:
+                                        for item in aggregation_questions:
+                                            for name, attributes in item.items():
+                                                for key, value in attributes.items():
+                                                    if key in submission.instance.json:
+                                                        if value in aggregation_answer:
+                                                            previous_answer = aggregation_answer.get(value, '0')
+                                                            aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
+                                                        else:
+                                                            aggregation_answer[value] = submission.instance.json[key]
+                                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                                        aggregations.aggregation_fields_value = aggregation_answer
+                                        aggregations.save()
+
+                            order = submission.cluster_activity.activity.order
+                            if order:
+                                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=project).update(status='approved')
+                                # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
+
+                                # if aggregations_list:
+                                #     for aggregations in aggregations_list:
+                                #         aggregation_questions = aggregations.aggregation_fields
+                                #         aggregation_answer = aggregations.aggregation_fields_value
+                                #         answer_dict = {}
+
+                                #         if aggregation_answer == {}:
+                                #             for item in aggregation_questions:
+                                #                 for name, attributes in item.items():
+                                #                     for key, value in attributes.items():
+                                #                         for instance in submissions:
+                                #                             if key in instance.instance.json:
+                                #                                 answer_dict[value] = instance.instance.json[key]
+                                #             aggregations.aggregation_fields_value = answer_dict
+                                #             aggregations.save()
+                                #         else:
+                                #             for item in aggregation_questions:
+                                #                 for name, attributes in item.items():
+                                #                     for key, value in attributes.items():
+                                #                         for instance in submissions:
+                                #                             if key in instance.instance.json:
+                                #                                 if value in aggregation_answer:
+                                #                                     previous_answer = aggregation_answer.get(value, '0')
+                                #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                #                                 else:
+                                #                                     aggregation_answer[value] = submission.instance.json[key]
+                                #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                                #             aggregations.aggregation_fields_value = aggregation_answer
+                                #             aggregations.save()
 
         submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
         page = request.GET.get('page', 1)
