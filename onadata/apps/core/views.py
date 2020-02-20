@@ -426,6 +426,7 @@ def get_phase_data(request, *args, **kwargs):
             total_dict['number'] = beneficiaries
             total_dict['percentage'] = round((float(beneficiaries) / len(types)) * 100, 2)
             construction_phases[ag.name] = total_dict
+    phases = sorted(construction_phases.items(), key=lambda x: x[1], reverse=True)
     return JsonResponse(construction_phases)
 
 

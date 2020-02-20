@@ -33,9 +33,6 @@ $(document).ready(function(){
         dataType: 'json',        
 
         success: function(result){
-            result = result.sort(function(a, b){
-                return parseFloat(a.percentage) - parseFloat(b.percentage);
-            })
             $("#radialloader").css("display", "none");  
             var myseries = [];
             var radius = ["110%", "80%", "50%"];
@@ -141,9 +138,6 @@ $(document).ready(function(){
                     data: {'district': request.id},            
             
                     success: function(result){
-                        result = result.sort(function(a, b){
-                            return parseFloat(a.percentage) - parseFloat(b.percentage);
-                        })
                         $("#district-"+request.id+"-loader").css("display", "none");
                         i = 0;
                         $("#district_"+ request.id +"_legend").empty();
