@@ -591,16 +591,16 @@ def parse_entry_question(ques_json):
     for question in question_json['children']:
         if question['name'] == 'meta':
             pass
-        if question['type'] == 'text':
+        if question['type'] == "text":
             question = question['name']
             label = question['label']
             questions.append({'question': question, 'label': label})
-        if question['type'] == 'select one':
+        if question['type'] == "select one":
             question = question['name']
             label = question['label']
             questions.append({'question': question, 'label': label})
-        if question['type'] == 'integer':
-            question = question['integer']
+        if question['type'] == "integer":
+            question = question['name']
             label = question['label']
             questions.append({'question': question, 'label': label})
     return questions
