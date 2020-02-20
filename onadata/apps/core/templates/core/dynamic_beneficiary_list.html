@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}{{ table_name }} List{% endblock %}
+{% block title %}{{ name }} List{% endblock %}
 
 {% block content %}
 
@@ -11,11 +11,11 @@
         <div class="block-header">
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2>{{ table_name }} list</h2>
+                    <h2>{{ name }} list</h2>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'home' %}">Project</a></li>
-                        <li class="breadcrumb-item active">{{ table_name }} list</li>
+                        <li class="breadcrumb-item active">{{ name }} list</li>
                     </ul>
                     <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
                 </div>
