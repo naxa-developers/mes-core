@@ -2370,7 +2370,6 @@ class AggregationEditView(ManagerMixin, TemplateView):
             act_aggregate.name = aggregation_name
             act_aggregate.save()
 
-            ActivityAggregateHistory.objects.create(aggregation=act_aggregate, aggregation_values=act_aggregate.aggregation_fields_value, date=datetime.now())
         return HttpResponseRedirect('/core/aggregation-list')
 
 
