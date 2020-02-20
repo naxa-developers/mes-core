@@ -66,6 +66,7 @@ from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, g
 
 from onadata.libs.utils.viewer_tools import _get_form_url
 
+from django.db import transaction, connection
 
 def logout_view(request):
     if 'project_id' in request.session:
@@ -2371,3 +2372,16 @@ class AggregationEditView(ManagerMixin, TemplateView):
 
             ActivityAggregateHistory.objects.create(aggregation=act_aggregate, aggregation_values=act_aggregate.aggregation_fields_value, date=datetime.now())
         return HttpResponseRedirect('/core/aggregation-list')
+
+
+# for dynamic beneficiary
+def dynamic_beneficiary_list(request, *args, **kwargs):
+    activity_group = ActivityGroup.objects.get(id=kwargs.get('pk'))
+    table_name = activity_group.name
+    with connection.cursor() as cursor:
+        command = "SELECT * FROM {}".format(table_name)
+        cursor.execute(command)
+        beneficiary_list = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+
+    return render(request, 'core/dynamic_beneficiary_list.html', {'name': table_name, 'beneficiaries': beneficiary_list, 'columns': columns})

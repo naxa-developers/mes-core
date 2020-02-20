@@ -131,6 +131,10 @@ urlpatterns = [
     url(r'^aggregation-list/$', views.AggregationListView.as_view(), name="aggregation-list"),
     url(r'^aggregation-delete/(?P<pk>[0-9]+)/$', views.AggregationDeleteView.as_view(), name="aggregation-delete"),
     url(r'^aggregation-edit/(?P<pk>[0-9]+)/$', views.AggregationEditView.as_view(), name="aggregation-edit"),
+
+    # for dynamic beneficiary
+    url(r'dynamic-list/(?P<pk>[0-9]+)/$', views.dynamic_beneficiary_list, name="dynamic_beneficiary_list"),
+
 ]
 
 urlpatterns += router.urls

@@ -295,6 +295,13 @@
                     <li><a href="{% url 'beneficiary_add' %}">Add Beneficiaries</a></li>
                 </ul>
             </li>
+            {% for item in dynamic_beneficiaries %}
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-sellsy"></i><span>{{ item.name }}</span></a>
+                <ul class="ml-menu">
+                    <li><a href="{% url 'dynamic_beneficiary_list' item.pk %}">{{ item.name }} List</a></li>
+                </ul>
+            </li>
+            {% endfor %}
             {% end ifrole %}
             {% ifrole 'manager_only' %}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-sellsy"></i><span>Aggregation</span></a>
