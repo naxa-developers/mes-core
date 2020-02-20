@@ -566,6 +566,7 @@ def parse_repeat(prev_groupname, g_object):
     return group_questions, g_question
 
 
+# for beneficiary create form
 def parse_question(ques_json):
     questions = []
     question_json = json.loads(ques_json)
@@ -580,8 +581,32 @@ def parse_question(ques_json):
             for item in repeat_questions:
                 questions.append(item)
     return questions, group_label
-        
 
+
+# for beneficiary entry form
+def parse_entry_question(ques_json):
+    questions = []
+    question_json = json.loads(ques_json)
+
+    for question in question_json['children']:
+        if question['name'] == 'meta':
+            pass
+        if question['type'] == 'text':
+            question = question['name']
+            label = question['label']
+            questions.append({'question': question, 'label': label})
+        if question['type'] == 'select one':
+            question = question['name']
+            label = question['label']
+            questions.append({'question': question, 'label': label})
+        if question['type'] == 'integer':
+            question = question['integer']
+            label = question['label']
+            questions.append({'question': question, 'label': label})
+    return questions
+
+        
+# for beneficiary create form
 def get_question_answer(submission):
     form = XForm.objects.get(id=submission.cluster_activity.activity.form.id)
     questions, group_label = parse_question(form.json)
@@ -594,6 +619,20 @@ def get_question_answer(submission):
                     row = {'question': question['label'], 'answer': item[question['question']]}
                     ques_ans.append(row)
             data.append(ques_ans) 
+    return data
+
+# for beneficiary entry form
+def get_entry_question_answer(submission):
+    form = XForm.objects.get(id=submission.cluster_activity.activity.form.id)
+    questions = parse_entry_question(form.json)
+    data = []
+    for item in submission.instance.json:
+        ques_ans = []
+        for question in questions:
+            if question['question'] in item:
+                row = {'question': question['label', 'answer': item[question['question']]]}
+                ques_ans.append(row)
+        data.append(ques_ans)
     return data
 
 
@@ -627,8 +666,3 @@ def create_db_table(submission):
         return True
     else:
         return False
-
-
-def beneficiary_entry(submission):
-    if check_entry_submission(submission):
-        pass
