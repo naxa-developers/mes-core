@@ -630,7 +630,7 @@ def get_entry_question_answer(submission):
     ques_ans = []
     for question in questions:
         if question['question'] in submission_json:
-            row = {'question': question['label'], 'answer': submission_json[question['question']]}
+            row = {question['label']: submission_json[question['question']]}
             ques_ans.append(row)
     return ques_ans
 
@@ -665,3 +665,15 @@ def create_db_table(submission):
         return True
     else:
         return False
+
+
+def fill_cseb_table(submission):
+    if check_entry_submission(submission):
+        data = get_entry_question_answer(submission)
+        columns = list(data[0].keys())
+        values = 
+        table_name = submission.cluster_activity.cag.activity_group.name
+        with connection.cursor() as cursor:
+            for item in data:
+                for key, value in item.items():
+                    command = "INSERT INTO {} ({}) VALUES"
