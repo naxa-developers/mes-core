@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ name }} List{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>{{ name }} list</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="la la-home"></i> Practical Action</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Project</a></li>
+                        <li class="breadcrumb-item active">{{ name }} list</li>
+                    </ul>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="la la-navicon"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">                
+                    <button class="btn float-right right_icon_toggle_btn" type="button"><i class="la la-arrow-right"></i></button>
+                    <!-- <a href="{% url 'beneficiary_add' %}" ><button class="btn btn-success btn-icon float-right" type="button"><i class="la la-plus"></i></button></a> -->
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="card project_list">
+                <div class="table-responsive">
+                    <table id="Beneficiary_table" class="table table-hover c_table">
+                        <thead>
+                            <tr>
+                                {% for column in columns %}
+                                <th>{{ column }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for beneficiary in beneficiaries %}
+                            <tr>
+                                {% for item in beneficiary %}
+                                <td>{{ item }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <!-- <a class="btn" href="{% url 'beneficiary_add' %}"><i class="la la-plus"></i> Add Beneficiary</a> -->
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}

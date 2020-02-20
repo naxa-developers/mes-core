@@ -541,7 +541,7 @@ def check_registration_submission(submission):
         return False
 
 
-def check_beneficiary_entry_submission(submission):
+def check_entry_submission(submission):
     if submission.cluster_activity.activity.is_entry:
         return True
     else:
@@ -566,6 +566,7 @@ def parse_repeat(prev_groupname, g_object):
     return group_questions, g_question
 
 
+# for beneficiary create form
 def parse_question(ques_json):
     questions = []
     question_json = json.loads(ques_json)
@@ -580,8 +581,32 @@ def parse_question(ques_json):
             for item in repeat_questions:
                 questions.append(item)
     return questions, group_label
-        
 
+
+# for beneficiary entry form
+def parse_entry_question(ques_json):
+    questions = []
+    question_json = json.loads(ques_json)
+
+    for question in question_json['children']:
+        if question['name'] == 'meta':
+            pass
+        elif question['type'] == "text":
+            question_text = question.get("name")
+            label = question.get("label")
+            questions.append({'question': question_text, 'label': label})
+        elif question['type'] == "select one":
+            question_text = question.get("name")
+            label = question.get("label")
+            questions.append({'question': question_text, 'label': label})
+        elif question['type'] == "integer":
+            question_text = question.get("name")
+            label = question.get("label")
+            questions.append({'question': question_text, 'label': label})
+    return questions
+
+        
+# for beneficiary create form
 def get_question_answer(submission):
     form = XForm.objects.get(id=submission.cluster_activity.activity.form.id)
     questions, group_label = parse_question(form.json)
@@ -596,6 +621,19 @@ def get_question_answer(submission):
             data.append(ques_ans) 
     return data
 
+# for beneficiary entry form
+def get_entry_question_answer(submission):
+    form = XForm.objects.get(id=submission.cluster_activity.activity.form.id)
+    questions = parse_entry_question(form.json)
+    submission_json = submission.instance.json
+
+    ques_ans = []
+    for question in questions:
+        if question['question'] in submission_json:
+            row = {question['label']: submission_json[question['question']]}
+            ques_ans.append(row)
+    return ques_ans
+
 
 def get_arguments(question_answer):
     arg = {}
@@ -604,7 +642,7 @@ def get_arguments(question_answer):
             if item['answer'] == "text":
                 column_type = "varchar(255)"
             elif item['answer'] == "select":
-                column_type = "bool"
+                column_type = "varchar(255)"
             elif item['answer'] == "number":
                 column_type = 'int'
             else:
@@ -627,4 +665,25 @@ def create_db_table(submission):
         return True
     else:
         return False
-        
+
+
+def fill_cseb_table(submission):
+    if check_entry_submission(submission):
+        data = get_entry_question_answer(submission)
+        columns = []
+        values = []
+        for item in data:
+            for key, value in item.items():
+                columns.append(key)
+                if str(value).isdigit():
+                    values.append(int(str(value)))
+                else:
+                    values.append(str(value))
+        values = tuple(values)
+        table_name = submission.cluster_activity.cag.activity_group.name
+        with connection.cursor() as cursor:
+            command = "INSERT INTO {} ({}) VALUES {}".format(table_name, ','.join([s for s in columns]), values)
+            cursor.execute(command)
+        return True
+    else:
+        return False

@@ -62,12 +62,15 @@ from .mixin import LoginRequiredMixin, CreateView, UpdateView, DeleteView, Proje
     ProjectMixin, group_required, ManagerMixin, AdminMixin
 
 from .utils import get_beneficiaries, get_clusters, get_cluster_activity_data, get_progress_data, \
-    get_form_location_label, image_urls_dict, inject_instanceid, create_db_table
+    get_form_location_label, image_urls_dict, inject_instanceid, create_db_table, fill_cseb_table
 
 from onadata.libs.utils.viewer_tools import _get_form_url
 
+from django.db import transaction, connection
 
 def logout_view(request):
+    if 'project_id' in request.session:
+        del request.session['project_id']
     logout(request)
 
     return HttpResponseRedirect('/core/sign-in/')
@@ -183,10 +186,7 @@ def signin(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    if user.user_roles.first().group.name == 'project-manager':
-                        return HttpResponseRedirect(reverse('dashboard-1'))
-                    else:
-                        return HttpResponseRedirect(reverse('home'))
+                    return HttpResponseRedirect(reverse('project-dashboard'))
                 else:
                     return render(request, 'core/sign-in.html',
                                   {'form': form,
@@ -302,7 +302,10 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard-1new.html'
 
     def get(self, request):
-        project = request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = request.project
         beneficiary_count = Beneficiary.objects.filter(cluster__project=project).count()
         activity_count = Activity.objects.filter(activity_group__project=project).count()
         districts = District.objects.filter(beneficiary__isnull=False).distinct()
@@ -313,7 +316,8 @@ class Dashboard1View(LoginRequiredMixin, TemplateView):
             'activity_count': activity_count, 
             'beneficiary_count': beneficiary_count,
             'districts': districts,
-            'script_district': script_district})
+            'script_district': script_district,
+            'project': project})
 
 
 def get_district_progress(request):
@@ -322,7 +326,10 @@ def get_district_progress(request):
     progress_data = {}
     categories = []
 
-    project=request.project
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project=request.project
     
     for item in types:
         beneficiary_progress = 0
@@ -338,7 +345,10 @@ def get_district_progress(request):
                     beneficiary_progress += obj.progress
                 except:
                     beneficiary_progress += 0
-            total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            try:
+                total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            except:
+                total_dict['sum'] = beneficiary_progress / 1
             total_dict['total'] = len(beneficiary)
             progress_data[item['Type']] = total_dict
         else:
@@ -348,20 +358,26 @@ def get_district_progress(request):
                     beneficiary_progress += obj.progress
                 except:
                     beneficiary_progress += 0
-            total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            try:
+                total_dict['sum'] = beneficiary_progress / len(beneficiary)
+            except:
+                total_dict['sum'] = beneficiary_progress / 1
             total_dict['total'] = len(beneficiary)
             progress_data[item['Type']] = total_dict
     return JsonResponse(progress_data)
 
 
 def get_phase_data(request, *args, **kwargs):
-    project = request.project
+    if 'project_id' in request.session['project_id']:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     types = Beneficiary.objects.filter(cluster__project=project)
     construction_phases = {}
     data = []
         
     if 'district' in request.GET:
-        clusters = Cluster.objects.filter(project=request.project).order_by('name')
+        clusters = Cluster.objects.filter(project=project).order_by('name')
         district = District.objects.get(id=int(request.GET.get('district')))
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction', clusterag__cluster__municipality__district=district).distinct()
 
@@ -388,7 +404,7 @@ def get_phase_data(request, *args, **kwargs):
             total_dict['percentage'] = round((float(beneficiaries) / len(types)) * 100, 2)
             construction_phases[ag.name] = total_dict
     else:
-        clusters = Cluster.objects.filter(project=request.project).order_by('name')
+        clusters = Cluster.objects.filter(project=project).order_by('name')
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         for ag in activity_groups:
             total_dict = {}
@@ -498,7 +514,10 @@ def get_answer(json, labels):
 
 # for map data in dashboard1
 def get_map_data(request):
-    project = request.project
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     form = XForm.objects.get(id_string='aLXbstTLbCJn8eQqDbbaQg')
     form_json = form.json
     labels = get_form_location_label(json.loads(form_json))
@@ -528,9 +547,17 @@ class BeneficiaryProgressView(LoginRequiredMixin, MultipleObjectMixin, TemplateV
     def get(self, request):
         if 'search' in request.GET:
             key = request.GET.get('search')
-            beneficiaries = Beneficiary.objects.filter(name__icontains=key)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            beneficiaries = Beneficiary.objects.filter(name__icontains=key, cluster__project=project)
         else:
-            beneficiaries = Beneficiary.objects.filter(cluster__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            beneficiaries = Beneficiary.objects.filter(cluster__project=project)
         page = request.GET.get('page', 1)
         paginator = Paginator(beneficiaries, 100)
         
@@ -583,7 +610,11 @@ class OutputListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 class OutputDetailView(ManagerMixin, DetailView):
@@ -599,7 +630,11 @@ class OutputCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(OutputCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -612,7 +647,11 @@ class OutputUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(OutputUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -631,7 +670,11 @@ class ActivityGroupListVeiw(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 class ActivityGroupDeleteView(ManagerMixin, DeleteView):
@@ -648,7 +691,11 @@ class ActivityGroupCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityGroupCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -661,7 +708,11 @@ class ActivityGroupUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityGroupUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -679,7 +730,11 @@ class ActivityListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(activity_group__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(activity_group__project=project)
 
 
 class ActivityCreateView(ManagerMixin, CreateView):
@@ -690,7 +745,11 @@ class ActivityCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -708,7 +767,11 @@ class ActivityUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(ActivityUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
         
@@ -728,16 +791,24 @@ class ClusterListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 class UserClusterListView(LoginRequiredMixin, TemplateView):
     template_name = 'core/cluster-list.html'
 
     def get(self, request, **kwargs):
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = Project.objects.get(id=self.request.project)
         user = User.objects.get(pk=kwargs.get('pk'))
         user_roles = UserRole.objects.filter(Q(user=user) & ~Q(group__name="community-social-mobilizer"))
-        clusters = Cluster.objects.filter(userrole_cluster__in=user_roles)
+        clusters = Cluster.objects.filter(userrole_cluster__in=user_roles, project=project)
         return render(request, self.template_name, {'clusters': clusters})
 
 
@@ -749,7 +820,11 @@ class ClusterCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(ClusterCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -767,7 +842,11 @@ class ClusterUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(ClusterUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -783,10 +862,14 @@ class ClusterAssignView(ManagerMixin, View):
 
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
-        clusterag = ClusterAG.objects.filter(cluster_id=pk, cluster__project=self.request.project).order_by('id')
-        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag), project=self.request.project).order_by('id')
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        clusterag = ClusterAG.objects.filter(cluster_id=pk, cluster__project=project).order_by('id')
+        activity_group = ActivityGroup.objects.filter(~Q(clusterag__in=clusterag), project=project).order_by('id')
         selected_activity_group = ClusterAG.objects.filter(cluster_id=pk).select_related('activity_group').order_by('id')
-        time_interval = ProjectTimeInterval.objects.filter(project=self.request.project)
+        time_interval = ProjectTimeInterval.objects.filter(project=project)
         return render(request, 'core/cluster-assign.html',
                       {
                           'activity_group': activity_group,
@@ -964,7 +1047,11 @@ class BeneficiaryListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(cluster__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(cluster__project=project)
 
 
 class BeneficiaryCreateView(ManagerMixin, CreateView):
@@ -975,7 +1062,11 @@ class BeneficiaryCreateView(ManagerMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(BeneficiaryCreateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -993,7 +1084,11 @@ class BeneficiaryUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(BeneficiaryUpdateView, self).get_form_kwargs()
-        kwargs['project'] = self.request.project
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -1018,7 +1113,10 @@ class BeneficiaryUploadView(ManagerMixin, View):
                 if 'Project' in df:
                     project = Project.objects.get(id=df['Project'][row])
                 else:
-                    project = Project.objects.last()
+                    if 'project_id' in self.request.session:
+                        project = Project.objects.get(id=self.request.session['project_id'])
+                    else:
+                        project = self.request.project
 
                 district, created = District.objects.get_or_create(name=df['District '][row])
                 municipality, created = Municipality.objects.get_or_create(
@@ -1057,7 +1155,11 @@ class UserRoleListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(project=project)
 
 
 # class UserRoleCreateView(ManagerMixin, CreateView):
@@ -1069,7 +1171,11 @@ class UserRoleListView(ManagerMixin, ListView):
 
 class UserRoleCreateView(ManagerMixin, View):
     def get(self, request, **kwargs):
-        form = UserRoleForm(project=self.request.project, is_super_admin=self.request.is_super_admin)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        form = UserRoleForm(project=project, is_super_admin=self.request.is_super_admin)
         return render(request, 'core/userrole-form.html', {'form': form})
 
     def post(self, request, **kwargs):
@@ -1115,6 +1221,10 @@ class UserRoleUpdateView(ManagerMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super(UserRoleUpdateView, self).get_form_kwargs()
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = project
         kwargs['project'] = self.request.project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
@@ -1136,7 +1246,11 @@ class SubmissionView(LoginRequiredMixin, View):
     def get(self, request, **kwargs):
         pk = kwargs.get('pk')
         cluster_activity_group = ClusterAG.objects.filter(cluster_id=pk)
-        time_interval = ProjectTimeInterval.objects.filter(project=request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        time_interval = ProjectTimeInterval.objects.filter(project=project)
         return render(request, 'core/submission.html', {
             'cluster_activity_groups': cluster_activity_group,
             'pk': pk,
@@ -1152,7 +1266,11 @@ class SubmissionListView(LoginRequiredMixin, View):
         return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
 
     def post(self, request, **kwargs):
-        aggregations_list = ActivityAggregate.objects.filter(project=self.request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        aggregations_list = ActivityAggregate.objects.filter(project=project)
         if 'approve' in request.POST:
             if ',' in request.POST.get('approve'):
                 sub_id = request.POST.get('approve').replace(',', '')
@@ -1163,107 +1281,9 @@ class SubmissionListView(LoginRequiredMixin, View):
             submission.save()
             
             created = create_db_table(submission)
-            if aggregations_list:
-                for aggregations in aggregations_list:
-                    aggregation_questions = aggregations.aggregation_fields
-                    aggregation_answer = aggregations.aggregation_fields_value
-                    answer_dict = {}
-                    
-
-                    if aggregation_answer == {}:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    if key in submission.instance.json:
-                                        answer_dict[value] = submission.instance.json[key]
-                        aggregations.aggregation_fields_value = answer_dict
-                        aggregations.save()
-                    else:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    if key in submission.instance.json:
-                                        if value in aggregation_answer:
-                                            previous_answer = aggregation_answer.get(value, '0')
-                                            aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
-                                        else:
-                                            aggregation_answer[value] = submission.instance.json[key]
-                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        aggregations.aggregation_fields_value = aggregation_answer
-                        aggregations.save()
-
-
-            order = submission.cluster_activity.activity.order
-            if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order, beneficiary__cluster__project=self.request.project).update(status='approved')
-
-        elif 'reject' in request.POST:
-            if ',' in request.POST.get('reject'):
-                sub_id = request.POST.get('reject').replace(',', '')
-            else:
-                sub_id = request.POST.get('reject')
-            submission = Submission.objects.get(pk=sub_id)
-            submission.status = 'rejected'
-            submission.save()
-            if submission.instance.user:
-                to_email = submission.instance.user.email
-                mail_subject = 'Submission Rejected.'
-                message = render_to_string('core/submission_reject_email.html', {
-                    'submission': submission.instance,
-                    'rejected_by': request.user.username,
-                    'activity': submission.cluster_activity.activity.name,
-                    'cluster': submission.cluster_activity.cag.cluster.name,
-                    'date': datetime.now(),
-                })
-                email = EmailMessage(
-                    mail_subject, message, to=[to_email]
-                )
-                email.send()
-
-        elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=self.request.project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=self.request.project, status="approved")
-
-            if aggregations_list:
-                for aggregations in aggregations_list:
-                    aggregation_questions = aggregations.aggregation_fields
-                    aggregation_answer = aggregations.aggregation_fields_value
-                    answer_dict = {}
-                    
-
-                    if aggregation_answer == {}:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    for instance in submissions:
-                                        if key in instance.instance.json:
-                                            answer_dict[value] = instance.instance.json[key]
-                        aggregations.aggregation_fields_value = answer_dict
-                        aggregations.save()
-                    else:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    for instance in submissions:
-                                        if key in instance.instance.json:
-                                            if value in aggregation_answer:
-                                                previous_answer = aggregation_answer.get(value, '0')
-                                                aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
-                                            else:
-                                                aggregation_answer[value] = submission.instance.json[key]
-                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        aggregations.aggregation_fields_value = aggregation_answer
-                        aggregations.save()
-        
-        elif 'approve-selected' in request.POST:
-            checked = request.POST.getlist('checked[]')
-            if checked:
-                for item in checked:
-                    submission = Submission.objects.get(id=int(item))
-                    submission.status = 'approved'
-                    submission.save()
-                    created = create_db_table(submission)
-                    
+            if not created:
+                filled = fill_cseb_table(submission)
+                if not filled:
                     if aggregations_list:
                         for aggregations in aggregations_list:
                             aggregation_questions = aggregations.aggregation_fields
@@ -1293,40 +1313,150 @@ class SubmissionListView(LoginRequiredMixin, View):
                                 aggregations.aggregation_fields_value = aggregation_answer
                                 aggregations.save()
 
+
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(beneficiary__cluster__project=self.request.project, cluster_activity__activity__order__lte=order).update(status='approved')
-                        # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
+                        Submission.objects.filter(cluster_activity__activity__order__lte=order, beneficiary__cluster__project=project).update(status='approved')
 
-                        # if aggregations_list:
-                        #     for aggregations in aggregations_list:
-                        #         aggregation_questions = aggregations.aggregation_fields
-                        #         aggregation_answer = aggregations.aggregation_fields_value
-                        #         answer_dict = {}
-                                
-                        #         if aggregation_answer == {}:
-                        #             for item in aggregation_questions:
-                        #                 for name, attributes in item.items():
-                        #                     for key, value in attributes.items():
-                        #                         for instance in submissions:
-                        #                             if key in instance.instance.json:
-                        #                                 answer_dict[value] = instance.instance.json[key]
-                        #             aggregations.aggregation_fields_value = answer_dict
-                        #             aggregations.save()
-                        #         else:
-                        #             for item in aggregation_questions:
-                        #                 for name, attributes in item.items():
-                        #                     for key, value in attributes.items():
-                        #                         for instance in submissions:
-                        #                             if key in instance.instance.json:
-                        #                                 if value in aggregation_answer:
-                        #                                     previous_answer = aggregation_answer.get(value, '0')
-                        #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
-                        #                                 else:
-                        #                                     aggregation_answer[value] = submission.instance.json[key]
-                        #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        #             aggregations.aggregation_fields_value = aggregation_answer
-                        #             aggregations.save()
+        elif 'reject' in request.POST:
+            if ',' in request.POST.get('reject'):
+                sub_id = request.POST.get('reject').replace(',', '')
+            else:
+                sub_id = request.POST.get('reject')
+            submission = Submission.objects.get(pk=sub_id)
+            submission.status = 'rejected'
+            submission.save()
+            if submission.instance.user:
+                to_email = submission.instance.user.email
+                mail_subject = 'Submission Rejected.'
+                message = render_to_string('core/submission_reject_email.html', {
+                    'submission': submission.instance,
+                    'rejected_by': request.user.username,
+                    'activity': submission.cluster_activity.activity.name,
+                    'cluster': submission.cluster_activity.cag.cluster.name,
+                    'date': datetime.now(),
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+
+        elif 'approve-all' in request.POST:
+            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
+            
+            for submission in submissions:
+                created = create_db_table(submission)
+                if not created:
+                    filled = fill_cseb_table(submission)
+            if aggregations_list:
+                for aggregations in aggregations_list:
+                    aggregation_questions = aggregations.aggregation_fields
+                    aggregation_answer = aggregations.aggregation_fields_value
+                    answer_dict = {}
+                    
+
+                    if aggregation_answer == {}:
+                        for item in aggregation_questions:
+                            for name, attributes in item.items():
+                                for key, value in attributes.items():
+                                    for instance in submissions:
+                                        if key in instance.instance.json:
+                                            answer_dict[value] = instance.instance.json[key]
+                        aggregations.aggregation_fields_value = answer_dict
+                        aggregations.save()
+                    else:
+                        for item in aggregation_questions:
+                            for name, attributes in item.items():
+                                for key, value in attributes.items():
+                                    for instance in submissions:
+                                        created = create_db_table(instance)
+                                        if not created:
+                                            if key in instance.instance.json:
+                                                if value in aggregation_answer:
+                                                    previous_answer = aggregation_answer.get(value, '0')
+                                                    aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                                else:
+                                                    aggregation_answer[value] = submission.instance.json[key]
+                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                        aggregations.aggregation_fields_value = aggregation_answer
+                        aggregations.save()
+        
+        elif 'approve-selected' in request.POST:
+            checked = request.POST.getlist('checked[]')
+            if checked:
+                for item in checked:
+                    submission = Submission.objects.get(id=int(item))
+                    submission.status = 'approved'
+                    submission.save()
+                    created = create_db_table(submission)
+
+                    if not created:
+                        filled = fill_cseb_table(submission)
+                        if not filled:
+                            if aggregations_list:
+                                for aggregations in aggregations_list:
+                                    aggregation_questions = aggregations.aggregation_fields
+                                    aggregation_answer = aggregations.aggregation_fields_value
+                                    answer_dict = {}
+                                    
+
+                                    if aggregation_answer == {}:
+                                        for item in aggregation_questions:
+                                            for name, attributes in item.items():
+                                                for key, value in attributes.items():
+                                                    if key in submission.instance.json:
+                                                        answer_dict[value] = submission.instance.json[key]
+                                        aggregations.aggregation_fields_value = answer_dict
+                                        aggregations.save()
+                                    else:
+                                        for item in aggregation_questions:
+                                            for name, attributes in item.items():
+                                                for key, value in attributes.items():
+                                                    if key in submission.instance.json:
+                                                        if value in aggregation_answer:
+                                                            previous_answer = aggregation_answer.get(value, '0')
+                                                            aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
+                                                        else:
+                                                            aggregation_answer[value] = submission.instance.json[key]
+                                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                                        aggregations.aggregation_fields_value = aggregation_answer
+                                        aggregations.save()
+
+                            order = submission.cluster_activity.activity.order
+                            if order:
+                                Submission.objects.filter(beneficiary__cluster__project=project, cluster_activity__activity__order__lte=order).update(status='approved')
+                                # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
+
+                                # if aggregations_list:
+                                #     for aggregations in aggregations_list:
+                                #         aggregation_questions = aggregations.aggregation_fields
+                                #         aggregation_answer = aggregations.aggregation_fields_value
+                                #         answer_dict = {}
+                                        
+                                #         if aggregation_answer == {}:
+                                #             for item in aggregation_questions:
+                                #                 for name, attributes in item.items():
+                                #                     for key, value in attributes.items():
+                                #                         for instance in submissions:
+                                #                             if key in instance.instance.json:
+                                #                                 answer_dict[value] = instance.instance.json[key]
+                                #             aggregations.aggregation_fields_value = answer_dict
+                                #             aggregations.save()
+                                #         else:
+                                #             for item in aggregation_questions:
+                                #                 for name, attributes in item.items():
+                                #                     for key, value in attributes.items():
+                                #                         for instance in submissions:
+                                #                             if key in instance.instance.json:
+                                #                                 if value in aggregation_answer:
+                                #                                     previous_answer = aggregation_answer.get(value, '0')
+                                #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                #                                 else:
+                                #                                     aggregation_answer[value] = submission.instance.json[key]
+                                #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                                #             aggregations.aggregation_fields_value = aggregation_answer
+                                #             aggregations.save()
         cluster_activity = ClusterA.objects.get(pk=kwargs.get('pk'))
         submissions = Submission.objects.filter(cluster_activity=cluster_activity)
         return render(request, 'core/submission_list.html', {'submissions': submissions, 'activity': cluster_activity})
@@ -1335,7 +1465,11 @@ class SubmissionListView(LoginRequiredMixin, View):
 class SubNotificationListView(LoginRequiredMixin, View):
 
     def get(self, request, **kwargs):
-        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=self.request.project).order_by('instance__date_created')
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=project).order_by('instance__date_created')
         page = request.GET.get('page', 1)
         paginator = Paginator(submissions, 200)
         
@@ -1348,7 +1482,11 @@ class SubNotificationListView(LoginRequiredMixin, View):
         return render(request, 'core/submission_notification.html', {'submissions': submissions})
 
     def post(self, request, **kwargs):
-        aggregations_list = ActivityAggregate.objects.filter(project=self.request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        aggregations_list = ActivityAggregate.objects.filter(project=project)
         if 'approve' in request.POST:
             if ',' in request.POST.get('approve'):
                 sub_id = request.POST.get('approve').replace(',', '')
@@ -1358,69 +1496,71 @@ class SubNotificationListView(LoginRequiredMixin, View):
             submission.status = 'approved'
             submission.save()
             created = create_db_table(submission)
+            if not created:
+                filled = fill_cseb_table(submission)
+                if not filled:
+                    if aggregations_list:
+                        for aggregations in aggregations_list:
+                            aggregation_questions = aggregations.aggregation_fields
+                            aggregation_answer = aggregations.aggregation_fields_value
+                            answer_dict = {}
 
-            if aggregations_list:
-                for aggregations in aggregations_list:
-                    aggregation_questions = aggregations.aggregation_fields
-                    aggregation_answer = aggregations.aggregation_fields_value
-                    answer_dict = {}
+                            if aggregation_answer == {}:
+                                for item in aggregation_questions:
+                                    for name, attributes in item.items():
+                                        for key, value in attributes.items():
+                                            if key in submission.instance.json:
+                                                answer_dict[value] = submission.instance.json[key]
+                                aggregations.aggregation_fields_value = answer_dict
+                                aggregations.save()
+                            else:
+                                for item in aggregation_questions:
+                                    for name, attributes in item.items():
+                                        for key, value in attributes.items():
+                                            if key in submission.instance.json:
+                                                if value in aggregation_answer:
+                                                    previous_answer = aggregation_answer.get(value, '0')
+                                                    aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
+                                                else:
+                                                    aggregation_answer[value] = submission.instance.json[key]
+                                ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                                aggregations.aggregation_fields_value = aggregation_answer
+                                aggregations.save()
 
-                    if aggregation_answer == {}:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    if key in submission.instance.json:
-                                        answer_dict[value] = submission.instance.json[key]
-                        aggregations.aggregation_fields_value = answer_dict
-                        aggregations.save()
-                    else:
-                        for item in aggregation_questions:
-                            for name, attributes in item.items():
-                                for key, value in attributes.items():
-                                    if key in submission.instance.json:
-                                        if value in aggregation_answer:
-                                            previous_answer = aggregation_answer.get(value, '0')
-                                            aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
-                                        else:
-                                            aggregation_answer[value] = submission.instance.json[key]
-                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        aggregations.aggregation_fields_value = aggregation_answer
-                        aggregations.save()
+                    order = submission.cluster_activity.activity.order
+                    if order:
+                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=project).update(status='approved')
+                        # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
-            order = submission.cluster_activity.activity.order
-            if order:
-                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
-                # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
+                        # if aggregations_list:
+                        #     for aggregations in aggregations_list:
+                        #         aggregation_questions = aggregations.aggregation_fields
+                        #         aggregation_answer = aggregations.aggregation_fields_value
+                        #         answer_dict = {}
 
-                # if aggregations_list:
-                #     for aggregations in aggregations_list:
-                #         aggregation_questions = aggregations.aggregation_fields
-                #         aggregation_answer = aggregations.aggregation_fields_value
-                #         answer_dict = {}
-
-                #         if aggregation_answer == {}:
-                #             for item in aggregation_questions:
-                #                 for name, attributes in item.items():
-                #                     for key, value in attributes.items():
-                #                         for instance in submissions:
-                #                             if key in instance.instance.json:
-                #                                 answer_dict[value] = instance.instance.json[key]
-                #             aggregations.aggregation_fields_value = answer_dict
-                #             aggregations.save()
-                #         else:
-                #             for item in aggregation_questions:
-                #                 for name, attributes in item.items():
-                #                     for key, value in attributes.items():
-                #                         for instance in submissions:
-                #                             if key in instance.instance.json:
-                #                                 if value in aggregation_answer:
-                #                                     previous_answer = aggregation_answer.get(value, '0')
-                #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
-                #                                 else:
-                #                                     aggregation_answer[value] = submission.instance.json[key]
-                #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                #             aggregations.aggregation_fields_value = aggregation_answer
-                #             aggregations.save()
+                        #         if aggregation_answer == {}:
+                        #             for item in aggregation_questions:
+                        #                 for name, attributes in item.items():
+                        #                     for key, value in attributes.items():
+                        #                         for instance in submissions:
+                        #                             if key in instance.instance.json:
+                        #                                 answer_dict[value] = instance.instance.json[key]
+                        #             aggregations.aggregation_fields_value = answer_dict
+                        #             aggregations.save()
+                        #         else:
+                        #             for item in aggregation_questions:
+                        #                 for name, attributes in item.items():
+                        #                     for key, value in attributes.items():
+                        #                         for instance in submissions:
+                        #                             if key in instance.instance.json:
+                        #                                 if value in aggregation_answer:
+                        #                                     previous_answer = aggregation_answer.get(value, '0')
+                        #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                        #                                 else:
+                        #                                     aggregation_answer[value] = submission.instance.json[key]
+                        #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                        #             aggregations.aggregation_fields_value = aggregation_answer
+                        #             aggregations.save()
 
         elif 'reject' in request.POST:
 
@@ -1446,9 +1586,13 @@ class SubNotificationListView(LoginRequiredMixin, View):
                 )
                 email.send()
         elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=self.request.project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=self.request.project, status="approved")
+            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
 
+            for submission in submissions:
+                created = create_db_table(submission)
+                if not created:
+                    filled = fill_cseb_table(submission)
             if aggregations_list:
                 for aggregations in aggregations_list:
                     aggregation_questions = aggregations.aggregation_fields
@@ -1487,69 +1631,71 @@ class SubNotificationListView(LoginRequiredMixin, View):
                     submission.status = 'approved'
                     submission.save()
                     created = create_db_table(submission)
+                    if not created:
+                        filled = fill_cseb_table(submission)
+                        if not filled:
+                            if aggregations_list:
+                                for aggregations in aggregations_list:
+                                    aggregation_questions = aggregations.aggregation_fields
+                                    aggregation_answer = aggregations.aggregation_fields_value
+                                    answer_dict = {}
+                                    
+                                    if aggregation_answer == {}:
+                                        for item in aggregation_questions:
+                                            for name, attributes in item.items():
+                                                for key, value in attributes.items():
+                                                    if key in submission.instance.json:
+                                                        answer_dict[value] = submission.instance.json[key]
+                                        aggregations.aggregation_fields_value = answer_dict
+                                        aggregations.save()
+                                    else:
+                                        for item in aggregation_questions:
+                                            for name, attributes in item.items():
+                                                for key, value in attributes.items():
+                                                    if key in submission.instance.json:
+                                                        if value in aggregation_answer:
+                                                            previous_answer = aggregation_answer.get(value, '0')
+                                                            aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
+                                                        else:
+                                                            aggregation_answer[value] = submission.instance.json[key]
+                                        ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                                        aggregations.aggregation_fields_value = aggregation_answer
+                                        aggregations.save()
 
-                    if aggregations_list:
-                        for aggregations in aggregations_list:
-                            aggregation_questions = aggregations.aggregation_fields
-                            aggregation_answer = aggregations.aggregation_fields_value
-                            answer_dict = {}
-                            
-                            if aggregation_answer == {}:
-                                for item in aggregation_questions:
-                                    for name, attributes in item.items():
-                                        for key, value in attributes.items():
-                                            if key in submission.instance.json:
-                                                answer_dict[value] = submission.instance.json[key]
-                                aggregations.aggregation_fields_value = answer_dict
-                                aggregations.save()
-                            else:
-                                for item in aggregation_questions:
-                                    for name, attributes in item.items():
-                                        for key, value in attributes.items():
-                                            if key in submission.instance.json:
-                                                if value in aggregation_answer:
-                                                    previous_answer = aggregation_answer.get(value, '0')
-                                                    aggregation_answer[value] = str(int(submission.instance.json[key]) + int(previous_answer))
-                                                else:
-                                                    aggregation_answer[value] = submission.instance.json[key]
-                                ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                                aggregations.aggregation_fields_value = aggregation_answer
-                                aggregations.save()
+                            order = submission.cluster_activity.activity.order
+                            if order:
+                                Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=project).update(status='approved')
+                                # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
-                    order = submission.cluster_activity.activity.order
-                    if order:
-                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=self.request.project).update(status='approved')
-                        # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
+                                # if aggregations_list:
+                                #     for aggregations in aggregations_list:
+                                #         aggregation_questions = aggregations.aggregation_fields
+                                #         aggregation_answer = aggregations.aggregation_fields_value
+                                #         answer_dict = {}
 
-                        # if aggregations_list:
-                        #     for aggregations in aggregations_list:
-                        #         aggregation_questions = aggregations.aggregation_fields
-                        #         aggregation_answer = aggregations.aggregation_fields_value
-                        #         answer_dict = {}
-
-                        #         if aggregation_answer == {}:
-                        #             for item in aggregation_questions:
-                        #                 for name, attributes in item.items():
-                        #                     for key, value in attributes.items():
-                        #                         for instance in submissions:
-                        #                             if key in instance.instance.json:
-                        #                                 answer_dict[value] = instance.instance.json[key]
-                        #             aggregations.aggregation_fields_value = answer_dict
-                        #             aggregations.save()
-                        #         else:
-                        #             for item in aggregation_questions:
-                        #                 for name, attributes in item.items():
-                        #                     for key, value in attributes.items():
-                        #                         for instance in submissions:
-                        #                             if key in instance.instance.json:
-                        #                                 if value in aggregation_answer:
-                        #                                     previous_answer = aggregation_answer.get(value, '0')
-                        #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
-                        #                                 else:
-                        #                                     aggregation_answer[value] = submission.instance.json[key]
-                        #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
-                        #             aggregations.aggregation_fields_value = aggregation_answer
-                        #             aggregations.save()
+                                #         if aggregation_answer == {}:
+                                #             for item in aggregation_questions:
+                                #                 for name, attributes in item.items():
+                                #                     for key, value in attributes.items():
+                                #                         for instance in submissions:
+                                #                             if key in instance.instance.json:
+                                #                                 answer_dict[value] = instance.instance.json[key]
+                                #             aggregations.aggregation_fields_value = answer_dict
+                                #             aggregations.save()
+                                #         else:
+                                #             for item in aggregation_questions:
+                                #                 for name, attributes in item.items():
+                                #                     for key, value in attributes.items():
+                                #                         for instance in submissions:
+                                #                             if key in instance.instance.json:
+                                #                                 if value in aggregation_answer:
+                                #                                     previous_answer = aggregation_answer.get(value, '0')
+                                #                                     aggregation_answer[value] = str(int(instance.instance.json[key]) + int(previous_answer))
+                                #                                 else:
+                                #                                     aggregation_answer[value] = submission.instance.json[key]
+                                #             ActivityAggregateHistory.objects.create(aggregation=aggregations, aggregation_values=aggregations.aggregation_fields_value, date=datetime.now())
+                                #             aggregations.aggregation_fields_value = aggregation_answer
+                                #             aggregations.save()
 
         submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
         page = request.GET.get('page', 1)
@@ -1755,14 +1901,18 @@ def get_municipalities(request):
 
 
 def get_clusters(request):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.is_ajax():
         municipalities = request.GET.getlist('municipalities[]')
         if municipalities:
-            clusters = Cluster.objects.filter(municipality__id__in=municipalities, project=request.project).distinct()
+            clusters = Cluster.objects.filter(municipality__id__in=municipalities, project=project).distinct()
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
         else:
-            clusters = Cluster.objects.filter(project=request.project)
+            clusters = Cluster.objects.filter(project=project)
             clusters = serialize("json", clusters)
             return HttpResponse(clusters)
     else:
@@ -1770,6 +1920,10 @@ def get_clusters(request):
 
 
 def get_activity_group(request):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.is_ajax():
         clusters = request.GET.getlist('clusters[]')
         if clusters:
@@ -1782,11 +1936,11 @@ def get_activity_group(request):
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
             else:
-                activity_groups = ActivityGroup.objects.filter(project=request.project)
+                activity_groups = ActivityGroup.objects.filter(project=project)
                 activity_groups = serialize("json", activity_groups)
                 return HttpResponse(activity_groups)
         else:
-            activity_groups = ActivityGroup.objects.filter(project=request.project)
+            activity_groups = ActivityGroup.objects.filter(project=project)
             activity_groups = serialize("json", activity_groups)
             return HttpResponse(activity_groups)
     else:
@@ -1794,6 +1948,10 @@ def get_activity_group(request):
 
 
 def get_activity(request):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.is_ajax():
         activity_groups = request.GET.getlist('activity_groups[]')
         if activity_groups:
@@ -1801,7 +1959,7 @@ def get_activity(request):
             activity = serialize("json", activity)
             return HttpResponse(activity)
         else:
-            activity = Activity.objects.filter(activity_group__project=request.project)
+            activity = Activity.objects.filter(activity_group__project=project)
             activity = serialize("json", activity)
             return HttpResponse(activity)
     else:
@@ -1816,19 +1974,27 @@ class ActivityAssignListView(ManagerMixin, ListView):
         if self.request.is_super_admin:
             return self.model.objects.all()
         else:
-            return self.model.objects.filter(activity_group__project=self.request.project)
+            if 'project_id' in self.request.session:
+                project = Project.objects.get(id=self.request.session['project_id'])
+            else:
+                project = self.request.project
+            return self.model.objects.filter(activity_group__project=project)
 
 
 def assign_activity(request, *args, **kwargs):
+    if 'project_id' in self.request.session:
+        project = Project.objects.get(id=self.request.session['project_id'])
+    else:
+        project = self.request.project
     activity = Activity.objects.get(pk=kwargs.get('pk'))
     if request.method == 'GET':
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=project)
 
     elif request.method == 'POST':
         activity = Activity.objects.get(pk=kwargs.get('pk'))
         cluster_activity = ClusterA.objects.filter(activity=activity)
-        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=request.project)
+        clusters = Cluster.objects.filter(~Q(clusterag__ca__activity=activity), project=project)
         if 'assign' in request.POST:
             cluster = request.POST.getlist('clusters[]')
             for item in cluster:
@@ -1907,7 +2073,10 @@ def get_progress(request):
     types = Beneficiary.objects.filter(cluster__project=request.project).values('Type').distinct()
     progress_data = []
     categories = []
-    project=request.project
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     
     for item in types:
         total_list = []
@@ -1925,123 +2094,13 @@ def get_progress(request):
     
     data = {'categories': categories, 'progress_data': progress_data}
     return JsonResponse(data)
-    # progress_data = {}
-    # if clusters:
-    #     # for cluster progress bar data
-    #     # gives the data of the volume of beneficiaries that have completed all the activities as per the type of beneficiaries
-    #     # increase by 1 if all the activities have been completed(all submissions are approved)
-        
-    #     selected_clusters = Cluster.objects.filter(id__in=clusters).order_by('name')
-    #     for item in types:
-    #         total_list = []
-    #         for obj in selected_clusters:
-    #             beneficiary = Beneficiary.objects.filter(cluster=obj, Type=item['Type'])
-    #             beneficiary_progress = 0
-    #             for obj in beneficiary:
-    #                 if Submission.objects.filter(beneficiary=obj).exists():
-    #                     submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-    #                         'beneficiary__Type'). \
-    #                         annotate(progress=Sum('cluster_activity__activity__weight'))
-    #                     for submission in submissions:
-    #                         beneficiary_progress += submission['progress']
-    #                 else:
-    #                     pass
-    #             try:
-    #                 total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-    #             except Exception:
-    #                 total_list.append(beneficiary_progress/1)
-    #         progress_data[str(item['Type'])] = total_list
-    #     for item in selected_clusters:
-    #         categories.append(str(item.name))
-        
-    #     data = {'categories': categories, 'progress_data': progress_data}
-    #     return JsonResponse(data)
-    
-    # elif munis:
-    #     selected_munis = Municipality.objects.filter(id__in=munis).order_by('name')
-    #     clusters = Cluster.objects.filter(municipality__in=selected_munis)
-    #     for item in types:
-    #         total_list = []
-    #         for obj in selected_munis:
-    #             beneficiary = Beneficiary.objects.filter(municipality=obj, Type=item['Type'])
-    #             beneficiary_progress = 0
-    #             for obj in beneficiary:
-    #                 if Submission.objects.filter(beneficiary=obj).exists():
-    #                     submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-    #                         'beneficiary__Type'). \
-    #                         annotate(progress=Sum('cluster_activity__activity__weight'))
-    #                     for submission in submissions:
-    #                         beneficiary_progress += submission['progress']
-    #                 else:
-    #                     pass
-    #             try:
-    #                 total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-    #             except Exception:
-    #                 total_list.append(beneficiary_progress / 1)
-    #         progress_data[str(item['Type'])] = total_list
-    #     for item in selected_munis:
-    #         categories.append(str(item.name))
-        
-    #     data = {'categories': categories, 'progress_data': progress_data}
-    #     return JsonResponse(data)
-    
-    # elif select_districts:
-    #     selected_districts = District.objects.filter(id__in=districts).order_by('name')
-    #     clusters = Cluster.objects.filter(municipality__district__in=selected_districts)
-    #     for item in types:
-    #         total_list = []
-    #         for obj in selected_districts:
-    #             beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
-    #             beneficiary_progress = 0
-    #             for obj in beneficiary:
-    #                 if Submission.objects.filter(beneficiary=obj).exists():
-    #                     submissions = Submission.objects.filter(beneficiary=obj, status='approved').values(
-    #                         'beneficiary__Type'). \
-    #                         annotate(progress=Sum('cluster_activity__activity__weight'))
-    #                     for submission in submissions:
-    #                         beneficiary_progress += submission['progress']
-    #                 else:
-    #                     pass
-    #             try:
-    #                 total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-    #             except Exception:
-    #                 total_list.append(beneficiary_progress / 1)
-    #         progress_data[str(item['Type'])] = total_list
-    #     for item in selected_districts:
-    #         categories.append(str(item.name))
-        
-    #     data = {'categories': categories, 'progress_data': progress_data}
-    #     return JsonResponse(data)
-    
-    # else:
-    #     selected_districts = District.objects.filter(id__in=Beneficiary.objects.filter(cluster__project=request.project).values('district__id').distinct())
-    #     for item in types:
-    #         total_list = []
-    #         for obj in selected_districts:
-    #             beneficiary = Beneficiary.objects.filter(district=obj, Type=item['Type'])
-    #             beneficiary_progress = 0
-    #             for obj in beneficiary:
-    #                 if Submission.objects.filter(beneficiary=obj).exists():
-    #                     submissions = Submission.objects.filter(beneficiary=obj, status='approved').values('beneficiary__Type').\
-    #                         annotate(progress=Sum('cluster_activity__activity__weight'))
-    #                     for submission in submissions:
-    #                         beneficiary_progress += submission['progress']
-    #                 else:
-    #                     pass
-    #             try:
-    #                 total_list.append(round(beneficiary_progress / len(beneficiary), 2))
-    #             except Exception:
-    #                 total_list.append(beneficiary_progress / 1)
-    #         progress_data[str(item['Type'])] = total_list
-    #     for item in selected_districts:
-    #         categories.append(str(item.name))
-        
-    #     data = {'categories': categories, 'progress_data': progress_data}
-    #     return JsonResponse(data)
 
 
 def get_progress_phase_pie(request):
-    project = request.project
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     types = Beneficiary.objects.filter(cluster__project=project).values('Type').distinct()
     construction_phases = {}
 
@@ -2141,7 +2200,7 @@ def get_progress_phase_pie(request):
         return JsonResponse(data)
     
     else:
-        clusters = Cluster.objects.filter(project=request.project).order_by('name')
+        clusters = Cluster.objects.filter(project=project).order_by('name')
         activity_groups = ActivityGroup.objects.filter(project=project, output__name='House Construction')
         construction_phases = {}
         for ag in activity_groups:
@@ -2182,6 +2241,10 @@ def get_aggregation_fields(request, *args, **kwargs):
 
 
 def aggregation_settings(request, *args, **kwargs):
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
+    else:
+        project = request.project
     if request.method == 'GET':
         forms = XForm.objects.all()
         add_forms = list(XForm.objects.all().values('id', 'title'))
@@ -2208,12 +2271,12 @@ def aggregation_settings(request, *args, **kwargs):
 
         if len(aggregation_fields) > 0:
             aggregation_name = request.POST.get('aggregation_label', '')
-            if ActivityAggregate.objects.filter(name=aggregation_name, project=request.project).exists():
-                act_aggregate = ActivityAggregate.objects.get(name=aggregation_name, project=request.project)
+            if ActivityAggregate.objects.filter(name=aggregation_name, project=project).exists():
+                act_aggregate = ActivityAggregate.objects.get(name=aggregation_name, project=project)
                 act_aggregate.aggregation_fields = aggregation_fields
                 act_aggregate.save()
             else:
-                ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields, project=request.project)
+                ActivityAggregate.objects.create(name=aggregation_name, aggregation_fields=aggregation_fields, project=project)
             
         return HttpResponseRedirect('/core/aggregation-list')
 
@@ -2222,14 +2285,18 @@ class AggregateView(ManagerMixin, TemplateView):
     template_name = 'core/aggregation-view.html'
 
     def get(self, request, *args, **kwargs):
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
         try:
-            aggregations = ActivityAggregate.objects.filter(project=self.request.project)
+            aggregations = ActivityAggregate.objects.filter(project=project)
             for aggregate in aggregations:
                 aggregate_question = aggregate.aggregation_fields
                 aggregation_answer = aggregate.aggregation_fields_value
                 if aggregation_answer == {}:
                     answer_dict = {}
-                    submissions = Submission.objects.filter(status='approved', cluster_activity__activity__activity_group__project=request.project)
+                    submissions = Submission.objects.filter(status='approved', cluster_activity__activity__activity_group__project=project)
                     for sub in submissions:
                         for item in aggregate_question:
                             for name, attributes in item.items():
@@ -2251,7 +2318,11 @@ class AggregationListView(ManagerMixin, TemplateView):
     template_name = 'core/aggregation-list.html'
 
     def get(self, request, *args, **kwargs):
-        aggregations = ActivityAggregate.objects.filter(project=request.project)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        aggregations = ActivityAggregate.objects.filter(project=project)
         return render(request, self.template_name, {'aggregations': aggregations})
 
 
@@ -2301,3 +2372,16 @@ class AggregationEditView(ManagerMixin, TemplateView):
 
             ActivityAggregateHistory.objects.create(aggregation=act_aggregate, aggregation_values=act_aggregate.aggregation_fields_value, date=datetime.now())
         return HttpResponseRedirect('/core/aggregation-list')
+
+
+# for dynamic beneficiary
+def dynamic_beneficiary_list(request, *args, **kwargs):
+    activity_group = ActivityGroup.objects.get(id=kwargs.get('pk'))
+    table_name = activity_group.name
+    with connection.cursor() as cursor:
+        command = "SELECT * FROM {}".format(table_name)
+        cursor.execute(command)
+        beneficiary_list = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+
+    return render(request, 'core/dynamic_beneficiary_list.html', {'name': table_name, 'beneficiaries': beneficiary_list, 'columns': columns})
