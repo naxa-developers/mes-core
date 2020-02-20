@@ -625,15 +625,14 @@ def get_question_answer(submission):
 def get_entry_question_answer(submission):
     form = XForm.objects.get(id=submission.cluster_activity.activity.form.id)
     questions = parse_entry_question(form.json)
-    data = []
-    for item in submission.instance.json:
-        ques_ans = []
-        for question in questions:
-            if question['question'] in item:
-                row = {'question': question['label'], 'answer': item[question['question']]}
-                ques_ans.append(row)
-        data.append(ques_ans)
-    return data
+    submission_json = submission.instance.json
+
+    ques_ans = []
+    for question in questions:
+        if question['question'] in submission_json:
+            row = {'question': question['label'], 'answer': submission_json[question['question']]}
+            ques_ans.append(row)
+    return ques_ans
 
 
 def get_arguments(question_answer):
