@@ -667,13 +667,23 @@ def create_db_table(submission):
         return False
 
 
-# def fill_cseb_table(submission):
-#     if check_entry_submission(submission):
-#         data = get_entry_question_answer(submission)
-#         columns = list(data[0].keys())
-#         values = 
-#         table_name = submission.cluster_activity.cag.activity_group.name
-#         with connection.cursor() as cursor:
-#             for item in data:
-#                 for key, value in item.items():
-#                     command = "INSERT INTO {} ({}) VALUES"
+def fill_cseb_table(submission):
+    if check_entry_submission(submission):
+        data = get_entry_question_answer(submission)
+        columns = []
+        values = []
+        for item in data:
+            for key, value in item.items():
+                columns.append(key)
+                if str(value).isdigit():
+                    values.append(int(str(value)))
+                else:
+                    values.append(str(value))
+        values = tuple(values)
+        table_name = submission.cluster_activity.cag.activity_group.name
+        with connection.cursor() as cursor:
+            command = "INSERT INTO {} ({}) VALUES {}".format(table_name, ','.join([s for s in columns]), values)
+            cursor.execute(command)
+        return True
+    else:
+        return False
