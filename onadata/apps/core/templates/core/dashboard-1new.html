@@ -412,7 +412,7 @@
             dataType: "json",
 
             success: function(result){
-                $("#district-"+request.id+"-progressloader").css("display", "none");
+                $("#district-"+district_id+"-progressloader").css("display", "none");
                 
                 $("#" + district_id +" .progress_bar_info").remove();
                 $.each(result, function(key, value){
