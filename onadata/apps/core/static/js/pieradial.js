@@ -165,7 +165,17 @@ $(document).ready(function(){
                                     render: renderIcons
                                 }
                             },
+                            title:{
+                                text: null,
+                            },
+                            exporting:{
+                                enabled: false,
+                            },
                         
+                            credits:{
+                                enabled: false
+                            },
+                            
                             tooltip: {
                                 borderWidth: 0,
                                 backgroundColor: 'none',
