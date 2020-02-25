@@ -400,6 +400,7 @@
     $(".filter-btn").click(function(){
         var request_data = []
         district_id = $(this).attr('district_id');
+        $("#"+ district_id +" .progress_bar_info").remove();
         $("#district-"+district_id+"-progressloader").css("display", "block");
         $.each($("input[class='"+ district_id +"']:checked"), function(){
             request_data.push(this.value);
