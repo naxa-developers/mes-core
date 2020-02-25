@@ -12,7 +12,7 @@ $(function(){
 	$('#Beneficiary_table').DataTable({
 		"scrollX": "1000px",
 		"scrollCollapse": true,
-		'iDisplayLength': 3,
+		'iDisplayLength': 25,
 		
 	});
 });
