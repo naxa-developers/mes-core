@@ -400,6 +400,7 @@
     $(".filter-btn").click(function(){
         var request_data = []
         district_id = $(this).attr('district_id');
+        $("#district-"+district_id+"-progressloader").css("display", "block");
         $.each($("input[class='"+ district_id +"']:checked"), function(){
             request_data.push(this.value);
         });
@@ -410,6 +411,7 @@
             dataType: "json",
 
             success: function(result){
+                
                 $("#" + district_id).empty();
                 $.each(result, function(key, value){
                     $("#" + district_id).append('<div class="progress_bar_info"><div class="status_info"><span>'+ key +'</span><span> ('+ value.sum +'% of 100)</span></div><div class="progress"><div class="progress-bar" role="progressbar" style="width: '+ value.sum +'%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>');

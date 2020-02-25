@@ -206,6 +206,8 @@
         </li>
         {% end ifrole %}
         <li><a href="{% url 'logout' %}?next=/core/sign-in/" class="mega-menu" title="Sign Out"><i class="la la-power-off"></i></a></li>
+        
+        <li><a href="{% url 'project-dashboard' %}" class="mega-menu" title="Switch Project"><i class="la la-exchange"></i></a></li>
     </ul>
 </div>
 <!-- Left Sidebar -->
@@ -343,7 +345,6 @@
         </ul>
     </div>
 </aside>
-
 
 {% block content %}
 {% endblock %}
