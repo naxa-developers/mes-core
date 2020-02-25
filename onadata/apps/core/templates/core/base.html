@@ -273,7 +273,7 @@
                 </ul>
             </li>
             {% end ifrole %}
-
+            {% ifrole 'manager' %}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>Cluster</span></a>
                 <ul class="ml-menu">
 
@@ -286,6 +286,14 @@
                     {% end ifrole %}
                 </ul>
             </li>
+            {% end ifrole %}
+            {% ifrole 'normal' %}
+            <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-transgender-alt"></i><span>Cluster</span></a>
+                <ul class="ml-menu">
+                    <li><a href="{% url 'user_cluster_list' request.user.pk %}">My Clusters</a></li>
+                </ul>
+            </li>
+            {% end ifrole %}
 
             {% ifrole 'manager_only' %}
             <li> <a href="javascript:void(0);" class="menu-toggle"><i class="la la-sellsy"></i><span>Benificiaries</span></a>
