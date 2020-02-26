@@ -40,7 +40,7 @@
 .show>.navbar .navbar-nav>a.btn.dropdown-toggle:focus,
 .show>.navbar .navbar-nav>a.btn.dropdown-toggle:hover {
     box-shadow: none;
-    background-color:$color-orange;
+    background-color: rgba($color-red, .8);
 }
 a.btn{
     color:$color-white;
@@ -51,9 +51,9 @@ button.btn.btn-create{
 }
 
 .btn.remove{
-    background-color:$color-orange;
+    background-color:$color-red;
     &:hover{
-        background-color: $color-secondary;
+        background-color: rgba($color-secondary, .8);
         color:$color-white;
     }
 }

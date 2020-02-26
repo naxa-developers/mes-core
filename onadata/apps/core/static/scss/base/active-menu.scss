@@ -1,6 +1,6 @@
 .ls-toggle-menu{
     .navbar-brand{
-        margin-left: 15px;
+        margin-left: 10px;
         a{
             display: none
         }
@@ -28,9 +28,11 @@
         width: 50px;
         .user-info{
             .image{
-                padding: 8px !important;
+                padding: 8px 6px !important;
                 img{
-                    box-shadow: none
+                    box-shadow: none;
+                    max-width: 35px;
+                    height: 35px;
                 }
             }
             .detail{
@@ -95,6 +97,9 @@
                 }
             }
         }
+    }
+    section.content{
+        margin-left: 60px !important;
     }
     
     @media only screen and (max-width: 768px) {

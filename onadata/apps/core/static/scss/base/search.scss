@@ -55,11 +55,11 @@
         justify-content: center;
         align-items: center;
         text-shadow: none;
-        border:2px solid $color-orange;
+        border:2px solid $color-red;
         font-size: 1.2rem;
         @include radius50;
         &:hover {
-            background: $color-orange;
+            background: $color-red;
             color: $color-white;
         }
     }
@@ -87,7 +87,7 @@
         @include radius50;
         cursor: pointer;
         i{
-            color:$color-orange;
+            color:$color-red;
             // animation: heartbit 0.5s ease-out;
             // -moz-animation: heartbit 0.5s ease-out;
             // -moz-animation-iteration-count: infinite;

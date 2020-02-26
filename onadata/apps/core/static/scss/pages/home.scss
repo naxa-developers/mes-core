@@ -154,21 +154,21 @@
                     }
                     &.card-content-blue{
                         .card-icon{
-                            border: 1px solid $color-bluelght;
+                            border: 1px solid $color-blue;
                         }
                         .card-text{
                             .body-span2{
-                                color: $color-bluelght;
+                                color: $color-blue;
                             }
                         }
                     }
                     &.card-content-green{
                         .card-icon{
-                            border: 1px solid $color-greenlght;
+                            border: 1px solid $color-secondary;
                         }
                         .card-text{
                             .body-span2{
-                                color: $color-greenlght;
+                                color: $color-secondary;
                             }
                         }
                     }
@@ -184,11 +184,11 @@
                     }
                     &.card-content-yellow{
                         .card-icon{
-                            border: 1px solid $color-yellowlght;
+                            border: 1px solid $color-orange;
                         }
                         .card-text{
                             .body-span2{
-                                color: $color-yellowlght;
+                                color: $color-orange;
                             }
                         }
                     }
@@ -201,19 +201,19 @@
                         &.card-content-blue{
                             .card-icon{
                                 i{
-                                    color: $color-bluelght;
+                                    color: $color-blue;
                                 }
-                                background-color: lighten($color-bluelght, 30%);
-                                @include boxshadow_all(0 1px 13px 0 rgba($color-bluelght, 0.4));
+                                background-color: lighten($color-blue, 40%);
+                                @include boxshadow_all(0 1px 13px 0 rgba($color-blue, 0.2));
                             }
                         }
                         &.card-content-green{
                             .card-icon{
                                 i{
-                                    color: $color-greenlght;
+                                    color: $color-secondary;
                                 }
-                                background-color: lighten($color-greenlght, 40%);
-                                @include boxshadow_all(0 1px 13px 0 rgba($color-greenlght, 0.4));
+                                background-color: lighten($color-secondary, 45%);
+                                @include boxshadow_all(0 1px 13px 0 rgba($color-secondary, 0.4));
                             }
                         }
                         &.card-content-purple{
@@ -221,17 +221,17 @@
                                 i{
                                     color: $color-purple;
                                 }
-                                background-color: lighten($color-purple, 16%);
-                                @include boxshadow_all(0 1px 13px 0 rgba($color-purple, 0.4));
+                                background-color: lighten($color-purple, 45%);
+                                @include boxshadow_all(0 1px 13px 0 rgba($color-purple, 0.6));
                             }
                         }
                         &.card-content-yellow{
                             i{
-                                color: $color-yellowlght;
+                                color: $color-orange;
                             }
                             .card-icon{
-                                background-color: lighten($color-yellowlght, 20%);
-                                @include boxshadow_all(0 1px 13px 0 rgba($color-yellowlght, 0.4));
+                                background-color: lighten($color-orange, 45%);
+                                @include boxshadow_all(0 1px 13px 0 rgba($color-orange, 0.4));
                             }
                         }
                     }

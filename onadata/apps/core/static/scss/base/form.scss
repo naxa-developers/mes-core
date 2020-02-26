@@ -164,8 +164,13 @@
                     color:$color-secondary;
                     border-color:rgba($color-primary, 0.2);
                     @include anim05;
+                    @include flex;
+                    @include align-items-center;
+                    @include justify-content-center;
                     &:hover{
-                        background-color:$color-orange;
+                        background-color: rgba($color-red, .8);
+                        color: rgba($color-secondary, 0.8);
+                        cursor: pointer;
                     }
                 }
             }
@@ -240,8 +245,14 @@
                     bottom:0;
                     border:1px solid $color-primary;
                     background-color: transparent;
-                    color:$color-orange;
+                    color:$color-red;
                     @include radius50;
+                    &:focus{
+                        outline: none;
+                    }
+                    &:hover{
+                        cursor: pointer;
+                    }
                 }
             }
             
@@ -381,7 +392,7 @@
                                 border:1px solid $color-primary;
                                 @include radius50;
                                 font-size:0.675rem;
-                                color:$color-orange;
+                                color:$color-red;
                                 }
                                 sup{
                                     @extend .pulse-fast;
@@ -406,7 +417,7 @@
                                         border:1px solid $color-primary;
                                         @include radius50;
                                         font-size:0.6rem;
-                                        color:$color-orange;
+                                        color:$color-red;
                                     }
                                     sup{
                                         @extend .pulse-fast;

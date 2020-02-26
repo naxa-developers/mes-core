@@ -5,7 +5,8 @@ if (!Highcharts.theme) {
         chart: {
             backgroundColor: 'white'
         },
-        colors: ['#56D9FE', '#FF6565', '#FFDA83'],
+        // colors: ['#56D9FE', '#FF6565', '#FFDA83'],
+        colors: ['#1b9cfc', '#ed6a82', '#ffa600'],
         title: {
             style: {
                 color: 'silver'

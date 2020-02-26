@@ -10,33 +10,21 @@ section.content {
         @include boxshadow_all(none);
         padding: 0 2rem;
        
-        .graph-section, .info-graph-section{
+        .graph-section{
             .card{
                 @include radius5;
                 background-color: $color-light;
+                .card-header{
+                    padding:  0 0 .75rem 0;
+                    span.body_subtitle{
+                        line-height: 1rem;
+                    }
+                }
                 .card-body{
                     .content-card{
-                        .card-header{
-                            @include display-flex(flex);
-                            @include justify-content-between;
-                            padding: 0 0 .75rem 0;
-                            .card-header-left{
-                                span{
-                                    display: block;  
-                                }
-                                .body-title{
-                                    padding-bottom: 1rem;
-                                }
-                            }
-                            .card-header-right{
-                                form{
-
-                                }
-                            }
-                        }
+                        // padding: 1.25rem;
                         .card-body-graph{
                             padding: 0;
-                           
                             #radial-chart, #radial-chart-infoleft, #radial-chart-inforight{
                                 .highcharts-title{
                                     display: none;
@@ -64,7 +52,7 @@ section.content {
                                                     font-family: 'FontAwesome';
                                                     position: relative;
                                                     right: 5px;
-                                                    color: $color-bluelght;
+                                                    color: $color-blue;
                                                 }
                                             }
                                         }
@@ -75,7 +63,7 @@ section.content {
                                                     font-family: 'FontAwesome';
                                                     position: relative;
                                                     right: 5px;
-                                                    color: $color-orange;
+                                                    color: $color-pink;
                                                 }
                                             }
                                         }
@@ -86,7 +74,7 @@ section.content {
                                                     font-family: 'FontAwesome';
                                                     position: relative;
                                                     right: 5px;
-                                                    color: $color-yellowlght;
+                                                    color: $color-orange;
                                                 }
                                             }
                                         }
@@ -110,16 +98,52 @@ section.content {
         }
 
         .info-graph-section{
-            .card{
-                .card-body{
+            // .card{
+            //     .card-body{
                     .content-card{
+                        background-color: $color-white;
+                        padding: 1.25rem;
+                        &:not(:last-child){
+                            .card-body-graph{
+                                border-bottom: 1px solid rgba($color-black, .125);
+                            }
+                        }
                         &:last-child{
-                            padding-top: 30px;
+                            .card-header{
+                                border-bottom: 0 !important;
+                            }
+                        }
+                        .card-header{
+                            @include display-flex(flex);
+                            @include justify-content-between;
+                            padding: 0 0 .75rem 0;
+                            .card-header-left{
+                                span{
+                                    display: block;  
+                                }
+                                // span.body-title{
+                                //     margin-bottom: 10rem;
+                                // }
+                            }
                         }
                         .card-body-graph{
                             padding-bottom: 1rem;
-                            border-bottom: 1px solid rgba($color-black, .125);
-                            margin-top: 1.25rem;
+                            // border-bottom: 1px solid rgba($color-black, .125);
+                            // margin-top: 1.25rem;
+                            #radial-chart, #radial-chart-infoleft, #radial-chart-inforight{
+                                .highcharts-title{
+                                    display: none;
+                                } 
+                                .highcharts-button{
+                                    display: none;
+                                } 
+                                .highcharts-credits{
+                                    display: none;
+                                }
+                                .highcharts-pane{
+                                    background: red;
+                                }
+                            }
                             .progress_bar_info{
                                 .status_info{
                                     @include display-flex(flex);
@@ -144,21 +168,21 @@ section.content {
                                 &:first-child{
                                     .progress{
                                         .progress-bar{
-                                            background-color: $color-purple;
+                                            background-color: $color-blue;
                                         }
                                     }
                                 }
                                 &:nth-child(2){
                                     .progress{
                                         .progress-bar{
-                                            background-color: $color-greenlght;
+                                            background-color: $color-secondary;
                                         }
                                     }
                                 }
                                 &:nth-child(3){
                                     .progress{
                                         .progress-bar{
-                                            background-color: $color-orange;
+                                            background-color: $color-pink;
                                         }
                                     }
                                 }
@@ -166,7 +190,7 @@ section.content {
                                 &:nth-child(4){
                                     .progress{
                                         .progress-bar{
-                                            background-color: $color-orange;
+                                            background-color: $color-red;
                                         }
                                     }
                                 }
@@ -174,18 +198,15 @@ section.content {
                                 &:last-child{
                                     .progress{
                                         .progress-bar{
-                                            background-color: $color-orangelght;
+                                            background-color: $color-orange;
                                         }
                                     }
                                 }
-
-                               
-                                
                             }
                         }
                     }
-                }
-            }
+            //     }
+            // }
         }
 
         .content-wrapper{
@@ -246,7 +267,7 @@ section.content {
                                                     font-family: 'FontAwesome';
                                                     position: relative;
                                                     right: 5px;
-                                                    color: $color-orange;
+                                                    color: $color-red;
                                                 }
                                             }
                                         }

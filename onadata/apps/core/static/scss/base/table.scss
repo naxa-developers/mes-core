@@ -4,7 +4,6 @@
     @include radius5;
     margin-bottom: 30px;
     .table{
-        
         th,td{
             border:1px solid rgba($color-primary, 0.1);
             @include radius5;
@@ -13,6 +12,7 @@
         th{
             border-bottom:2px solid rgba($color-secondary, 0.2);
             text-transform: capitalize;
+            vertical-align: middle;
         }
         td{
             &.action{
