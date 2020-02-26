@@ -145,10 +145,11 @@ def get_ca_history(obj, cag=None):
 
 @register.filter
 def check_manager_permission(obj, cluster):
+    project = cluster.project
     try:
-        user_role = UserRole.objects.get(Q(user=obj), Q(cluster=cluster))
+        user_role = UserRole.objects.get(Q(user=obj), Q(cluster=cluster), project=project)
     except:
-        user_role = UserRole.objects.get(user=obj)
+        user_role = UserRole.objects.get(user=obj, project=project)
 
     if user_role.group.name in ['project-manager', 'super-admin']:
         return True
