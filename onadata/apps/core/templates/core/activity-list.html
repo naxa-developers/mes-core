@@ -56,7 +56,9 @@
                                 <td>{{ activity.beneficiary_level }}</td>
                                 <td>{{ activity.weight }}</td>
                                 <td class="table-action">
-                                    <a href="{% url 'activity_delete' activity.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
+                                    <form action="{% url 'activity_delete' activity.pk %}">
+                                        <button type="submit" onclick="return confirm('Are you sure?')" class="btn remove"> <i class="la la-trash-o"></i> Delete</button>
+                                    </form>
                                     <a href="{% url 'activity_edit' activity.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
                                 </td>
                             </tr>

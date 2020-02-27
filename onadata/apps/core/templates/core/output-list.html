@@ -44,7 +44,9 @@
                                 <td>{{ output.description }}</td>
                                 <td>{{ output.project }}</td>
                                 <td class="table-action">
-                                    <a href="{% url 'output_delete' output.pk %}" class="btn remove"> <i class="la la-trash-o"></i> Delete</a>
+                                    <form action="{% url 'output_delete' output.pk %}">
+                                        <button type="submit" onclick="return confirm('Are you sure?')" class="btn remove"> <i class="la la-trash-o"></i> Delete</button>
+                                    </form>
                                     <a href="{% url 'output_edit' output.pk %}" class="btn"> <i class="la la-edit"></i> Edit</a>
                                 </td>
                             </tr>
