@@ -29,6 +29,9 @@
             <div class="card project_list">
                 <div class="table-responsive">
                     <table id="Beneficiary_table" class="table table-hover c_table">
+                        {% if msg %}
+                            <p>{{ msg }}</p>
+                        {% else %}
                         <thead>
                             <tr>
                                 {% for column in columns %}
@@ -45,6 +48,7 @@
                             </tr>
                             {% endfor %}
                         </tbody>
+                        {% endif %}
                     </table>
                 </div>
                 <div class="table-footer">
