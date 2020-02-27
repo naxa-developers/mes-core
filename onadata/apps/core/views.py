@@ -1805,7 +1805,11 @@ class ClusterViewSet(viewsets.ModelViewSet):
         if len(roles) > 1:
             cluster = Cluster.objects.filter(userrole_cluster__in=roles)
         else:
-            cluster = Cluster.objects.filter(userrole_cluster=self.request.role)
+            try:
+                role = UserRole.objects.get(user=self.request.user)
+                cluster = Cluster.objects.filter(userrole_cluster=role)
+            except:
+                cluster = Cluster.objects.filter(userrole_cluster=self.request.role)
         return cluster
 
 
