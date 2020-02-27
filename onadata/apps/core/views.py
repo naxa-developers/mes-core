@@ -2013,7 +2013,7 @@ def assign_activity(request, *args, **kwargs):
             cluster = request.POST.getlist('clusters[]')
             for item in cluster:
                 cluster = Cluster.objects.get(id=int(item))
-                cag = ClusterAG.objects.create(cluster=cluster, activity_group=activity.activity_group)
+                cag, created = ClusterAG.objects.get_or_create(cluster=cluster, activity_group=activity.activity_group)
                 ca, created = ClusterA.objects.get_or_create(
                     activity=activity,
                     cag=cag,
