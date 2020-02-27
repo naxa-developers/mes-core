@@ -447,12 +447,12 @@ class UserRoleForm(forms.ModelForm):
                 })
 
         elif self.instance.pk:
-            if UserRole.objects.filter(~Q(group=cleaned_data.get('group'), project=cleaned_data.get('project'), user=cleaned_data.get('user'))).exists():
-                raise ValidationError({
-                    'user': [
-                        'A user can only be assigned to a single role in a project'
-                    ]
-                })
+            # if UserRole.objects.filter(~Q(group=cleaned_data.get('group'), project=cleaned_data.get('project'), user=cleaned_data.get('user'))).exists():
+            #     raise ValidationError({
+            #         'user': [
+            #             'A user can only be assigned to a single role in a project'
+            #         ]
+            #     })
             clusters = cleaned_data.get('cluster')
             if clusters:
                 if cleaned_data.get('group').name in ['social-mobilizer']:
