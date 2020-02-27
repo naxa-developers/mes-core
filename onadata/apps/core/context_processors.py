@@ -7,8 +7,13 @@ def userroleprocessor(request):
             project = Project.objects.get(id=request.session.get('project_id'))
         else:
             project = request.project
+        
+        try:
+            role = UserRole.objects.get(user=user, project=project)
+        except:
+            role = UserRole.objects.filter(user=user)[0]
 
-        return {'role': UserRole.objects.get(user=user, project=project)}
+        return {'role': role}
     else:
         return {}
 
