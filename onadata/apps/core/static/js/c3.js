@@ -452,7 +452,7 @@ $(function() {
                     column_data.push(data);
                 });
 
-                var progress = ['percentage'];
+                var progress = ['progress'];
                 progress_data.forEach(function(data){
                     progress.push(data);
                 });
@@ -465,7 +465,7 @@ $(function() {
                             progress,
                         ],
                         color: function(inColor, data) {
-                            var colors = ['#A3A0FB', '#5EE2A0','#FF6565','F2E5D2','#FFA177'];
+                            var colors = ['#1b9cfc', '#2ecc71','#ed6a82','F2E5D2','#ffa600'];
                             if(data.index !== undefined) {
                                 return colors[data.index];
                             }
@@ -478,8 +478,6 @@ $(function() {
                         x: {
                             type: 'category',
                             // name of each category
-                            categories: categories,
-
                         },
                         y: {
                             label: {
