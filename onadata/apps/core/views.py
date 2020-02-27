@@ -2391,10 +2391,13 @@ class AggregationEditView(ManagerMixin, TemplateView):
 def dynamic_beneficiary_list(request, *args, **kwargs):
     activity_group = ActivityGroup.objects.get(id=kwargs.get('pk'))
     table_name = activity_group.name
-    with connection.cursor() as cursor:
-        command = "SELECT * FROM {}".format(table_name)
-        cursor.execute(command)
-        beneficiary_list = cursor.fetchall()
-        columns = [desc[0] for desc in cursor.description]
+    try:
+        with connection.cursor() as cursor:
+            command = "SELECT * FROM {}".format(table_name)
+            cursor.execute(command)
+            beneficiary_list = cursor.fetchall()
+            columns = [desc[0] for desc in cursor.description]
 
-    return render(request, 'core/dynamic_beneficiary_list.html', {'name': table_name, 'beneficiaries': beneficiary_list, 'columns': columns})
+        return render(request, 'core/dynamic_beneficiary_list.html', {'name': table_name, 'beneficiaries': beneficiary_list, 'columns': columns})
+    except:
+        return render(request, 'core/dynamic_beneficiary_list.html')
