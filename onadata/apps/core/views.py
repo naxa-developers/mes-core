@@ -1987,10 +1987,10 @@ class ActivityAssignListView(ManagerMixin, ListView):
 
 
 def assign_activity(request, *args, **kwargs):
-    if 'project_id' in self.request.session:
-        project = Project.objects.get(id=self.request.session['project_id'])
+    if 'project_id' in request.session:
+        project = Project.objects.get(id=request.session['project_id'])
     else:
-        project = self.request.project
+        project = request.project
     activity = Activity.objects.get(pk=kwargs.get('pk'))
     if request.method == 'GET':
         cluster_activity = ClusterA.objects.filter(activity=activity)
