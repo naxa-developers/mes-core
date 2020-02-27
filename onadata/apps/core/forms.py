@@ -439,6 +439,12 @@ class UserRoleForm(forms.ModelForm):
                         'A project can contain only a single project manager.'
                     ]
                 })
+            if UserRole.objects.filter(~Q(group=cleaned_data.get('group'), project=cleaned_data.get('project'), user=cleaned_data.get('user'))).exists():
+                raise ValidationError({
+                    'user': [
+                        'A user can only be assigned to a single role in project'
+                    ]
+                })
 
         elif self.instance.pk:
             if UserRole.objects.filter(~Q(group=cleaned_data.get('group'), project=cleaned_data.get('project'), user=cleaned_data.get('user'))).exists():
@@ -481,7 +487,7 @@ class UserRoleForm(forms.ModelForm):
                                 'A cluster can contain only a single ' + str(cleaned_data.get('group'))]})
 
                 if UserRole.objects.filter(
-                        user=cleaned_data.get('user')).exists() and \
+                        user=cleaned_data.get('user'), project=cleaned_data.get('project')).exists() and \
                         cleaned_data.get('group').name not in ['social-mobilizer', 'project-coordinator', 'project-management-unit']:
                     raise ValidationError({
                         'cluster': [

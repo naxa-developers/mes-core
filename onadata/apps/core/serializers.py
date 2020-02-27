@@ -125,16 +125,15 @@ class CAGSerializer(serializers.ModelSerializer):
 
 class ClusterSerializer(serializers.ModelSerializer):
     clusterag = CAGSerializer(many=True, read_only=True)
-    userrole = serializers.SerializerMethodField()
     district = serializers.ReadOnlyField(source='municipality.district')
-
-    def get_userrole(self, obj):
-        return obj.userrole_cluster.get().group.name
+    name = serializers.SerializerMethodField()
 
     class Meta:
         model = Cluster
-        fields = ('id', 'name', 'district', 'municipality', 'ward', 'userrole', 'clusterag')
+        fields = ('id', 'name', 'district', 'municipality', 'ward', 'clusterag')
 
+    def get_name(self, obj):
+        return obj.name + ' ' obj.project.name
 
 class ConfigSerializer(serializers.ModelSerializer):
 	beneficiary_updated = serializers.SerializerMethodField()
