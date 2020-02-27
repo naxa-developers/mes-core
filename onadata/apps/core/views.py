@@ -2400,4 +2400,5 @@ def dynamic_beneficiary_list(request, *args, **kwargs):
 
         return render(request, 'core/dynamic_beneficiary_list.html', {'name': table_name, 'beneficiaries': beneficiary_list, 'columns': columns})
     except:
+        connection._rollback()
         return render(request, 'core/dynamic_beneficiary_list.html')
