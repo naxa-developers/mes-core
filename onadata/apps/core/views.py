@@ -1184,7 +1184,11 @@ class UserRoleCreateView(ManagerMixin, View):
         return render(request, 'core/userrole-form.html', {'form': form})
 
     def post(self, request, **kwargs):
-        form = UserRoleForm(request.POST, project=self.request.project, is_super_admin=self.request.is_super_admin)
+        if 'project_id' in self.request.session:
+            project = Project.objects.get(id=self.request.session['project_id'])
+        else:
+            project = self.request.project
+        form = UserRoleForm(request.POST, project=project, is_super_admin=self.request.is_super_admin)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.save()
@@ -1230,7 +1234,7 @@ class UserRoleUpdateView(ManagerMixin, UpdateView):
             project = Project.objects.get(id=self.request.session['project_id'])
         else:
             project = project
-        kwargs['project'] = self.request.project
+        kwargs['project'] = project
         kwargs['is_super_admin'] = self.request.is_super_admin
         return kwargs
 
@@ -1752,8 +1756,9 @@ class UserActivityViewSet(viewsets.ModelViewSet):
     serializer_class = CASerializer
 
     def get_queryset(self):
-        role = self.request.user.user_roles.first()
         activitygroup = ClusterAG.objects.get(pk=self.kwargs.get('pk'))
+        project = activitygroup.activity_group.project
+        role = UserRole.objects.get(user=self.request.user, project=project)
         if role.group.name == 'social-mobilizer':
             queryset = ClusterA.objects.filter(cag=activitygroup)
         elif role.group.name == 'community-social-mobilizer':
