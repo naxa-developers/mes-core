@@ -133,7 +133,7 @@ class ClusterSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'district', 'municipality', 'ward', 'clusterag')
 
     def get_name(self, obj):
-        return obj.name + ' ' + obj.project.name
+        return obj.name + ' (' + obj.project.name + ')'
 
 class ConfigSerializer(serializers.ModelSerializer):
 	beneficiary_updated = serializers.SerializerMethodField()
