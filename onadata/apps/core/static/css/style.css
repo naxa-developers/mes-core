@@ -3740,3 +3740,7 @@ section.content.content-mod {
     padding: 0.45rem 0.75rem; }
 
 /*# sourceMappingURL=style.css.map */
+
+table, .dataTables_scrollHeadInner{
+  width: 100% !important;
+}
