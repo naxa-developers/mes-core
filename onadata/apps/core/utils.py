@@ -667,10 +667,8 @@ def create_db_table(submission):
                 if connection is not None:
                     try:
                         connection.close()
-                        connection = None
                         return "error"
                     except:
-                        connection = None
                         return "error"
                 return "error"
         return True
