@@ -1290,6 +1290,8 @@ class SubmissionListView(LoginRequiredMixin, View):
             submission.save()
             
             created = create_db_table(submission)
+            if created == 'error':
+                return render(request, 'core/submission_notification.html', {'msg': 'Cannot approve submission. Only a single submission for beneficiary creation can be approved.'})
             if not created:
                 filled = fill_cseb_table(submission)
                 if not filled:
@@ -1356,6 +1358,8 @@ class SubmissionListView(LoginRequiredMixin, View):
             
             for submission in submissions:
                 created = create_db_table(submission)
+                if created == 'error':
+                    return render(request, 'core/submission_notification.html', {'msg': 'Cannot approve submission. Only a single submission for beneficiary creation can be approved.'})
                 if not created:
                     filled = fill_cseb_table(submission)
             if aggregations_list:
@@ -1399,6 +1403,8 @@ class SubmissionListView(LoginRequiredMixin, View):
                     submission.status = 'approved'
                     submission.save()
                     created = create_db_table(submission)
+                    if created == 'error':
+                        return render(request, 'core/submission_notification.html', {'msg': 'Cannot approve submission. Only a single submission for beneficiary creation can be approved.'})
 
                     if not created:
                         filled = fill_cseb_table(submission)
@@ -1505,6 +1511,8 @@ class SubNotificationListView(LoginRequiredMixin, View):
             submission.status = 'approved'
             submission.save()
             created = create_db_table(submission)
+            if created == 'error':
+                return render(request, 'core/submission_notification.html', {'msg': 'Cannot approve submission. Only a single submission for beneficiary creation can be approved.'})
             if not created:
                 filled = fill_cseb_table(submission)
                 if not filled:
@@ -1600,6 +1608,8 @@ class SubNotificationListView(LoginRequiredMixin, View):
 
             for submission in submissions:
                 created = create_db_table(submission)
+                if created == 'error':
+                    return render(request, 'core/submission_notification.html', {'msg': 'Cannot approve submission. Only a single submission for beneficiary creation can be approved.'})
                 if not created:
                     filled = fill_cseb_table(submission)
             if aggregations_list:
@@ -1640,6 +1650,8 @@ class SubNotificationListView(LoginRequiredMixin, View):
                     submission.status = 'approved'
                     submission.save()
                     created = create_db_table(submission)
+                    if created == 'error':
+                        return render(request, 'core/submission_notification.html', {'msg': 'Cannot approve submission. Only a single submission for beneficiary creation can be approved.'})
                     if not created:
                         filled = fill_cseb_table(submission)
                         if not filled:

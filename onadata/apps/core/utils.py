@@ -656,13 +656,17 @@ def create_db_table(submission):
         data = get_question_answer(submission)
         args = get_arguments(data)
         table_name = submission.cluster_activity.cag.activity_group.name
-        with connection.cursor() as cursor:
-            command = "CREATE TABLE {} (id SERIAL PRIMARY KEY)".format(table_name)
-            cursor.execute(command)
-            for key, value in args.items():
-                command = "ALTER TABLE {0} ADD COLUMN {1} {2}".format(table_name, key, value)
+        try:
+            with connection.cursor() as cursor:
+                command = "CREATE TABLE {} (id SERIAL PRIMARY KEY)".format(table_name)
                 cursor.execute(command)
-        return True
+                for key, value in args.items():
+                    command = "ALTER TABLE {0} ADD COLUMN {1} {2}".format(table_name, key, value)
+                    cursor.execute(command)
+            return True
+        except:
+            connection._rollback()
+            return "error"
     else:
         return False
 
