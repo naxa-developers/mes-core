@@ -665,6 +665,7 @@ def create_db_table(submission):
                     cursor.execute(command)
             return True
         except:
+            connection._rollback()
             return "error"
             
     else:
