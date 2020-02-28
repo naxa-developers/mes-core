@@ -1399,7 +1399,11 @@ class SubmissionListView(LoginRequiredMixin, View):
             checked = request.POST.getlist('checked[]')
             if checked:
                 for item in checked:
-                    submission = Submission.objects.get(id=int(item))
+                    if ',' in item:
+                        sub_id = item.replace(',', '')
+                    else:
+                        sub_id = item
+                    submission = Submission.objects.get(id=int(sub_id))
                     submission.status = 'approved'
                     submission.save()
                     created = create_db_table(submission)
@@ -1646,7 +1650,11 @@ class SubNotificationListView(LoginRequiredMixin, View):
             checked = request.POST.getlist('checked[]')
             if checked:
                 for item in checked:
-                    submission = Submission.objects.get(id=int(item))
+                    if ',' in item:
+                        sub_id = item.replace(',', '')
+                    else:
+                        sub_id = item
+                    submission = Submission.objects.get(id=int(sub_id))
                     submission.status = 'approved'
                     submission.save()
                     created = create_db_table(submission)
