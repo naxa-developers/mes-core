@@ -2411,6 +2411,7 @@ class AggregationEditView(ManagerMixin, TemplateView):
 def dynamic_beneficiary_list(request, *args, **kwargs):
     activity_group = ActivityGroup.objects.get(id=kwargs.get('pk'))
     table_name = activity_group.name
+    table_name = table_name.replace(" ", "_")
     try:
         with connection.cursor() as cursor:
             command = "SELECT * FROM {}".format(table_name)
