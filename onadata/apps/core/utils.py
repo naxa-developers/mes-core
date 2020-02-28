@@ -664,7 +664,6 @@ def create_db_table(submission):
                     command = "ALTER TABLE {0} ADD COLUMN {1} {2}".format(table_name, key, value)
                     cursor.execute(command)
             except:
-                connection.close()
                 return "error"
         return True
             
