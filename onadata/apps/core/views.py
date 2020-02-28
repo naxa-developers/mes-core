@@ -1351,8 +1351,8 @@ class SubmissionListView(LoginRequiredMixin, View):
                 email.send()
 
         elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
+            Submission.objects.filter(cluster_activity__cag__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(cluster_activity__cag__cluster__project=project, status="approved")
             
             for submission in submissions:
                 created = create_db_table(submission)
@@ -1434,7 +1434,7 @@ class SubmissionListView(LoginRequiredMixin, View):
 
                             order = submission.cluster_activity.activity.order
                             if order:
-                                Submission.objects.filter(beneficiary__cluster__project=project, cluster_activity__activity__order__lte=order).update(status='approved')
+                                Submission.objects.filter(cluster_activity__cag__cluster__project=project, cluster_activity__activity__order__lte=order).update(status='approved')
                                 # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                                 # if aggregations_list:
@@ -1478,7 +1478,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
             project = Project.objects.get(id=self.request.session['project_id'])
         else:
             project = self.request.project
-        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=project).order_by('instance__date_created')
+        submissions = Submission.objects.filter(status='pending', cluster_activity__cag__cluster__project=project).order_by('instance__date_created')
         page = request.GET.get('page', 1)
         paginator = Paginator(submissions, 200)
         
@@ -1538,7 +1538,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
 
                     order = submission.cluster_activity.activity.order
                     if order:
-                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__activity__activity_group__project=project).update(status='approved')
+                        Submission.objects.filter(cluster_activity__activity__order__lte=order, cluster_activity__cag__cluster__project=project).update(status='approved')
                         # submissions = Submission.objects.filter(cluster_activity__activity__order__lte=order, status="approved").exclude(id=submission.id)
 
                         # if aggregations_list:
@@ -1595,8 +1595,8 @@ class SubNotificationListView(LoginRequiredMixin, View):
                 )
                 email.send()
         elif 'approve-all' in request.POST:
-            Submission.objects.filter(beneficiary__cluster__project=project, status='pending').update(status='approved')
-            submissions = Submission.objects.filter(beneficiary__cluster__project=project, status="approved")
+            Submission.objects.filter(cluster_activity__cag__cluster__project=project, status='pending').update(status='approved')
+            submissions = Submission.objects.filter(cluster_activity__cag__cluster__project=project, status="approved")
 
             for submission in submissions:
                 created = create_db_table(submission)
@@ -1706,7 +1706,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
                                 #             aggregations.aggregation_fields_value = aggregation_answer
                                 #             aggregations.save()
 
-        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=project).order_by('instance__date_created')
+        submissions = Submission.objects.filter(status='pending', cluster_activity__cag__cluster__project=project).order_by('instance__date_created')
         page = request.GET.get('page', 1)
         paginator = Paginator(submissions, 200)
         
