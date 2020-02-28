@@ -664,10 +664,16 @@ def create_db_table(submission):
                     command = "ALTER TABLE {0} ADD COLUMN {1} {2}".format(table_name, key, value)
                     cursor.execute(command)
             except:
-                connection._rollback()
+                if connection is not None:
+                    try:
+                        connection.close()
+                        connection = None
+                        return "error"
+                    except:
+                        connection = None
+                        return "error"
                 return "error"
         return True
-            
     else:
         return False
 
