@@ -667,7 +667,7 @@ def create_db_table(submission):
                     cursor.execute(command)
             return True
         except:
-            cursor.execut('ROLLBACK TO SAVEPOINT sp1')
+            cursor.execute('ROLLBACK TO SAVEPOINT sp1')
             return "error"
         
     else:
