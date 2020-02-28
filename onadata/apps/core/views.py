@@ -1706,7 +1706,7 @@ class SubNotificationListView(LoginRequiredMixin, View):
                                 #             aggregations.aggregation_fields_value = aggregation_answer
                                 #             aggregations.save()
 
-        submissions = Submission.objects.filter(status='pending').order_by('instance__date_created')
+        submissions = Submission.objects.filter(status='pending', beneficiary__cluster__project=project).order_by('instance__date_created')
         page = request.GET.get('page', 1)
         paginator = Paginator(submissions, 200)
         
