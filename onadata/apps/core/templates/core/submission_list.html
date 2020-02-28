@@ -27,6 +27,9 @@
             </div>
         </div>
         <div class="container-fluid">
+            {% if msg %}
+                <p>{{ msg }}</p>
+            {% else %}
             <form method="post">
                 {% csrf_token %}
                 <button name='approve-all' class='btn'><i class="la la-check">Approve All</i></button>
@@ -79,6 +82,7 @@
 
             </div>
             </form>
+            {% endif %}
         </div>
     </div>
 </section>
