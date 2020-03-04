@@ -283,3 +283,10 @@ def get_sum(aggregation):
                 if answer in aggregation.aggregation_fields_value:
                     sum += int(aggregation.aggregation_fields_value[answer])
     return sum
+
+
+@register.filter
+def get_latest_activity(beneficiary):
+    submissions = Submission.objects.filter(beneficiary=beneficiary).order_by('cluster_activity__activity__order')
+    submission = submissions[len(submissions) - 1]
+    return submission.cluster_activity.activity.name
