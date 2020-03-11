@@ -288,5 +288,8 @@ def get_sum(aggregation):
 @register.filter
 def get_latest_activity(beneficiary):
     submissions = Submission.objects.filter(beneficiary=beneficiary).order_by('cluster_activity__activity__order')
-    submission = submissions[len(submissions) - 1]
+    try:
+        submission = submissions[len(submissions) - 1]
+    except:
+        return ''
     return submission.cluster_activity.activity.name
