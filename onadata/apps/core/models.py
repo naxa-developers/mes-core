@@ -160,6 +160,7 @@ class Beneficiary(models.Model):
 	Remarks = models.CharField(max_length=100, blank=True)
 	location = PointField(geography=True, srid=4326, blank=True, null=True)
 	payment_type = models.CharField(max_length=100, choices=PAYMENT_CHOICES, blank=True, null=True)
+	nra_card_number = models.CharField(max_length=255, null=True, blank=True)
 
 	def __str__(self):
 		return self.name
