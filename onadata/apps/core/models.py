@@ -176,7 +176,9 @@ class Beneficiary(models.Model):
 
 	@property
 	def progress(self):
-		submissions = Submission.objects.filter(beneficiary=self).distinct('cluster_activity')
+		submissions = Submission.objects.filter(beneficiary=self)
+		cluster_act = ClusterA.objects.filter(submissions__in=submissions).distinct()
+		submissions = Submission.objects.filter(beneficiary=self, cluster_activity__in=cluster_act).order_by('-cluster_activity__activity__order')
 		progress = 0
 		tracked_activity = []
 		for item in submissions:
