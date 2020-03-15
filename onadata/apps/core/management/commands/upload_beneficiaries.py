@@ -18,11 +18,11 @@ class Command(BaseCommand):
         try:
             total = df['SN' ].count()
             for row in range(total):
-                print(df['Municipality'][row])
                 municipality = Municipality.objects.get(name=df['Municipality'][row])
                 district = municipality.district
                 name = df['Name of Beneficiries '][row]
                 nra_card_no = df.get('NRA CARD No', '')[row]
+                print(nra_card_no)
                 ward = int(df.get('Ward', '')[row])
                 try:
                     cluster = Cluster.objects.get(name=df['Cluster'][row])
@@ -33,7 +33,6 @@ class Command(BaseCommand):
                 vulnerabilityType = df.get('Tyeps of Vulnerability', '')[row]
                 tranch = df.get('Tranches Progress', '')[row]
                 remarks = df.get('Remarks', '')[row]
-                print(name, district.id, municipality.id)
 
                 if cluster:
                     beneficiary, created = Beneficiary.objects.get_or_create(
@@ -47,7 +46,7 @@ class Command(BaseCommand):
                     if created:
                         print(name)
 
-                    beneficiary.nra_card_no = nra_card_no
+                    beneficiary.nra_card_number = nra_card_no
                     beneficiary.Typesofhouse = houseType
                     beneficiary.GovernmentTranch = tranch
                     beneficiary.vulnerabilityType = vulnerabilityType
@@ -63,7 +62,7 @@ class Command(BaseCommand):
                         Type=category
                     )
 
-                    beneficiary.nra_card_no = nra_card_no
+                    beneficiary.nra_card_number = nra_card_no
                     beneficiary.Typesofhouse = houseType
                     beneficiary.GovernmentTranch = tranch
                     beneficiary.vulnerabilityType = vulnerabilityType
