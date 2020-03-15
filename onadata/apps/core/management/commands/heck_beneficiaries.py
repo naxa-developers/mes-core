@@ -19,8 +19,8 @@ class Command(BaseCommand):
         try:
             total = df['SN' ].count()
             for row in range(total):
-                name.append(df['Name of Beneficiries '])
-            
+                name.append(df['Name of Beneficiries '][row])
+            print(name)
             print(Beneficiary.objects.filter(name__in=name).count())
 
         except Exception as e:
