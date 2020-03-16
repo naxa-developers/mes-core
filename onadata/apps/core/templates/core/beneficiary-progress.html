@@ -68,6 +68,7 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center">Beneficiary name</th>
+                                            <th class="text-center">NRA Card Number</th>
                                             <th class="text-center">Type</th>
                                             <th class="text-center">Work Progress</th>
                                             <th class="text-center">Current Activity</th>
@@ -77,6 +78,7 @@
                                     {% for beneficiary in beneficiaries %}
                                         <tr>
                                             <td>{{ beneficiary.name }}</td>
+                                            <td>{{ beneficiary.nra_card_number }}</td>
                                             <td>{{ beneficiary.Type }}</td>
                                             <td>
                                                 <div class="progress">

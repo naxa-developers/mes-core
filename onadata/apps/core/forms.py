@@ -380,6 +380,7 @@ class BeneficiaryForm(forms.ModelForm):
             'Typesofhouse': forms.TextInput(attrs={'placeholder': 'Types of house', 'class': 'form-control'}),
             'cluster': forms.Select(attrs={'class': "custom-select"}),
             'payment_type': forms.Select(attrs={'class': "custom-select"}),
+            'nra_card_number': forms.TextInput(attrs={'placeholder': 'NRA Card Number', 'class': 'form-control'})
         }
 
     def clean(self):

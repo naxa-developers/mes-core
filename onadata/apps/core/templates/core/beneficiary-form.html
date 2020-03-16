@@ -115,6 +115,13 @@
                     <font color="crimson">{{ form.payment_type.errors }}</font>
                     {% endif %}
                     <div class="form-group">
+                        <label>{{ form.nra_card_number.label }}</label>
+                        {{ form.nra_card_number }}
+                    </div>
+                    {% if form.nra_card_number.errors %}
+                    <font color="crimson">{{ form.nra_card_number.errors }}</font>
+                    {% endif %}
+                    <div class="form-group">
                         <label>Longitude</label>
                         <input class="form-control" type="text" name="Longitude"
                                value="{% if form.instance %}{{ form.instance.location.x }}{% else %}0{% endif %}">

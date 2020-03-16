@@ -31,7 +31,8 @@
                     <table id="Beneficiary_table" class="table table-hover c_table">
                         <thead>
                             <tr>
-                                <th>Project Name</th>
+                                <th>Name</th>
+                                <th>NRA Card Number</th>
                                 <th>District</th>
                                 <th>Municipality</th>
                                 <th>Cluster</th>
@@ -47,6 +48,7 @@
                             {% for beneficiary in object_list %}
                             <tr>
                                 <td>{{ beneficiary.name }}</td>
+                                <td>{{ beneficiary.nra_card_number }}</td>
                                 <td>{{ beneficiary.district }}</td>
                                 <td>{{ beneficiary.municipality }}</td>
                                 <td>{{ beneficiary.cluster }}</td>
